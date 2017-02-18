@@ -1,0 +1,52 @@
+<div>
+	   <div>
+		<input type="text" placeholder="naam" id="searchNaam" onChange="searchGroepen()"/>
+		<input type="text" placeholder="beschrijving" id="searchBeschrijving" onChange="searchGroepen()"/>
+		<input type="text" placeholder="groepscode" id="searchGroepscode" onChange="searchGroepen()"/>
+		<select id="searchOrganisatie"  onChange="searchGroepen()">
+			<option value="">(organisatie)</option>
+		</select> 
+		<select id="searchScope"  onChange="searchGroepen()">
+			<option value="">(scope)</option>
+		</select> 
+			
+		<input type="text" placeholder="product" id="searchProduct" onChange="searchGroepen()"/>
+		<input type="text" placeholder="kenmerk" id="searchKenmerk" onChange="searchGroepen()"/>
+		
+		<select id="searchStatus" onChange="searchGroepen()">
+			<option value="">(status)</option>
+			<option value="Actief">Actief</option>
+			<option value="Passief">Passief</option>
+			<option value="Verwijderd">Verwijderd</option>
+		</select> 		
+	</div>
+
+
+	<div id="overzicht">
+
+		
+	<table class="display" id="overviewTable">	
+		<thead>
+			<tr>
+				<th>Status</th>	
+				<th>Naam</th>	
+				<th>Beschrijving</th>
+				<th>MutatieType</th>
+				<th>Code</th>
+				<th>Organisatie</th>
+				<th>Scope</th>
+				<th>Product</th>
+				<th>Periode</th>						
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="9" class="dataTables_empty"></td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	
+	<br/>
+	<button id="but_create_groep">Nieuwe Groep</button>
+</div>

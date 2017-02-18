@@ -1,0 +1,37 @@
+<div>
+<div id="scopeFilter">
+	<input type="text" placeholder="Organisatienaam" id="organisatieSearchNaam" onChange="searchOrganisaties()"/>
+
+	<select id="organisatieSearchStatus" onChange="searchOrganisaties()">
+		<option value="">(status)</option>
+		<option value="Actief">Actief</option>
+		<option value="Passief">Passief</option>
+		<option value="Verwijderd">Verwijderd</option>
+	</select> 
+</div>
+
+<table class="display" id="organisatietable">
+	
+	<thead>
+		<tr>
+			<th>Naam</th>
+			<th>Straatnaam</th>
+			<th>Nummer</th>
+			<th>Postcode</th>
+			<th>Plaatsnaam</th>
+			<th>KvK nummer</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="10" class="dataTables_empty">leeg</td>
+		</tr>
+	</tbody>
+
+</table>
+
+	<br/>
+	<button id="but_create">Nieuw</button>
+
+</div>

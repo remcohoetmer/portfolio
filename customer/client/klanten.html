@@ -1,0 +1,95 @@
+﻿
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" href="css/jquery-ui.css" />
+		<link rel="stylesheet" href="css/style.css" />
+  		<link rel="shortcut icon" href="favicon.ico" />
+
+		<title>Klanten Beheer</title>
+		<style type="text/css" title="currentStyle">
+			@import "css/demo_page.css";
+			@import "css/demo_table.css";
+		</style>
+		<script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+		<script type="text/javascript" language="javascript" src="includes/filter.js"></script>
+		<script type="text/javascript" language="javascript" src="includes/klanten.js"></script>
+		<script type="text/javascript" language="javascript">
+		$(document).ready(function() {
+			$('#closeGebruikersBeheer').click( function() {
+				window.location.href="index.html";
+			} );
+	
+			searchGebruikers();
+		});
+		
+		</script>
+	</head>
+	<body id="dt_example">
+		<a id="closeGebruikersBeheer"><img class="close_button" src="images/close_button.png"/></a>
+		<div id="container">
+			<h1>
+				Klanten Overzicht
+			</h1>
+            <div>
+                <form id="gebruikerFilter" action="">
+                    <input type="text" placeholder="Voornaam" id="voornaam" onChange="searchGebruikers();" />
+                    <input type="text" placeholder="Achternaam" id="achternaam" onChange="searchGebruikers();" />
+                    <input type="text" placeholder="E-mail" id="emailAdres" onChange="searchGebruikers();" />
+
+                    <select id="geslacht" onChange="searchGebruikers()">
+                        <option value="">(geslacht)</option>
+                        <option value="Man">Man</option>
+                        <option value="Vrouw">Vrouw</option>
+                    </select>
+
+                    <select id="rol" onChange="searchGebruikers()">
+                        <option value="">(rol)</option>
+                        <option value="Leerling">Leerling</option>
+                        <option value="Leerkracht">Leerkracht</option>
+                    </select>
+
+                    <select id="status" onChange="searchGebruikers()">
+                        <option value="Actief">Actief</option>
+                        <option value="Passief">Passief</option>
+                        <option value="Verwijderd">Verwijderd</option>
+                    </select>
+                    <select id="searchGebruikerOrganisatie" onChange="searchGebruikers()">
+                        <option value="">(organisatie)</option>
+                    </select>
+                    <select id="searchGebruikerLocatie" onChange="searchGebruikers()">
+                        <option value="">(locatie)</option>
+                    </select>
+
+                    <input type="text" placeholder="Leerrichting" id="leerrichting" onChange="searchGebruikers();" />
+                    <input type="text" placeholder="Jaargroep" id="jaargroep" onChange="searchGebruikers();" />
+
+                </form>
+
+                <div id="dynamic">
+                    <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+                        <thead>
+                            <tr>
+                                <th>Voornaam</th>
+                                <th>Voorletters</th>
+                                <th></th>
+                                <th>Achternaam</th>
+                                <th>Email</th>
+                                <th>Geslacht</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="dataTables_empty"></td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+		</div>
+	</body>
+</html>

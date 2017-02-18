@@ -1,0 +1,240 @@
+﻿
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <title>Gebruikersgroepen Beheer</title>
+    <style type="text/css" title="currentStyle">
+        @import "css/demo_page.css";
+        @import "css/demo_table.css";
+    </style>
+    <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+    <script type="text/javascript" language="javascript" src="js/ui/1.10.2/jquery-ui.js"></script>
+
+    <script type="text/javascript" language="javascript" src="includes/windows.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/filter.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/klanten.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/groepOverview.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/groepCreate.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/groepAddLeden.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/groepEdit.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var service_path = "http://localhost:8080/rw/rest/groep";
+        $(document).ready(function () {
+
+            $('#closePopupboxEdit').click(function () {
+                searchGroepen();
+                closeWindow("popupboxEdit");
+            });
+
+            $('#closePopupboxCreate').click(function () {
+                searchGroepen();
+                closeWindow("popupboxCreate");
+            });
+
+            $('#closePopupboxAddLeden').click(function () {
+                jump2EditGroep();
+                closeWindow("popupboxAddLeden");
+            });
+
+            $('#closeGebruikersgroepenBeheer').click(function () {
+                window.location.href = "index.html";
+            });
+            searchGroepen();
+        });
+
+    </script>
+</head>
+<body id="dt_example">
+    <a id="closeGebruikersgroepenBeheer"><img class="close_button" src="images/close_button.png" /></a>
+    <div id="container">
+        <h1>Gebruikersgroepen Overzicht</h1>
+        <div>
+            <div>
+                <input type="text" placeholder="naam" id="searchNaam" onChange="searchGroepen()" />
+                <input type="text" placeholder="beschrijving" id="searchBeschrijving" onChange="searchGroepen()" />
+                <input type="text" placeholder="groepscode" id="searchGroepscode" onChange="searchGroepen()" />
+                <select id="searchOrganisatie" onChange="searchGroepen()">
+                    <option value="">(organisatie)</option>
+                </select>
+                <select id="searchGroepscope" onChange="searchGroepen()">
+                    <option value="">(scope)</option>
+                </select>
+
+                <input type="text" placeholder="leerrichting" id="searchLeerrichting" onChange="searchGroepen()" />
+                <input type="text" placeholder="kenmerk" id="searchKenmerk" onChange="searchGroepen()" />
+
+                <select id="searchStatus" onChange="searchGroepen()">
+                    <option value="">(status)</option>
+                    <option value="Actief">Actief</option>
+                    <option value="Passief">Passief</option>
+                    <option value="Verwijderd">Verwijderd</option>
+                </select>
+            </div>
+
+
+            <div id="overzicht">
+
+
+                <table class="display" id="overviewTable">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Naam</th>
+                            <th>Beschrijving</th>
+                            <th>MutatieType</th>
+                            <th>Code</th>
+                            <th>Organisatie</th>
+                            <th>Scope</th>
+                            <th>Leerrichting</th>
+                            <th>Periode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="9" class="dataTables_empty"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <br />
+            <button id="but_create_groep">Nieuwe Gebruikersgroep</button>
+        </div>
+
+    </div>
+
+    <div id="popupboxEdit">
+        <a id="closePopupboxEdit"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>Edit Gebruikersgroep</h1>
+        <div>
+            <div id="attributen">
+
+                <div>
+                    <div class="label">Naam</div>
+                    <input type="text" id="naamEdit" />
+                </div>
+                <div>
+                    <div class="label">Status</div>
+                    <select id="statusEdit">
+                        <option value="Actief">Actief</option>
+                        <option value="Passief">Passief</option>
+                        <option value="Verwijderd">Verwijderd</option>
+                    </select>
+                </div>
+            </div>
+
+            <br />
+
+            <div id="saveEdit">
+                <button id="but_saveEdit" type="button">Opslaan</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="popupboxCreate">
+        <a id="closePopupboxCreate"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>Nieuwe Gebruikersgroep</h1>
+        <div>
+            <div id="CreateGroepsAttributen">
+
+                <div>
+                    <div class="label">Naam</div>
+                    <input type="text" id="naamCreate" />
+                </div>
+                <div>
+                    <div class="label">Status</div>
+                    <select id="statusCreate">
+                        <option value="Actief">Actief</option>
+                        <option value="Passief">Passief</option>
+                        <option value="Verwijderd">Verwijderd</option>
+                    </select>
+                </div>
+
+
+            </div>
+            <br />
+            <div id="saveCreate">
+                <button id="but_saveCreate" type="button">Opslaan</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="popupboxAddLeden">
+        <a id="closePopupboxAddLeden"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>Groepsleden toevoegen</h1>
+        <div>
+            <form id="gebruikerFilter" action="">
+                <input type="text" placeholder="Voornaam" id="voornaam" onChange="searchGebruikers();" />
+                <input type="text" placeholder="Achternaam" id="achternaam" onChange="searchGebruikers();" />
+                <input type="text" placeholder="E-mail" id="emailAdres" onChange="searchGebruikers();" />
+
+                <select id="geslacht" onChange="searchGebruikers()">
+                    <option value="">(geslacht)</option>
+                    <option value="Man">Man</option>
+                    <option value="Vrouw">Vrouw</option>
+                </select>
+
+                <select id="rol" onChange="searchGebruikers()">
+                    <option value="">(rol)</option>
+                    <option value="Leerling">Leerling</option>
+                    <option value="Leerkracht">Leerkracht</option>
+                </select>
+
+                <select id="status" onChange="searchGebruikers()">
+                    <option value="Actief">Actief</option>
+                    <option value="Passief">Passief</option>
+                    <option value="Verwijderd">Verwijderd</option>
+                </select>
+                <select id="searchGebruikerOrganisatie" onChange="searchGebruikers()">
+                    <option value="">(organisatie)</option>
+                </select>
+                <select id="searchGebruikerLocatie" onChange="searchGebruikers()">
+                    <option value="">(locatie)</option>
+                </select>
+
+                <input type="text" placeholder="Leerrichting" id="leerrichting" onChange="searchGebruikers();" />
+                <input type="text" placeholder="Jaargroep" id="jaargroep" onChange="searchGebruikers();" />
+
+            </form>
+
+            <div id="dynamic">
+                <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+
+                    <thead>
+                        <tr>
+                            <th>Voornaam</th>
+                            <th>Voorletters</th>
+                            <th></th>
+                            <th>Achternaam</th>
+                            <th>Email</th>
+                            <th>Geslacht</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" class="dataTables_empty"></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <div id="gebruikergroepAddLeden">
+            <div id="saveAddLeden">
+                <button id="but_saveAddLeden">Opslaan</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

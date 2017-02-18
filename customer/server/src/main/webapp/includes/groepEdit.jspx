@@ -1,0 +1,114 @@
+<div>
+<div id="groepsAttributen">
+	<div><div class="label">Naam</div>
+		<input type="text" id="naamEdit"/>
+	</div>
+	<div><div class="label">Beschrijving</div>
+		<textarea id="beschrijvingEdit" rows="2" cols="30">placeholder
+		</textarea>
+	</div>
+	<div><div class="label">Status</div>
+		<select id="statusEdit">
+		<option value="Actief">Actief</option>
+		<option value="Passief">Passief</option>
+		<option value="Verwijderd">Verwijderd</option>
+		</select>
+	</div>
+
+	<div><div class="label">Organisatie</div>
+		<input type="text" id="organisatieEdit" disabled="disabled"/>
+	</div>
+	<div><div class="label">Scope</div>
+		<input type="text" id="scopeEdit" disabled="disabled"/>
+	</div>				
+	<div><div class="label">Mutatie Type</div>
+		<input type="radio" name="groepsMutatieType" disabled="disabled" id="groepsMutatieTypeEdit_MANAGED"/>Managed
+		<input type="radio" name="groepsMutatieType" disabled="disabled" id="groepsMutatieTypeEdit_SELFSERVICE"/>Self-service
+	</div>
+	<div><div class="label">Groepscode</div>
+		<input type="text" id="groepscodeEdit" disabled="disabled"/>
+	</div>				
+	<div><div class="label">Product</div>
+		<input type="text" id="productEdit" disabled="disabled"/>
+	</div>				
+	<div><div class="label">Periode</div>
+		<input type="text" id="geplandePeriodeEdit" disabled="disabled"/>
+	</div>
+	<div><div class="label">Kenmerken</div>
+		<input type="text" id="kenmerkenEdit" disabled="disabled"/>
+	</div>
+	<div><div class="label">Hoofdgroep</div>
+		<input type="text" id="hoofdgroepEdit" disabled="disabled"/>
+	</div>
+
+</div>
+
+<br/>
+
+<div id="saveEdit">
+	<button id="but_saveEdit" type="button">Opslaan</button>
+</div>
+<div id="leden">
+	<h2>Leden</h2>
+
+	<div id="groepsledenTableDiv">
+	<table class="display" id="groepsledenTable">	
+		<thead>
+			<tr>
+				<th>Status Lidmaatschap</th>
+				<th>Status</th>
+				<th>Voornaam</th>
+				<th>Voorletters</th>
+				<th></th>
+				<th>Achternaam</th>
+				<th>Email</th>
+				<th>Geslacht</th>
+		
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="10" class="dataTables_empty"></td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	<br/>
+	<button id="but_add_lid" type="button">Voeg toe</button>
+	<button id="but_delete_lid" type="button">Verwijder selectie</button>
+	<button id="but_activate_lid" type="button">Maak selectie actief</button>
+	<button id="but_deactivate_lid" type="button">Maak selectie passief</button>
+</div>
+<div id="groepsleidersId">
+	<h2>Groepsleiders</h2>
+
+	<div id="groepsleidersTableDiv">
+	<table class="display" id="groepsleidersTable">	
+		<thead>
+			<tr>
+				<th>Status Lidmaatschap</th>
+				<th>Status</th>
+				<th>Voornaam</th>
+				<th>Voorletters</th>
+				<th></th>
+				<th>Achternaam</th>
+				<th>Email</th>
+				<th>Geslacht</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="10" class="dataTables_empty"></td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	<br/>
+	<button id="but_add_ldr" type="button">Voeg toe</button>
+	<button id="but_delete_ldr" type="button">Verwijder selectie</button>
+	<button id="but_activate_ldr" type="button">Maak selectie actief</button>
+	<button id="but_deactivate_ldr" type="button">Maak selectie passief</button>
+
+</div>
+</div>

@@ -1,0 +1,291 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+  'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace='nl.remco.service.groep.dao.GroepMapper'>
+
+
+	<select id='getKenmerkRecords' resultMap='kenmerkResult'>
+		SELECT
+		ken.id, ken.groep_id, ken.kenmerk
+		FROM kenmerk ken
+		WHERE
+		ken.groep_id IN
+		<foreach item="id" collection="list" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</select>
+	<resultMap type='nl.remco.service.groep.dao.KenmerkRecord'
+		id='kenmerkResult'>
+		<id property='id' column='id' />
+		<result property='groepId' column='groep_id' />
+		<result property='kenmerk' column='kenmerk' />
+	</resultMap>
+
+	<resultMap type='nl.remco.service.groep.web.GRP_GebruikerMetGroepen'
+		id='gebruikersMetGroepenResult'>
+		<id property='id' column='id' />
+		<collection property="lidmaatschappen" resultMap="lidmaatschapGebruikerResult"
+			columnPrefix="lid_" />
+	</resultMap>
+
+	<resultMap type='nl.remco.service.groep.web.GRP_LidmaatschapMetGroep'
+		id='lidmaatschapGebruikerResult'>
+		<id property='id' column='id' />
+		<result property='laatstgewijzigd' column='laatstgewijzigd' />
+		<result property='status' column='status' />
+		<result property='rol' column='rol' />
+		<association property="groep" javaType="Groep"
+			resultMap="groepResult" columnPrefix="grp_" />
+	</resultMap>
+
+	<!-- Instead of referencing Fully Qualified Class Names we can register 
+		Aliases in mybatis-config.xml and use Alias names -->
+	<resultMap type='Groep' id='groepResult'>
+		<id property='id' column='id' />
+		<result property='laatstgewijzigd' column='laatstgewijzigd' />
+		<result property='status' column='status' />
+		<result property='naam' column='naam' />
+		<result property='beschrijving' column='beschrijving' />
+		<result property='groepsMutatieType' column='groeps_mutatie_type' />
+		<result property='groepscode' column='groepscode' />
+		<result property='product' column='product' />
+		<result property='geplandePeriode' column='geplande_periode' />
+
+		<association property="hoofdgroep" javaType="Identifiable">
+			<id property="id" column="hoofdgroep_id" />
+		</association>
+		<association property="aangemaaktDoor" javaType="Identifiable">
+			<id property="id" column="aangemaakt_door" />
+		</association>
+		<association property="scope" javaType="Identifiable">
+			<id property="id" column="scope_id" />
+		</association>
+		<association property="organisatie" javaType="Identifiable">
+			<id property="id" column="organisatie_id" />
+		</association>
+		<association property="locatie" javaType="Identifiable">
+			<id property="id" column="locatie_id" />
+		</association>
+
+		<collection property="lidmaatschappen" resultMap="lidmaatschapResult"
+			columnPrefix="lid_" />
+	</resultMap>
+
+	<resultMap type="nl.remco.service.groep.model.Lidmaatschap"
+		id="lidmaatschapResult">
+		<id property='id' column='id' />
+		<result property='laatstgewijzigd' column='laatstgewijzigd' />
+		<result property='status' column='status' />
+		<result property='rol' column='rol' />
+		<association property="gebruiker" javaType="Identifiable">
+			<id property="id" column="gebruiker_id" />
+		</association>
+	</resultMap>
+
+	<select id='getGroepen' parameterType='nl.remco.service.groep.web.GRP_GetRequest'
+		resultMap='groepResult'>
+		SELECT
+		grp.*
+		<if test="selectie.selectLidmaatschappen">,
+			lid.id AS lid_id,
+			lid.laatstgewijzigd AS lid_laatstgewijzigd,
+			lid.status AS lid_status,
+			lid.gebruiker_id AS lid_gebruiker_id,
+			lid.rol AS lid_rol
+		</if>
+		FROM groep grp
+		<if test="selectie.selectLidmaatschappen">
+			LEFT OUTER JOIN lidmaatschap lid
+			ON
+			grp.id=lid.groep_id
+			<choose>
+			<!-- This condition must be stated within the join-clause. If it were in the where-clause then it would prevent
+				Groepen without valid lidmaatschappen being returned -->
+				<when test="filter!= null and filter.status!=null">
+					AND lid.status = #{filter.status}
+				</when>
+				<otherwise>
+					AND lid.status &lt;&gt; 'V'
+				</otherwise>
+			</choose>		
+		</if>
+		<where>
+			<if test="ids!=null">
+				grp.id IN
+				<foreach item="id" collection="ids" open="(" separator=","
+					close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="filter!=null">
+				<if test="filter.naam!=null">
+					grp.naam like #{filter.naam}
+				</if>
+				<if test="filter.beschrijving!=null">
+					AND grp.beschrijving like #{filter.beschrijving}
+				</if>
+				<choose>
+					<when test="filter.status!=null">
+						AND grp.status = #{filter.status}
+					</when>
+					<otherwise>
+						AND grp.status &lt;&gt; 'V'
+					</otherwise>
+				</choose>
+				<if test="filter.groepscode!=null">
+					AND grp.groepscode = #{filter.groepscode}
+				</if>
+				<if test="filter.organisatie!=null">
+					AND grp.organisatie_id= #{filter.organisatie.id}
+				</if>
+				<if test="filter.locatie!=null">
+					AND grp.locatie_id= #{filter.locatie.id}
+				</if>
+				<if test="filter.scope!=null">
+					AND grp.scope_id= #{filter.scope.id}
+				</if>
+				<if test="filter.product!=null">
+					AND grp.product= #{filter.product}
+				</if>
+				<if test="filter.geplandePeriode!=null">
+					AND grp.geplande_periode = #{filter.geplandePeriode}
+				</if>
+				<if test="filter.kenmerken!=null">
+					AND EXISTS
+					( SELECT 1 FROM kenmerk ken
+					WHERE ken.groep_id= grp.id
+					AND ken.kenmerk IN
+					<foreach item="kenmerk" collection="filter.kenmerken" open="("
+						separator="," close=")">
+						#{kenmerk}
+					</foreach>
+					)
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<select id='searchGroepenForGebruikers'
+		parameterType='nl.remco.service.groep.web.GRP_SearchForGebruikersRequest'
+		resultMap='gebruikersMetGroepenResult'>
+		SELECT
+		lid.gebruiker_id AS id,
+		lid.id AS lid_id,
+		lid.laatstgewijzigd AS lid_laatstgewijzigd,
+		lid.status AS lid_status,
+		lid.rol AS lid_rol,
+		grp.id AS lid_grp_id,
+		grp.laatstgewijzigd AS lid_grp_laatstgewijzigd,
+		grp.status AS lid_grp_status,
+		grp.naam AS lid_grp_naam,
+		grp.scope_id AS lid_grp_scope_id,
+		grp.locatie_id AS lid_grp_locatie_id,
+		grp.organisatie_id AS lid_grp_organisatie_id,
+		grp.beschrijving AS lid_grp_beschrijving,
+		grp.groeps_mutatie_type AS lid_grp_groeps_mutatie_type,
+		grp.aangemaakt_door AS lid_grp_aangemaakt_door,
+		grp.hoofdgroep_id AS lid_grp_hoofdgroep_id,
+		grp.groepscode AS lid_grp_groepscode,
+		grp.product AS lid_grp_product,
+		grp.geplande_periode AS lid_grp_geplande_periode
+		FROM lidmaatschap lid
+		INNER JOIN groep grp ON grp.id=lid.groep_id
+		<where>
+			lid.gebruiker_id = #{filter.gebruikerID}
+			<if test="filter.rol!=null">
+				AND lid.rol= #{filter.rol}
+			</if>
+			<choose>
+				<when test="filter.lidmaatschapStatus!=null">
+					AND lid.status = #{filter.lidmaatschapStatus}
+				</when>
+				<otherwise>
+					AND lid.status &lt;&gt; 'V'
+				</otherwise>
+			</choose>
+			<if test="filter.organisatie!=null">
+				AND grp.organisatie_id= #{filter.organisatie.id}
+			</if>
+			<if test="filter.locatie!=null">
+				AND grp.locatie_id= #{filter.locatie.id}
+			</if>
+			<if test="filter.scope!=null">
+				AND grp.scope_id= #{filter.scope.id}
+			</if>
+			<if test="filter.groepStatus!=null">
+				AND grp.status = #{filter.groepStatus}
+			</if>
+		</where>
+	</select>
+
+
+	<insert id='insertGroep' parameterType='Groep'
+		useGeneratedKeys='true' keyProperty="id">
+		INSERT INTO groep
+		(status, naam, beschrijving, groepscode,
+		aangemaakt_door, groeps_mutatie_type, hoofdgroep_id,
+		scope_id, organisatie_id, locatie_id,
+		product,
+		geplande_periode
+		)
+		VALUES
+		(#{status}, #{naam}, #{beschrijving}, #{groepscode},
+		#{aangemaaktDoor.id}, #{groepsMutatieType}, #{hoofdgroep.id},
+		#{scope.id}, #{organisatie.id}, #{locatie.id},
+		#{product},
+		#{geplandePeriode}
+		)
+	</insert>
+
+	<insert id="insertLidmaatschappen" parameterType="Groep">
+		INSERT INTO lidmaatschap
+		(groep_id, status, gebruiker_id, rol)
+		VALUES
+		<foreach item="lidmaatschap" index="index" collection="lidmaatschappen"
+			open="(" separator="),(" close=")">
+			#{id}, #{lidmaatschap.status},
+			#{lidmaatschap.gebruiker.id},
+			#{lidmaatschap.rol}
+		</foreach>
+	</insert>
+
+	<insert id="insertKenmerken" parameterType="Groep">
+		INSERT INTO kenmerk
+		(groep_id, kenmerk)
+		VALUES
+		<foreach item="kenmerk" index="index" collection="kenmerken"
+			open="(" separator="),(" close=")">
+			#{id}, #{kenmerk}
+		</foreach>
+	</insert>
+
+
+	<update id='updateGroep' parameterType='Groep'>
+		UPDATE groep
+		<set>
+			<if test="status != null">status= #{status},</if>
+			<if test="naam != null">naam= #{naam},</if>
+			<if test="beschrijving != null">beschrijving = #{beschrijving},</if>
+		</set>
+		WHERE id = #{id} AND laatstgewijzigd=#{laatstgewijzigd}
+	</update>
+	<update id='updateLidmaatschap' parameterType='nl.remco.service.groep.model.Lidmaatschap'>
+		UPDATE lidmaatschap lid
+		<set>
+			<if test="status != null">status= #{status}</if>
+		</set>
+		WHERE id=#{id} AND laatstgewijzigd=#{laatstgewijzigd}
+	</update>
+	<delete id='deleteGroep' parameterType='Identifiable'>
+		DELETE FROM groep
+		WHERE id=#{id} AND laatstgewijzigd=#{laatstgewijzigd}
+	</delete>
+
+	<delete id='deleteLidmaatschap' parameterType='Identifiable'>
+		DELETE FROM lidmaatschap
+		WHERE id=#{id} AND laatstgewijzigd=#{laatstgewijzigd}
+	</delete>
+
+</mapper>

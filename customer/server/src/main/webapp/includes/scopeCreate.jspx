@@ -1,0 +1,22 @@
+<div>
+	<div id="CreateGroepsAttributen">
+
+	<div><div class="label">Naam</div>
+		<input type="text" id="naamCreate"/>
+	</div>
+	<div><div class="label">Status</div>
+		<select id="statusCreate">
+			<option value="Actief">Actief</option>
+			<option value="Passief">Passief</option>
+			<option value="Verwijderd">Verwijderd</option>
+		</select>
+	</div>
+
+
+</div>
+	<br/>
+	<div id="saveCreate">
+		<button id="but_saveCreate" type="button">Opslaan</button>
+	</div>
+
+</div>

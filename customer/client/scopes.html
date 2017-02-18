@@ -1,0 +1,139 @@
+﻿
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <title>Scope Beheer</title>
+    <style type="text/css" title="currentStyle">
+        @import "css/demo_page.css";
+        @import "css/demo_table.css";
+    </style>
+    <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/filter.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/windows.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/scope.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/scopeCreate.js"></script>
+    <script type="text/javascript" language="javascript" src="includes/scopeEdit.js"></script>
+    <script type="text/javascript" language="javascript">
+        var service_path = "http://localhost:8080/rw/rest/scope";
+
+        $(document).ready(function () {
+            $('#closePopupboxEdit').click(function () {
+                searchEntities();
+                closeWindow("popupboxEdit");
+            });
+
+            $('#closePopupboxCreate').click(function () {
+                searchEntities();
+                closeWindow("popupboxCreate");
+            });
+
+            $('#closeMain').click(function () {
+                window.location.href = "index.html";
+            });
+
+            searchEntities();
+        });
+
+    </script>
+</head>
+<body id="dt_example">
+    <a id="closeMain"><img class="close_button" src="images/close_button.png" /></a>
+    <div id="container">
+        <h1>Scope Beheer</h1>
+        <div>
+            <div id="scopeFilter">
+                <input type="text" placeholder="Naam" id="scopeNaamFilter" onChange="searchEntities()" />
+
+                <select id="scopeStatusFilter" onChange="searchEntities()">
+                    <option value=""></option>
+                    <option value="Actief">Actief</option>
+                    <option value="Passief">Passief</option>
+                    <option value="Verwijderd">Verwijderd</option>
+                </select>
+            </div>
+
+            <table class="display" id="scopetable">
+
+                <thead>
+                    <tr>
+                        <th>Naam</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="10" class="dataTables_empty">leeg</td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+            <br />
+            <button id="but_create">Nieuw</button>
+
+        </div>
+    </div>
+    <div id="popupboxEdit">
+        <a id="closePopupboxEdit"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>Edit Scope</h1>
+        <div>
+            <div id="attributen">
+
+                <div>
+                    <div class="label">Naam</div>
+                    <input type="text" id="naamEdit" />
+                </div>
+                <div>
+                    <div class="label">Status</div>
+                    <select id="statusEdit">
+                        <option value="Actief">Actief</option>
+                        <option value="Passief">Passief</option>
+                        <option value="Verwijderd">Verwijderd</option>
+                    </select>
+                </div>
+            </div>
+
+            <br />
+
+            <div id="saveEdit">
+                <button id="but_saveEdit" type="button">Opslaan</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="popupboxCreate">
+        <a id="closePopupboxCreate"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>Nieuwe Scope</h1>
+        <div>
+            <div id="CreateGroepsAttributen">
+
+                <div>
+                    <div class="label">Naam</div>
+                    <input type="text" id="naamCreate" />
+                </div>
+                <div>
+                    <div class="label">Status</div>
+                    <select id="statusCreate">
+                        <option value="Actief">Actief</option>
+                        <option value="Passief">Passief</option>
+                        <option value="Verwijderd">Verwijderd</option>
+                    </select>
+                </div>
+            </div>
+            <br />
+            <div id="saveCreate">
+                <button id="but_saveCreate" type="button">Opslaan</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
