@@ -9,10 +9,10 @@ import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer.Status;
 import nl.remco.service.groep.model.Groep;
 import nl.remco.service.groep.model.Lidmaatschap;
-import nl.remco.service.groep.web.GRP_GebruikerMetGroepen;
+import nl.remco.service.groep.web.GRP_KlantMetGroepen;
 import nl.remco.service.groep.web.GRP_GetRequest;
 import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
-import nl.remco.service.groep.web.GRP_SearchForGebruikersRequest;
+import nl.remco.service.groep.web.GRP_SearchForKlantRequest;
 import nl.remco.service.groep.web.GRP_UpdateRequest;
 import nl.remco.service.utils.HTTPServerUtil;
 import nl.remco.service.utils.Util;
@@ -94,7 +94,7 @@ public class GroepDao
 	}
 
 
-	public GRP_GebruikerMetGroepen searchGroepen(GRP_SearchForGebruikersRequest searchRequest) {
+	public GRP_KlantMetGroepen searchGroepen(GRP_SearchForKlantRequest searchRequest) {
 		return groepMapper.searchGroepenForGebruikers( searchRequest);
 
 	}

@@ -33,11 +33,11 @@ import nl.remco.service.groep.model.Groep;
 import nl.remco.service.groep.model.Lidmaatschap;
 import nl.remco.service.groep.web.GRP_CreateRequest;
 import nl.remco.service.groep.web.GRP_CreateResponse;
-import nl.remco.service.groep.web.GRP_GebruikerMetGroepen;
+import nl.remco.service.groep.web.GRP_KlantMetGroepen;
 import nl.remco.service.groep.web.GRP_GroepService;
 import nl.remco.service.groep.web.GRP_GetRequest;
 import nl.remco.service.groep.web.GRP_GetResponse;
-import nl.remco.service.groep.web.GRP_SearchForGebruikersRequest;
+import nl.remco.service.groep.web.GRP_SearchForKlantRequest;
 import nl.remco.service.groep.web.GRP_Selectie;
 import nl.remco.service.groep.web.GRP_UpdateRequest;
 import nl.remco.service.groep.web.GRP_GetRequest.Filter;
@@ -111,12 +111,12 @@ public class GroepWebService {
 
 		GRP_GetResponse response= service.get(request);
 		if (response.getGroepen().size()!= 1) {
-			throw new BadRequestException( "Gebruikersgroep ID niet geldig");
+			throw new BadRequestException( "Groep ID niet geldig");
 		}
 
-		Groep gebruikersgroep= response.getGroepen().get(0);
-		ResponseBuilder builder= Response.status(HttpServletResponse.SC_OK).entity(gebruikersgroep);
-		builder.lastModified(gebruikersgroep.getLaatstgewijzigd());
+		Groep groep= response.getGroepen().get(0);
+		ResponseBuilder builder= Response.status(HttpServletResponse.SC_OK).entity(groep);
+		builder.lastModified(groep.getLaatstgewijzigd());
 		return  builder.build();
 	}
 
@@ -129,7 +129,7 @@ public class GroepWebService {
 				switch (field){
 				case "sleutels":selectie.setSelectSleutels(true); break;
 				case "lidmaatschappen":selectie.setSelectLidmaatschappen(true); break;
-				case "gebruikers":selectie.setSelectGebruikers(true); break;
+				case "klanten":selectie.setSelectGebruikers(true); break;
 				case "organisaties":selectie.setSelectOrganisaties(true); break;
 				case "scopes":selectie.setSelectScopes(true); break;
 				case "kenmerken":selectie.setSelectKenmerken(true); break;
@@ -189,9 +189,9 @@ public class GroepWebService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/gebruiker/{id}")
+	@Path("/klant/{id}")
 	public Response searchForGebruikers( 
-			@PathParam("id") String gebruikerID,
+			@PathParam("id") String klantId,
 			@QueryParam("rol") Lidmaatschap.Rol rol,
 			@QueryParam("lidmaatschapStatus") Status lidmaatschapStatus,
 			@QueryParam("groepStatus") Status groepStatus,
@@ -201,10 +201,10 @@ public class GroepWebService {
 			)
 	{
 		GRP_GroepService service= getService();
-		GRP_SearchForGebruikersRequest request= new GRP_SearchForGebruikersRequest();
-		GRP_SearchForGebruikersRequest.Filter filter= new GRP_SearchForGebruikersRequest.Filter();
+		GRP_SearchForKlantRequest request= new GRP_SearchForKlantRequest();
+		GRP_SearchForKlantRequest.Filter filter= new GRP_SearchForKlantRequest.Filter();
 		request.setFilter(filter);
-		filter.setGebruikerID(gebruikerID);
+		filter.setKlantId(klantId);
 		filter.setRol(rol);
 		filter.setLidmaatschapStatus(lidmaatschapStatus);
 		filter.setGroepStatus(groepStatus);
@@ -217,7 +217,7 @@ public class GroepWebService {
 		if (scopeId!= null) {
 			filter.setScope( new Identifiable(scopeId));
 		}
-		GRP_GebruikerMetGroepen response= service.searchForGebruikers(request);
+		GRP_KlantMetGroepen response= service.searchForKlanten(request);
 		return Response.status(HttpServletResponse.SC_OK).entity(response).build();		
 	}
 }

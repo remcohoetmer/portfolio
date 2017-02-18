@@ -16,13 +16,13 @@ import nl.remco.service.groep.model.GroepsMutatieType;
 import nl.remco.service.groep.model.Lidmaatschap;
 import nl.remco.service.groep.web.GRP_CreateRequest;
 import nl.remco.service.groep.web.GRP_CreateResponse;
-import nl.remco.service.groep.web.GRP_GebruikerMetGroepen;
+import nl.remco.service.groep.web.GRP_KlantMetGroepen;
 import nl.remco.service.groep.web.GRP_GroepService;
 import nl.remco.service.groep.web.GRP_GetRequest;
 import nl.remco.service.groep.web.GRP_GetResponse;
 import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
 import nl.remco.service.groep.web.GRP_LidmaatschapMetGroep;
-import nl.remco.service.groep.web.GRP_SearchForGebruikersRequest;
+import nl.remco.service.groep.web.GRP_SearchForKlantRequest;
 import nl.remco.service.groep.web.GRP_Selectie;
 import nl.remco.service.groep.web.GRP_UpdateRequest;
 import nl.remco.service.groep.web.GRP_GetRequest.Filter;
@@ -81,7 +81,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 
 	public GroepServiceImpl() {
 		RequestContext requestContext= new RequestContext();
-		requestContext.setGebruiker( new Identifiable("9000000"));
+		requestContext.setKlant( new Identifiable("9000000"));
 		this.context= requestContext;
 	}
 
@@ -132,7 +132,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		}
 
 		Groep groep= mapper.map(request, Groep.class);
-		groep.setAangemaaktDoor( context.getGebruiker());
+		groep.setAangemaaktDoor( context.getKlant());
 		if (groep.getStatus()==null) {
 			groep.setStatus( Status.Actief);
 		}
@@ -191,7 +191,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 			if (lidmaatschap.getRol()== null) {
 				throw new BadRequestException( "Lidmaatschapsrol is verplicht");
 			}
-			if (lidmaatschap.getGebruiker()== null || lidmaatschap.getGebruiker().getId()==null) {
+			if (lidmaatschap.getKlant()== null || lidmaatschap.getKlant().getId()==null) {
 				throw new BadRequestException( "Persoon is verplicht bij groepencreatie");
 			}
 		} else {
@@ -268,7 +268,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		// collect gebruiker Ids
 		Set<String> gebruikerIds= new HashSet<String>();
 		for ( GRP_LidmaatschapCreateUpdate lidmaatschap: createdLidmaatschappen) {
-			gebruikerIds.add( lidmaatschap.getGebruiker().getId());
+			gebruikerIds.add( lidmaatschap.getKlant().getId());
 		}
 		if (gebruikerIds.isEmpty()) {
 			return;
@@ -375,17 +375,17 @@ public class GroepServiceImpl implements GRP_GroepService {
 	}
 
 	@Override
-	public GRP_GebruikerMetGroepen searchForGebruikers(
-			GRP_SearchForGebruikersRequest request) {
+	public GRP_KlantMetGroepen searchForKlanten(
+			GRP_SearchForKlantRequest request) {
 		if (request.getFilter()== null) {
-			request.setFilter( new GRP_SearchForGebruikersRequest.Filter());			
+			request.setFilter( new GRP_SearchForKlantRequest.Filter());			
 		}
 		if (request.getSelectie() == null) {
-			request.setSelectie( new GRP_SearchForGebruikersRequest.Selectie());			
+			request.setSelectie( new GRP_SearchForKlantRequest.Selectie());			
 		}
-		GRP_SearchForGebruikersRequest.Filter filter= request.getFilter();
+		GRP_SearchForKlantRequest.Filter filter= request.getFilter();
 
-		if (!Util.isDefined( filter.getGebruikerID())) {
+		if (!Util.isDefined( filter.getKlantId())) {
 			throw new BadRequestException( "Gebruiker ID is vereist");
 		}
 
@@ -399,12 +399,12 @@ public class GroepServiceImpl implements GRP_GroepService {
 			throw new BadRequestException( "Locatie ID leeg");
 		}
 
-		GRP_GebruikerMetGroepen groepen= getGebruikersgroepDao().searchGroepen( request);
+		GRP_KlantMetGroepen groepen= getGebruikersgroepDao().searchGroepen( request);
 		if (groepen == null) {
 			// valide response: er zijn geen groepen gevonden
 			// maar zorg wel dat het vereiste object worden geretourneerd (lege huls)
-			groepen= new GRP_GebruikerMetGroepen();
-			groepen.setId( filter.getGebruikerID());
+			groepen= new GRP_KlantMetGroepen();
+			groepen.setId( filter.getKlantId());
 			groepen.setLidmaatschappen( new ArrayList<GRP_LidmaatschapMetGroep>());
 		}
 		return groepen;

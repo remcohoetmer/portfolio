@@ -34,7 +34,7 @@ public class ScopeServiceImpl implements SCO_ScopeService {
 
 	public ScopeServiceImpl() {
 		RequestContext requestContext= new RequestContext();
-		requestContext.setGebruiker( new Identifiable("9000000"));
+		requestContext.setKlant( new Identifiable("9000000"));
 		this.context= requestContext;
 	}
 
@@ -45,7 +45,7 @@ public class ScopeServiceImpl implements SCO_ScopeService {
 		if (!Util.isDefined(scope.getNaam())) {
 			throw new BadRequestException("Naam is leeg");
 		}
-		scope.setAangemaaktDoor( context.getGebruiker());
+		scope.setAangemaaktDoor( context.getKlant());
 		if (scope.getStatus()==null) {
 			scope.setStatus( Status.Actief);
 		}

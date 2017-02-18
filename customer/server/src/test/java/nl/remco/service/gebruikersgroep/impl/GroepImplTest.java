@@ -14,13 +14,13 @@ import nl.remco.service.groep.model.Lidmaatschap;
 import nl.remco.service.groep.model.Lidmaatschap.Rol;
 import nl.remco.service.groep.web.GRP_CreateRequest;
 import nl.remco.service.groep.web.GRP_CreateResponse;
-import nl.remco.service.groep.web.GRP_GebruikerMetGroepen;
+import nl.remco.service.groep.web.GRP_KlantMetGroepen;
 import nl.remco.service.groep.web.GRP_GroepService;
 import nl.remco.service.groep.web.GRP_GetRequest;
 import nl.remco.service.groep.web.GRP_GetResponse;
 import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
 import nl.remco.service.groep.web.GRP_LidmaatschapMetGroep;
-import nl.remco.service.groep.web.GRP_SearchForGebruikersRequest;
+import nl.remco.service.groep.web.GRP_SearchForKlantRequest;
 import nl.remco.service.groep.web.GRP_Selectie;
 import nl.remco.service.groep.web.GRP_GetRequest.Filter;
 import nl.remco.service.utils.Util;
@@ -45,13 +45,13 @@ public class GroepImplTest {
 	@Before
 	public void setup() {
 		RequestContext context= new RequestContext();
-		context.setGebruiker(new Identifiable("0"));
+		context.setKlant(new Identifiable("0"));
 		testHelper.initialise();
 	}
 	final static String geplandePeriode= "april-mei 2017";
 
 	@Test
-	public void testCreateGebruiker() {
+	public void testCreateKlant() {
 		GRP_CreateRequest request= new GRP_CreateRequest();
 
 		request.setNaam( "Groepie");
@@ -72,7 +72,7 @@ public class GroepImplTest {
 		List<GRP_LidmaatschapCreateUpdate> lidmaatschappen= new ArrayList<GRP_LidmaatschapCreateUpdate>();
 		GRP_LidmaatschapCreateUpdate lidmaatschap= new GRP_LidmaatschapCreateUpdate();
 		Identifiable gebruiker= new Identifiable("testgebruiker1");
-		lidmaatschap.setGebruiker( gebruiker);
+		lidmaatschap.setKlant( gebruiker);
 
 		lidmaatschap.setRol( Rol.GROEPSLID);
 		lidmaatschappen.add( lidmaatschap);
@@ -99,7 +99,7 @@ public class GroepImplTest {
 		List<GRP_LidmaatschapCreateUpdate> lidmaatschappenZelfRegistratie= new ArrayList<GRP_LidmaatschapCreateUpdate>();
 		GRP_LidmaatschapCreateUpdate lidmaatschapSelfService= new GRP_LidmaatschapCreateUpdate();
 		Identifiable gebruikerSS= new Identifiable("testgebruiker4");
-		lidmaatschapSelfService.setGebruiker( gebruikerSS);
+		lidmaatschapSelfService.setKlant( gebruikerSS);
 		lidmaatschapSelfService.setRol( Rol.GROEPSLEIDER);
 		lidmaatschappenZelfRegistratie.add( lidmaatschapSelfService);
 		subCreateRequest.setLidmaatschappen(lidmaatschappenZelfRegistratie);
@@ -146,12 +146,12 @@ public class GroepImplTest {
 		searchResponse= groepenService.get(searchRequest);
 		Assert.assertEquals( 1, searchResponse.getGroepen().size());
 
-		GRP_SearchForGebruikersRequest searchForGebruikersRequest= new GRP_SearchForGebruikersRequest();
+		GRP_SearchForKlantRequest searchForGebruikersRequest= new GRP_SearchForKlantRequest();
 
-		searchForGebruikersRequest.setFilter( new GRP_SearchForGebruikersRequest.Filter());
-		searchForGebruikersRequest.getFilter().setGebruikerID( "testgebruiker1");
+		searchForGebruikersRequest.setFilter( new GRP_SearchForKlantRequest.Filter());
+		searchForGebruikersRequest.getFilter().setKlantId( "testgebruiker1");
 
-		GRP_GebruikerMetGroepen searchForGebruikersResponse= groepenService.searchForGebruikers(searchForGebruikersRequest);
+		GRP_KlantMetGroepen searchForGebruikersResponse= groepenService.searchForKlanten(searchForGebruikersRequest);
 		List<GRP_LidmaatschapMetGroep> gebrLidmaatschappen= searchForGebruikersResponse.getLidmaatschappen();
 		Assert.assertTrue( Util.isDefined( gebrLidmaatschappen));
 		Groep gebrGroep= gebrLidmaatschappen.get(0).getGroep();

@@ -49,7 +49,7 @@ function retrieveGroepDetails( groepId) {
 	}
 	$.ajax({
 		url: service_path + "/" +groepId + 
-		"?select=kenmerken,gebruikers,lidmaatschappen,organisaties,scopes,hoofdgroep",
+		"?select=kenmerken,klanten,lidmaatschappen,organisaties,scopes,hoofdgroep",
 		type: "GET",
 		success: function( response, textStatus, jqXHR ) {
 			if ( response==null) {
@@ -112,18 +112,18 @@ function showGroepsData(groep)
 		// introduce for null-safety
 		for (i=0;i<groep.lidmaatschappen.length;i++) {
 			var lidmaatschap= groep.lidmaatschappen[i];
-			var lidmaatschap_gebruiker= lidmaatschap.gebruiker;
+			var lidmaatschap_klant= lidmaatschap.klant;
 			// indien niet gedefinieerd: definieer leeg
-			prepareInschrijving( lidmaatschap_gebruiker);
-			// voeg de status & id van het lidmaatschap toe aan de gebruikergegevens
-			lidmaatschap_gebruiker.status_lidmaatschap=lidmaatschap.status;
-			lidmaatschap_gebruiker.laatstgewijzigd=lidmaatschap.laatstgewijzigd;
-			lidmaatschap_gebruiker.id_lidmaatschap=lidmaatschap.id;
+			prepareInschrijving( lidmaatschap_klant);
+			// voeg de status & id van het lidmaatschap toe aan de klantgegevens
+			lidmaatschap_klant.status_lidmaatschap=lidmaatschap.status;
+			lidmaatschap_klant.laatstgewijzigd=lidmaatschap.laatstgewijzigd;
+			lidmaatschap_klant.id_lidmaatschap=lidmaatschap.id;
 
 			if (lidmaatschap.rol== "GROEPSLEIDER") {
-				groepsleiders.push( lidmaatschap_gebruiker);
+				groepsleiders.push( lidmaatschap_klant);
 			} else {
-				groepsleden.push( lidmaatschap_gebruiker);
+				groepsleden.push( lidmaatschap_klant);
 			}
 		}
 	}

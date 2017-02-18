@@ -33,19 +33,19 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 
 		if (searchProfile.getKvKNumber()!= null) {
 			if (searchProfile.getKvKNumber().longValue()== 8000L) {
-				addGebruiker(response, "testgebruiker1", "Test1", "Gebruiker", 8000L);	
-				addGebruiker(response, "testgebruiker4", "Test4", "Gebruiker", 8000L);
+				addKlant(response, "testklant1", "Test1", "klant", 8000L);	
+				addKlant(response, "testklant4", "Test4", "klant", 8000L);
 			}
 		} else {
-			addGebruiker(response, "testgebruiker1", "Test1", "Gebruiker", 8000L);	
-			addGebruiker(response, "testgebruiker2", "Test2", "Gebruiker", null);
-			addGebruiker(response, "testgebruiker3", "Test3", "Gebruiker", null);
-			addGebruiker(response, "testgebruiker4", "Test4", "Gebruiker", 8000L);
+			addKlant(response, "testklant1", "Test1", "klant", 8000L);	
+			addKlant(response, "testklant2", "Test2", "klant", null);
+			addKlant(response, "testklant3", "Test3", "klant", null);
+			addKlant(response, "testklant4", "Test4", "klant", 8000L);
 		}
 		return response;
 	}
 
-	private void addGebruiker(RetrieveCustomersRes response, String id,
+	private void addKlant(RetrieveCustomersRes response, String id,
 			String firstname, String lastname, Long organisatieId) {
 		CustomerProfile user= new CustomerProfile();
 		user.setUserId(id);
@@ -53,7 +53,7 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 		user.setLastname( lastname);
 		user.setGender( Gender.MALE);
 		user.setDateOfBirth( new Date());
-		user.setEMailAddress( "gebruiker@example.org");
+		user.setEMailAddress( "klant@example.org");
 		user.setBSN( "123");
 		user.setRole( "leerling");
 		if (organisatieId!=null){
@@ -63,7 +63,7 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 	}
 
 
-	private void addGebruiker(SearchCustomersRes response, String id,
+	private void addKlant(SearchCustomersRes response, String id,
 			String firstname, String lastname, Long organisatieId) {
 		CustomerProfileSummary user= new CustomerProfileSummary();
 		user.setUserId(id);
@@ -88,16 +88,16 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 		RetrieveCustomersRes response= new RetrieveCustomersRes();
 
 		for (String userId: getUserProfile.getUserId()){
-			if (userId.equals("testgebruiker1")) {
-				addGebruiker(response, userId, "Test1", "Gebruiker", 8000L);
-			} else if (userId.equals("testgebruiker2")) {
-				addGebruiker(response, userId, "Test2", "Gebruiker", null);
-			} else if (userId.equals("testgebruiker3")) {
-				addGebruiker(response, userId, "Test3", "Gebruiker", null);
-			} else if (userId.equals("testgebruiker4")) {
-				addGebruiker(response, userId, "Test4", "Gebruiker", 8000L);
+			if (userId.equals("testklant1")) {
+				addKlant(response, userId, "Test1", "klant", 8000L);
+			} else if (userId.equals("testklant2")) {
+				addKlant(response, userId, "Test2", "klant", null);
+			} else if (userId.equals("testklant3")) {
+				addKlant(response, userId, "Test3", "klant", null);
+			} else if (userId.equals("testklant4")) {
+				addKlant(response, userId, "Test4", "klant", 8000L);
 			} else {
-				addGebruiker(response, userId, "Voornaam", "Achternaam"+ getUserProfile.getUserId(), 8000L);
+				addKlant(response, userId, "Voornaam", "Achternaam"+ getUserProfile.getUserId(), 8000L);
 			}
 		}
 		return response;

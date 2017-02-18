@@ -31,10 +31,10 @@ INSERT INTO kenmerk (`groep_id`,`kenmerk`) VALUES
 
 
 -- Bulbasaur is lid van 4 groepen binnen 3 organisaties
-INSERT INTO lidmaatschap (status,groep_id,gebruiker_id,rol)
+INSERT INTO lidmaatschap (status,groep_id,klant_id,rol)
 VALUES
-('A',153,"testgebruiker1", 0),
-('P',154,"testgebruiker1", 0);
+('A',153,"testklant1", 0),
+('P',154,"testklant2", 0);
 
 
 commit;

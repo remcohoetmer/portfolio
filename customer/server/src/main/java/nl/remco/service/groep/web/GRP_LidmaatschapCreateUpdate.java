@@ -6,7 +6,7 @@ import nl.remco.service.groep.model.Lidmaatschap;
 
 public class GRP_LidmaatschapCreateUpdate extends LifeCycleBeheer {
 	private Lidmaatschap.Rol rol;
-	private Identifiable gebruiker;
+	private Identifiable klant;
 	
 	public Lidmaatschap.Rol getRol() {
 		return rol;
@@ -14,11 +14,11 @@ public class GRP_LidmaatschapCreateUpdate extends LifeCycleBeheer {
 	public void setRol(Lidmaatschap.Rol rol) {
 		this.rol = rol;
 	}
-	public Identifiable getGebruiker() {
-		return gebruiker;
+	public Identifiable getKlant() {
+		return klant;
 	}
-	public void setGebruiker(Identifiable gebruiker) {
-		this.gebruiker = gebruiker;
+	public void setKlant(Identifiable klant) {
+		this.klant = klant;
 	}
 
 }

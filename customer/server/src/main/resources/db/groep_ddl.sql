@@ -45,7 +45,7 @@ CREATE TABLE lidmaatschap(
   laatstgewijzigd TIMESTAMP not null,
   status varchar(1) NOT NULL,
   groep_id int(18) unsigned NOT NULL,
-  gebruiker_id varchar(92) NOT NULL,
+  klant_id varchar(92) NOT NULL,
   rol int(1) NOT NULL,
   PRIMARY KEY  (id),
   FOREIGN KEY (groep_id) REFERENCES groep(id) ON DELETE CASCADE ON UPDATE CASCADE

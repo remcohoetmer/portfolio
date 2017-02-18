@@ -70,17 +70,17 @@ public class AddLedenTest {
 		request.setLidmaatschappen(lidmaatschappen);
 
 		GRP_LidmaatschapCreateUpdate lidmaatschap1= new GRP_LidmaatschapCreateUpdate();
-		lidmaatschap1.setGebruiker( gebruiker1Ref);
+		lidmaatschap1.setKlant( gebruiker1Ref);
 		lidmaatschap1.setRol( Rol.GROEPSLID);
 		lidmaatschappen.add( lidmaatschap1);
 
 		GRP_LidmaatschapCreateUpdate lidmaatschap2= new GRP_LidmaatschapCreateUpdate();
-		lidmaatschap2.setGebruiker( gebruiker2Ref);
+		lidmaatschap2.setKlant( gebruiker2Ref);
 		lidmaatschap2.setRol( Rol.GROEPSLID);
 		lidmaatschappen.add( lidmaatschap2);
 
 		GRP_LidmaatschapCreateUpdate lidmaatschap3= new GRP_LidmaatschapCreateUpdate();
-		lidmaatschap3.setGebruiker( gebruiker3Ref);
+		lidmaatschap3.setKlant( gebruiker3Ref);
 		lidmaatschap3.setRol( Rol.GROEPSLID);
 
 		try {

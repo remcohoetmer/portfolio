@@ -4,10 +4,10 @@ import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer.Status;
 import nl.remco.service.groep.model.Lidmaatschap;
 
-public class GRP_SearchForGebruikersRequest {
+public class GRP_SearchForKlantRequest {
 	public static class Filter {
 
-		private String gebruikerID;//verplicht
+		private String klantId;//verplicht
 		private Lidmaatschap.Rol rol;
 		private Status lidmaatschapStatus;
 
@@ -53,11 +53,11 @@ public class GRP_SearchForGebruikersRequest {
 		public void setGroepStatus(Status groepStatus) {
 			this.groepStatus = groepStatus;
 		}
-		public String getGebruikerID() {
-			return gebruikerID;
+		public String getKlantId() {
+			return klantId;
 		}
-		public void setGebruikerID(String gebruikerID) {
-			this.gebruikerID = gebruikerID;
+		public void setKlantId(String klantId) {
+			this.klantId = klantId;
 		}
 	};
 	public static class Selectie {

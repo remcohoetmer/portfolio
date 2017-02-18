@@ -8,5 +8,5 @@ public interface GRP_GroepService {
 	int update( GRP_UpdateRequest request);
 	int delete( Identifiable groep);
 	GRP_GetResponse get( GRP_GetRequest request);
-	GRP_GebruikerMetGroepen searchForGebruikers( GRP_SearchForGebruikersRequest request);
+	GRP_KlantMetGroepen searchForKlanten( GRP_SearchForKlantRequest request);
 }

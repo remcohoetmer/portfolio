@@ -85,7 +85,7 @@ public class DataEnrichmentTest {
 
 		GRP_LidmaatschapCreateUpdate lidmaatschap1= new GRP_LidmaatschapCreateUpdate();
 
-		lidmaatschap1.setGebruiker( gebruiker1Ref);
+		lidmaatschap1.setKlant( gebruiker1Ref);
 		lidmaatschap1.setRol( Rol.GROEPSLID);
 		lidmaatschappen.add( lidmaatschap1);
 
