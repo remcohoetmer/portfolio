@@ -28,13 +28,13 @@ public class CRMOrganisationsServiceImp  {
 	public CRMOrganisationsServiceImp()
 	{
 		bedrijfA= new OrganisationInfo();
-		bedrijfA.setBrinCode( "BRIN");
-		bedrijfA.setASSUNumber( new BigDecimal(8000L));
+		bedrijfA.setKvkNumber( "123456789");
+		bedrijfA.setCRMNumber( new BigDecimal(8000L));
 		bedrijfA.setOrganisationName( "Bedrijf A");
 
 		bedrijfB= new OrganisationInfo();
-		bedrijfB.setBrinCode( "BRIN");
-		bedrijfB.setASSUNumber( new BigDecimal(8001L));
+		bedrijfB.setKvkNumber( "888888888");
+		bedrijfB.setCRMNumber( new BigDecimal(8001L));
 		bedrijfB.setOrganisationName( "Bedrijf B");
 	}
 
@@ -64,20 +64,20 @@ public class CRMOrganisationsServiceImp  {
 	}
 
 	public GetOrganisationHierarchyRes getOrganisationHierarchy(
-			GetOrganisationHierarchyReq getSchoolTree)
+			GetOrganisationHierarchyReq getOrgTree)
 	{
 		GetOrganisationHierarchyRes response= new GetOrganisationHierarchyRes();
 		OrganisationRecords schoollist= new OrganisationRecords();
 
-		for (BigDecimal  school: getSchoolTree.getSchools().getASSUNumber()){
-			if (school.intValue()==8000) {
-				response.getSchoollist().getOrganisation().add( bedrijfA);
-			} else if  (school.intValue()==8001) {
-				response.getSchoollist().getOrganisation().add( bedrijfB);
+		for (BigDecimal org: getOrgTree.getOrganisations().getCRMNumber()){
+			if (org.intValue()==8000) {
+				response.getOrganisations().getOrganisation().add( bedrijfA);
+			} else if  (org.intValue()==8001) {
+				response.getOrganisations().getOrganisation().add( bedrijfB);
 			}
 		}
 
-		response.setSchoollist(schoollist);
+		response.setOrganisations(schoollist);
 		return response;
 	}
 

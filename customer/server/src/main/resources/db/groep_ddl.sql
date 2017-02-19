@@ -17,7 +17,6 @@ CREATE TABLE  groep (
   product varchar(100) NULL,
   scope_id int(18) unsigned NULL,
   organisatie_id varchar(25) NULL,
-  locatie_id varchar(25) NULL,
   geplande_periode varchar(100) NULL,
   PRIMARY KEY  (id),
   FOREIGN KEY (hoofdgroep_id) REFERENCES groep(id) ON DELETE CASCADE ON UPDATE CASCADE

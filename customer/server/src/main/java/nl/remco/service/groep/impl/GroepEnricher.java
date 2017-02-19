@@ -68,7 +68,7 @@ public class GroepEnricher {
 		Set<String> groepscopeIdSet= new HashSet<String>();
 		Set<String> hoofdgroepIdSet= new HashSet<String>();
 
-		// zet alle Ids van de gebruiker/organisatie/locatie een lijst
+		// zet alle Ids van de klanten/organisatie/locatie een lijst
 		// --> dit is een set zodat automatisch duplicates worden ge�limineerd
 		for (Groep groep: groepen) {
 			if (groep.getLidmaatschappen()!= null) {
@@ -101,10 +101,10 @@ public class GroepEnricher {
 		// initialiseer default (omwille van robuustheid)
 
 		for (String id: klantIdSet) {
-			Klant gebruiker= new Klant();
-			gebruiker.setId( id);
-			gebruiker.setAchternaam("Onbekend");
-			klantMap.put( id, gebruiker);
+			Klant klant= new Klant();
+			klant.setId( id);
+			klant.setAchternaam("Onbekend");
+			klantMap.put( id, klant);
 		}	
 
 		for (String id: hoofdgroepIdSet) {

@@ -5,6 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.dozer.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.sun.jersey.api.ConflictException;
+import com.sun.jersey.api.NotFoundException;
+
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer.Status;
 import nl.remco.service.common.web.BadRequestException;
@@ -16,27 +22,21 @@ import nl.remco.service.groep.model.GroepsMutatieType;
 import nl.remco.service.groep.model.Lidmaatschap;
 import nl.remco.service.groep.web.GRP_CreateRequest;
 import nl.remco.service.groep.web.GRP_CreateResponse;
-import nl.remco.service.groep.web.GRP_KlantMetGroepen;
-import nl.remco.service.groep.web.GRP_GroepService;
 import nl.remco.service.groep.web.GRP_GetRequest;
+import nl.remco.service.groep.web.GRP_GetRequest.Filter;
 import nl.remco.service.groep.web.GRP_GetResponse;
+import nl.remco.service.groep.web.GRP_GroepService;
+import nl.remco.service.groep.web.GRP_KlantMetGroepen;
 import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
 import nl.remco.service.groep.web.GRP_LidmaatschapMetGroep;
 import nl.remco.service.groep.web.GRP_SearchForKlantRequest;
 import nl.remco.service.groep.web.GRP_Selectie;
 import nl.remco.service.groep.web.GRP_UpdateRequest;
-import nl.remco.service.groep.web.GRP_GetRequest.Filter;
 import nl.remco.service.klant.impl.CRMCustomersDelegate;
-import nl.remco.service.klant.model.Klant;
 import nl.remco.service.klant.model.Inschrijving;
+import nl.remco.service.klant.model.Klant;
 import nl.remco.service.klant.web.KLA_KlantService;
 import nl.remco.service.utils.Util;
-
-import org.dozer.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.sun.jersey.api.ConflictException;
-import com.sun.jersey.api.NotFoundException;
 /*
  * Implementatie van de Service: naast de aanroep van de DAO worden de volgende business regels gerealiseerd:
  * Business regels:
@@ -91,7 +91,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		request.setIds( IDList.create(id));
 		request.setSelectie( new GRP_Selectie());
 		request.getSelectie().setSelectLidmaatschappen(selectLidmaatschappen);
-		List<Groep> groepen= getGebruikersgroepDao().getGroepen( request);
+		List<Groep> groepen= getGroepDao().getGroepen( request);
 		if (groepen.size() ==1) {
 			return groepen.get(0);
 		}
@@ -155,9 +155,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		if (request.getOrganisatie() != null&& request.getOrganisatie().getId()== null) {
 			throw new BadRequestException( "Organisatie ID leeg");
 		}
-		if (request.getLocatie() != null&& request.getLocatie().getId()== null) {
-			throw new BadRequestException( "Locatie ID leeg");
-		}
+
 		if (request.getHoofdgroep() != null) {
 			String hoofdgroepId= request.getHoofdgroep().getId();
 			if (hoofdgroepId== null) {
@@ -169,10 +167,10 @@ public class GroepServiceImpl implements GRP_GroepService {
 		}
 
 		if (request.getLidmaatschappen()!= null) {
-			checkCreateLidmaatschapData( request.getLidmaatschappen(), request.getOrganisatie(), request.getLocatie(), null);
+			checkCreateLidmaatschapData( request.getLidmaatschappen(), request.getOrganisatie(), null);
 		}
 
-		getGebruikersgroepDao().insertGroep( groep);
+		getGroepDao().insertGroep( groep);
 		GRP_CreateResponse response= new GRP_CreateResponse();
 		response.setId( groep.getId());
 		response.setGroepscode( groep.getGroepscode());
@@ -243,7 +241,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 
 		if (request.getCreateLidmaatschappen()!= null) {
 			checkCreateLidmaatschapData(request.getCreateLidmaatschappen(),
-					groep.getOrganisatie(), groep.getLocatie(), currentKlantIds);
+					groep.getOrganisatie(), currentKlantIds);
 		}
 		if (request.getUpdateLidmaatschappen()!= null) {
 			checkUpdateLidmaatschapData(
@@ -262,7 +260,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 	 */
 
 	private void checkCreateLidmaatschapData(
-			List<GRP_LidmaatschapCreateUpdate> createdLidmaatschappen, Identifiable organisatieGroep, Identifiable locatieGroep, 
+			List<GRP_LidmaatschapCreateUpdate> createdLidmaatschappen, Identifiable organisatieGroep, 
 			Set<String> currentKlantIds) {
 
 		// collect gebruiker Ids
@@ -281,7 +279,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 				throw new ConflictException( gebruiker.shortString() + " is reeds lid van de groep" );
 			}
 			if (organisatieGroep!= null) {
-				checkGebruikerOrganisatie( gebruiker, organisatieGroep, locatieGroep);
+				checkGebruikerOrganisatie( gebruiker, organisatieGroep);
 			}
 		}
 	}
@@ -305,22 +303,14 @@ public class GroepServiceImpl implements GRP_GroepService {
 	}
 
 	private void checkGebruikerOrganisatie(Klant klant,
-			Identifiable organisatie, Identifiable locatie) {
+			Identifiable organisatie) {
 		for (Inschrijving inschrijving: klant.getInschrijvingen()) {
 			if (organisatie.equals (inschrijving.getOrganisatie())) {
-				if (locatie == null) {
-					return; //groep niet gescoped aan een locatie. Gebruiker is lid van de organisatie en mag dus bij de groep
-				}
-				if (locatie.equals( inschrijving.getLocatie())) {
-					return;// Gebruiker is lid van de organisatie en de locatie en mag dus bij de groep
-				}
+					return; //Klant is lid van de organisatie en mag dus bij de groep
 			}
 			// ga door om te kijken voor een andere inschrijving
 		}
 		String melding= klant.shortString() +  " is niet ingeschreven bij de organisatie ";
-		if (locatie!= null) {
-			melding += "en locatie ";
-		}
 		melding += "van de groep en mag daarom niet worden toegevoegd";
 		throw new BadRequestException( melding);
 	}
@@ -360,13 +350,13 @@ public class GroepServiceImpl implements GRP_GroepService {
 				}
 			}
 		}
-		List<Groep> gebruikersgroepen= getGebruikersgroepDao().getGroepen( request);
+		List<Groep> gebruikersgroepen= getGroepDao().getGroepen( request);
 		GRP_Selectie selectie= request.getSelectie();
 		if (selectie.isSelectKlanten()
 				|| selectie.isSelectOrganisaties()
 				|| selectie.isSelectScopes()
 				|| selectie.isSelectHoofdgroep()) {
-			groepEnricher.execute( gebruikersgroepen, request.getSelectie(),getGebruikersgroepDao());
+			groepEnricher.execute( gebruikersgroepen, request.getSelectie(),getGroepDao());
 		}
 
 		GRP_GetResponse response= new GRP_GetResponse();
@@ -390,16 +380,13 @@ public class GroepServiceImpl implements GRP_GroepService {
 		}
 
 		if (filter.getScope() != null&& filter.getScope().getId()== null) {
-			throw new BadRequestException( "Groepscope ID leeg");
+			throw new BadRequestException( "Scope ID leeg");
 		}
 		if (filter.getOrganisatie() != null&& filter.getOrganisatie().getId()== null) {
 			throw new BadRequestException( "Organisatie ID leeg");
 		}
-		if (filter.getLocatie() != null&& filter.getLocatie().getId()== null) {
-			throw new BadRequestException( "Locatie ID leeg");
-		}
 
-		GRP_KlantMetGroepen groepen= getGebruikersgroepDao().searchGroepen( request);
+		GRP_KlantMetGroepen groepen= getGroepDao().searchGroepen( request);
 		if (groepen == null) {
 			// valide response: er zijn geen groepen gevonden
 			// maar zorg wel dat het vereiste object worden geretourneerd (lege huls)
@@ -410,12 +397,12 @@ public class GroepServiceImpl implements GRP_GroepService {
 		return groepen;
 	}
 
-	public GroepDao getGebruikersgroepDao() {
+	public GroepDao getGroepDao() {
 		return groepDao;
 	}
 
-	public void setGebruikersgroepDao(GroepDao gebruikersgroepDao) {
-		this.groepDao = gebruikersgroepDao;
+	public void setGroepDao(GroepDao dao) {
+		this.groepDao = dao;
 	}
 
 	public GroepEnricher getDataEnricher() {

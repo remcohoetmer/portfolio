@@ -13,13 +13,13 @@ VALUES
 
 delete from groep;
 INSERT INTO groep (`id`,`status`,`naam`,`beschrijving`,`aangemaakt_door`,`groeps_mutatie_type`,
-`hoofdgroep_id`,`groepscode`,`product`,geplande_periode, organisatie_id,locatie_id,scope_id)
+`hoofdgroep_id`,`groepscode`,`product`,geplande_periode, organisatie_id,scope_id)
 VALUES
- (151,'A','Groep 1','Beschrijving 1',100000,'M',NULL,NULL,'Soep','2013', 124,null,null),
- (152,'A','Groep 2','Beschrijving 2',100000,'M',151,'AAA123',NULL,'mei 2013',124,null,92),
- (153,'A','Groep 3','Edu',100000,'S',null,null,NULL,null,125,null,93),
- (154,'A','Club 4','club',100000,'M',null,null,NULL,null,126,null,91),
- (155,'P','Club 5','club',100000,'M',null,null,NULL,null,126,null,91);
+ (151,'A','Groep 1','Beschrijving 1',100000,'M',NULL,NULL,'Soep','2013', 124,null),
+ (152,'A','Groep 2','Beschrijving 2',100000,'M',151,'AAA123',NULL,'mei 2013',124,92),
+ (153,'A','Groep 3','Edu',100000,'S',null,null,NULL,null,125,93),
+ (154,'A','Club 4','club',100000,'M',null,null,NULL,null,126,91),
+ (155,'P','Club 5','club',100000,'M',null,null,NULL,null,126,91);
  
  
 

@@ -9,7 +9,6 @@ public class Inschrijving implements OrganisatieDataHolder {
 
 	private String id;
 	private Identifiable organisatie;
-	private Identifiable locatie;
 	private String product;
 	private String geplandePeriode;
 	private Rol rol;
@@ -20,12 +19,6 @@ public class Inschrijving implements OrganisatieDataHolder {
 	}
 	public void setOrganisatie(Identifiable organisatie) {
 		this.organisatie = organisatie;
-	}
-	public Identifiable getLocatie() {
-		return locatie;
-	}
-	public void setLocatie(Identifiable locatie) {
-		this.locatie = locatie;
 	}
 	public String getProduct() {
 		return product;
@@ -57,7 +50,6 @@ public class Inschrijving implements OrganisatieDataHolder {
 			return "Inschrijving {id: " + id + ", leerrichting:" + product
 					+ ", jaargroep:" + geplandePeriode
 					+ ", organisatie:" + organisatie
-					+ ", locatie:" + locatie
 					+ "}";
 	}
 }

@@ -13,7 +13,6 @@ public class GRP_SearchForKlantRequest {
 
 		private Status groepStatus;
 		private Identifiable organisatie;
-		private Identifiable locatie;
 		private Identifiable scope;
 		
 
@@ -28,12 +27,6 @@ public class GRP_SearchForKlantRequest {
 		}
 		public void setOrganisatie(Identifiable organisatie) {
 			this.organisatie = organisatie;
-		}
-		public Identifiable getLocatie() {
-			return locatie;
-		}
-		public void setLocatie(Identifiable locatie) {
-			this.locatie = locatie;
 		}
 		public Identifiable getScope() {
 			return scope;

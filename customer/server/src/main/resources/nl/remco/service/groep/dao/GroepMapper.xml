@@ -65,10 +65,6 @@
 		<association property="organisatie" javaType="Identifiable">
 			<id property="id" column="organisatie_id" />
 		</association>
-		<association property="locatie" javaType="Identifiable">
-			<id property="id" column="locatie_id" />
-		</association>
-
 		<collection property="lidmaatschappen" resultMap="lidmaatschapResult"
 			columnPrefix="lid_" />
 	</resultMap>
@@ -140,9 +136,6 @@
 				<if test="filter.organisatie!=null">
 					AND grp.organisatie_id= #{filter.organisatie.id}
 				</if>
-				<if test="filter.locatie!=null">
-					AND grp.locatie_id= #{filter.locatie.id}
-				</if>
 				<if test="filter.scope!=null">
 					AND grp.scope_id= #{filter.scope.id}
 				</if>
@@ -181,7 +174,6 @@
 		grp.status AS lid_grp_status,
 		grp.naam AS lid_grp_naam,
 		grp.scope_id AS lid_grp_scope_id,
-		grp.locatie_id AS lid_grp_locatie_id,
 		grp.organisatie_id AS lid_grp_organisatie_id,
 		grp.beschrijving AS lid_grp_beschrijving,
 		grp.groeps_mutatie_type AS lid_grp_groeps_mutatie_type,
@@ -208,9 +200,6 @@
 			<if test="filter.organisatie!=null">
 				AND grp.organisatie_id= #{filter.organisatie.id}
 			</if>
-			<if test="filter.locatie!=null">
-				AND grp.locatie_id= #{filter.locatie.id}
-			</if>
 			<if test="filter.scope!=null">
 				AND grp.scope_id= #{filter.scope.id}
 			</if>
@@ -226,14 +215,14 @@
 		INSERT INTO groep
 		(status, naam, beschrijving, groepscode,
 		aangemaakt_door, groeps_mutatie_type, hoofdgroep_id,
-		scope_id, organisatie_id, locatie_id,
+		scope_id, organisatie_id,
 		product,
 		geplande_periode
 		)
 		VALUES
 		(#{status}, #{naam}, #{beschrijving}, #{groepscode},
 		#{aangemaaktDoor.id}, #{groepsMutatieType}, #{hoofdgroep.id},
-		#{scope.id}, #{organisatie.id}, #{locatie.id},
+		#{scope.id}, #{organisatie.id},
 		#{product},
 		#{geplandePeriode}
 		)

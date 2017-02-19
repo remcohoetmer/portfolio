@@ -23,7 +23,7 @@
 				window.location.href="index.html";
 			} );
 	
-			searchGebruikers();
+			searchKlanten();
 		});
 		
 		</script>
@@ -36,36 +36,33 @@
 			</h1>
             <div>
                 <form id="gebruikerFilter" action="">
-                    <input type="text" placeholder="Voornaam" id="voornaam" onChange="searchGebruikers();" />
-                    <input type="text" placeholder="Achternaam" id="achternaam" onChange="searchGebruikers();" />
-                    <input type="text" placeholder="E-mail" id="emailAdres" onChange="searchGebruikers();" />
+                    <input type="text" placeholder="Voornaam" id="voornaam" onChange="searchKlanten();" />
+                    <input type="text" placeholder="Achternaam" id="achternaam" onChange="searchKlanten();" />
+                    <input type="text" placeholder="E-mail" id="emailAdres" onChange="searchKlanten();" />
 
-                    <select id="geslacht" onChange="searchGebruikers()">
+                    <select id="geslacht" onChange="searchKlanten()">
                         <option value="">(geslacht)</option>
                         <option value="Man">Man</option>
                         <option value="Vrouw">Vrouw</option>
                     </select>
 
-                    <select id="rol" onChange="searchGebruikers()">
+                    <select id="rol" onChange="searchKlanten()">
                         <option value="">(rol)</option>
-                        <option value="Leerling">Leerling</option>
-                        <option value="Leerkracht">Leerkracht</option>
+                        <option value="Medewerker">Medewerker</option>
+                        <option value="Manager">Manager</option>
                     </select>
 
-                    <select id="status" onChange="searchGebruikers()">
+                    <select id="status" onChange="searchKlanten()">
                         <option value="Actief">Actief</option>
                         <option value="Passief">Passief</option>
                         <option value="Verwijderd">Verwijderd</option>
                     </select>
-                    <select id="searchGebruikerOrganisatie" onChange="searchGebruikers()">
+                    <select id="searchKlantOrganisatie" onChange="searchKlanten()">
                         <option value="">(organisatie)</option>
                     </select>
-                    <select id="searchGebruikerLocatie" onChange="searchGebruikers()">
-                        <option value="">(locatie)</option>
-                    </select>
 
-                    <input type="text" placeholder="Leerrichting" id="leerrichting" onChange="searchGebruikers();" />
-                    <input type="text" placeholder="Jaargroep" id="jaargroep" onChange="searchGebruikers();" />
+                    <input type="text" placeholder="Product" id="product" onChange="searchKlanten();" />
+                    <input type="text" placeholder="Geplande periode" id="geplandePeriode" onChange="searchKlanten();" />
 
                 </form>
 

@@ -30,7 +30,9 @@ public class KlantEnricher {
 	public void enrichOrganisaties( List<Klant> klanten){
 
 		// verzamel de Ids van alle organisaties
-		// --> dit is een set zodat automatisch duplicates worden geÃ«limineerd
+		// --> dit is een set zodat automatisch duplicates worden geëlimineerd
+		//TODO: null-safe streaming
+		
 		Set<String> organisatieIdSet = new HashSet<String>();
 		for (Klant klant: klanten) {
 			List<Inschrijving> inschrijvingen= klant.getInschrijvingen();

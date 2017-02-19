@@ -38,7 +38,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class GroepImplTest {
 	
 	@Autowired
-	private GRP_GroepService groepenService;
+	private GRP_GroepService groepService;
 	@Autowired
 	private TestHelper testHelper;
 	
@@ -71,7 +71,7 @@ public class GroepImplTest {
 
 		List<GRP_LidmaatschapCreateUpdate> lidmaatschappen= new ArrayList<GRP_LidmaatschapCreateUpdate>();
 		GRP_LidmaatschapCreateUpdate lidmaatschap= new GRP_LidmaatschapCreateUpdate();
-		Identifiable gebruiker= new Identifiable("testgebruiker1");
+		Identifiable gebruiker= new Identifiable("klant1");
 		lidmaatschap.setKlant( gebruiker);
 
 		lidmaatschap.setRol( Rol.GROEPSLID);
@@ -80,7 +80,7 @@ public class GroepImplTest {
 
 		request.setProduct( "Fiets");
 
-		GRP_CreateResponse response= groepenService.create(request);
+		GRP_CreateResponse response= groepService.create(request);
 		String hoofdgroepId= response.getId();
 		Assert.assertNotNull( hoofdgroepId);
 
@@ -104,13 +104,13 @@ public class GroepImplTest {
 		lidmaatschappenZelfRegistratie.add( lidmaatschapSelfService);
 		subCreateRequest.setLidmaatschappen(lidmaatschappenZelfRegistratie);
 
-		GRP_CreateResponse subCreateResponse= groepenService.create(subCreateRequest);
+		GRP_CreateResponse subCreateResponse= groepService.create(subCreateRequest);
 		String subgroepId= subCreateResponse.getId();
 		Assert.assertNotNull( subgroepId);
 
 		GRP_GetRequest getRequest= new GRP_GetRequest();
 		getRequest.setIds( IDList.create( hoofdgroepId));
-		GRP_GetResponse getResponse= groepenService.get(getRequest);
+		GRP_GetResponse getResponse= groepService.get(getRequest);
 		Assert.assertEquals( 1, getResponse.getGroepen().size());
 
 		GRP_GetRequest searchRequest= new GRP_GetRequest();
@@ -119,11 +119,11 @@ public class GroepImplTest {
 		selectie.setSelectLidmaatschappen( true);
 		selectie.setSelectKenmerken( true);
 
-		GRP_GetResponse searchResponse= groepenService.get(searchRequest);
+		GRP_GetResponse searchResponse= groepService.get(searchRequest);
 		Assert.assertEquals( 2, searchResponse.getGroepen().size());
 		searchRequest.setFilter( new Filter());
 		searchRequest.getFilter().setGeplandePeriode(geplandePeriode);
-		searchResponse= groepenService.get(searchRequest);
+		searchResponse= groepService.get(searchRequest);
 		Assert.assertEquals( 1, searchResponse.getGroepen().size());
 		Groep returnedGroep= searchResponse.getGroepen().get(0);
 
@@ -132,7 +132,7 @@ public class GroepImplTest {
 
 		Assert.assertEquals( 1, returnedGroep.getLidmaatschappen().size());
 		Lidmaatschap returnedLidmaatschap= returnedGroep.getLidmaatschappen().get(0);
-		Assert.assertEquals( "testgebruiker1", returnedLidmaatschap.getKlant().getId());
+		Assert.assertEquals( "klant1", returnedLidmaatschap.getKlant().getId());
 		Assert.assertEquals( Rol.GROEPSLID, returnedLidmaatschap.getRol());
 		Assert.assertEquals( Status.Actief, returnedLidmaatschap.getStatus());
 
@@ -143,16 +143,16 @@ public class GroepImplTest {
 		searchKenmerken.add( "KK1");
 		searchKenmerken.add( "KK3");
 		searchRequest.getFilter().setKenmerken( searchKenmerken);
-		searchResponse= groepenService.get(searchRequest);
+		searchResponse= groepService.get(searchRequest);
 		Assert.assertEquals( 1, searchResponse.getGroepen().size());
 
-		GRP_SearchForKlantRequest searchForGebruikersRequest= new GRP_SearchForKlantRequest();
+		GRP_SearchForKlantRequest searchForKlantenRequest= new GRP_SearchForKlantRequest();
 
-		searchForGebruikersRequest.setFilter( new GRP_SearchForKlantRequest.Filter());
-		searchForGebruikersRequest.getFilter().setKlantId( "testgebruiker1");
+		searchForKlantenRequest.setFilter( new GRP_SearchForKlantRequest.Filter());
+		searchForKlantenRequest.getFilter().setKlantId( "klant1");
 
-		GRP_KlantMetGroepen searchForGebruikersResponse= groepenService.searchForKlanten(searchForGebruikersRequest);
-		List<GRP_LidmaatschapMetGroep> gebrLidmaatschappen= searchForGebruikersResponse.getLidmaatschappen();
+		GRP_KlantMetGroepen searchForKlantenResponse= groepService.searchForKlanten(searchForKlantenRequest);
+		List<GRP_LidmaatschapMetGroep> gebrLidmaatschappen= searchForKlantenResponse.getLidmaatschappen();
 		Assert.assertTrue( Util.isDefined( gebrLidmaatschappen));
 		Groep gebrGroep= gebrLidmaatschappen.get(0).getGroep();
 		Assert.assertNotNull( gebrGroep);
@@ -161,11 +161,11 @@ public class GroepImplTest {
 
 	}
 
-	public GRP_GroepService getGroepenService() {
-		return groepenService;
+	public GRP_GroepService getGroepService() {
+		return groepService;
 	}
 
-	public void setGroepenService(GRP_GroepService groepenService) {
-		this.groepenService = groepenService;
+	public void setGroepenService(GRP_GroepService groepService) {
+		this.groepService = groepService;
 	}
 }

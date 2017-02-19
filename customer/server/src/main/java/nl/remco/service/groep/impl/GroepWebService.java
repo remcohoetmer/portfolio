@@ -196,7 +196,6 @@ public class GroepWebService {
 			@QueryParam("lidmaatschapStatus") Status lidmaatschapStatus,
 			@QueryParam("groepStatus") Status groepStatus,
 			@QueryParam("organisatieId")  String organisatieId,
-			@QueryParam("locatieId")  String locatieId,
 			@QueryParam("scopeId") String scopeId
 			)
 	{
@@ -211,9 +210,7 @@ public class GroepWebService {
 		if (organisatieId!= null) {
 			filter.setOrganisatie( new Identifiable(organisatieId));
 		}
-		if (locatieId!= null) {
-			filter.setLocatie( new Identifiable(locatieId));
-		}
+
 		if (scopeId!= null) {
 			filter.setScope( new Identifiable(scopeId));
 		}

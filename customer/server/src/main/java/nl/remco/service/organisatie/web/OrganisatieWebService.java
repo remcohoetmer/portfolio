@@ -14,13 +14,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import nl.remco.service.common.model.LifeCycleBeheer;
 import nl.remco.service.common.web.BadRequestException;
 import nl.remco.service.organisatie.web.ORG_GetRequest.Filter;
 import nl.remco.service.utils.Util;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 
 @Path("/organisatie")
@@ -79,7 +79,6 @@ public class OrganisatieWebService {
 		if (selectieList!= null) {
 			for( String field: selectieList){
 				switch (field){
-				case "locaties": selectie.setSelectLocaties( true);
 				case "sleutels": selectie.setSelectSleutels( true);
 				default:
 					throw new BadRequestException( "Onbekende select veld: "+ field);

@@ -46,8 +46,8 @@ public class CRMOrganisationsDelegate
 				searchSchoolsRequest.setPattern( request.getFilter().getNaam());
 
 				SearchOrganisationRes result= organisationServices.searchOrganisations( searchSchoolsRequest);
-				for (OrganisationInfo school: result.getOrganisations()) {
-					convert( organisaties, school);
+				for (OrganisationInfo org: result.getOrganisations()) {
+					convert( organisaties, org);
 				}
 			}
 			return organisaties;
@@ -68,11 +68,11 @@ public class CRMOrganisationsDelegate
 	}
 	
 
-	private void convert(List<Organisatie> organisaties, OrganisationInfo school) {
+	private void convert(List<Organisatie> organisaties, OrganisationInfo org) {
 		Organisatie organisatie= new Organisatie();
-		organisatie.setId( school.getASSUNumber().toString());
-		organisatie.setNaam(school.getSchoolName());
-		organisatie.setKvkNummer( school.getBrinCode());
+		organisatie.setId( org.getCRMNumber().toString());
+		organisatie.setNaam(org.getOrganisationName());
+		organisatie.setKvkNummer( org.getKvkNumber());
 		organisatie.setStatus( Status.Actief);
 		organisaties.add( organisatie);
 	}
@@ -82,7 +82,7 @@ public class CRMOrganisationsDelegate
 	}
 	
 
-	public void setSchoolServices(CRMOrganisationsServiceImp schoolServices) {
-		this.organisationServices = schoolServices;
+	public void setSchoolServices(CRMOrganisationsServiceImp service) {
+		this.organisationServices = service;
 	}
 }

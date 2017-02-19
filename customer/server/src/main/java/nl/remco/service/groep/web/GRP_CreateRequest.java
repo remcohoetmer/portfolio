@@ -18,7 +18,6 @@ public class GRP_CreateRequest {
 	private String geplandePeriode;
 	private Identifiable scope;
 	private Identifiable organisatie;
-	private Identifiable locatie;
 	
 	private List<String> kenmerken;
 	private Identifiable hoofdgroep;
@@ -80,14 +79,6 @@ public class GRP_CreateRequest {
 
 	public void setOrganisatie(Identifiable organisatie) {
 		this.organisatie = organisatie;
-	}
-
-	public Identifiable getLocatie() {
-		return locatie;
-	}
-
-	public void setLocatie(Identifiable locatie) {
-		this.locatie = locatie;
 	}
 
 	public List<String> getKenmerken() {

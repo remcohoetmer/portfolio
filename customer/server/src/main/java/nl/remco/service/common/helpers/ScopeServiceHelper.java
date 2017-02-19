@@ -1,9 +1,10 @@
 package nl.remco.service.common.helpers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import nl.remco.service.scope.model.Scope;
 import nl.remco.service.scope.web.SCO_GetRequest;
@@ -21,10 +22,6 @@ public class ScopeServiceHelper {
 		SCO_GetResponse scopeResponse= scopeService.get(request);
 
 		// zet de scope in een map om ze snel te vinden
-		Map<String, Scope> returnedScopeMap= new HashMap<String, Scope>();
-		for( Scope leerobject: scopeResponse.getScopes()) {
-			returnedScopeMap.put(leerobject.getId(), leerobject);
-		}
-		return returnedScopeMap;
+		return scopeResponse.getScopes().stream().collect(Collectors.toMap( Scope::getId, Function.identity()));
 	}
 }

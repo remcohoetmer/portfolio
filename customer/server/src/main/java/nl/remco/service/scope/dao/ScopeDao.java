@@ -12,30 +12,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ScopeDao
 {
 	@Autowired
-	private ScopeMapper groepscopeMapper;
+	private ScopeMapper scopeMapper;
 
-	public ScopeMapper getGroepscopeMapper() {
-		return groepscopeMapper;
-	}
-
-	public void setGroepscopeMapper(ScopeMapper groepscopeMapper) {
-		this.groepscopeMapper = groepscopeMapper;
-	}
 
 	public int insertScope(Scope groepscope) {
-		return groepscopeMapper.insertScope( groepscope);
+		return getScopeMapper().insertScope( groepscope);
 	}
 
 	public List<Scope> getScopes(SCO_GetRequest request) {
-		return groepscopeMapper.getScopes( request);
+		return getScopeMapper().getScopes( request);
 	}
 
 	public int updateScope(Scope groepscope) {
-		return groepscopeMapper.updateScope( groepscope);
+		return getScopeMapper().updateScope( groepscope);
 	}
 
 	public int deleteScope( Identifiable groepscope)
 	{
-		return groepscopeMapper.deleteScope( groepscope);
+		return getScopeMapper().deleteScope( groepscope);
+	}
+
+	public ScopeMapper getScopeMapper() {
+		return scopeMapper;
+	}
+
+	public void setScopeMapper(ScopeMapper scopeMapper) {
+		this.scopeMapper = scopeMapper;
 	}
 }
