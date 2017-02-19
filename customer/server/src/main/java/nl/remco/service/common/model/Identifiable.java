@@ -2,8 +2,8 @@ package nl.remco.service.common.model;
 
 import java.util.Date;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import nl.remco.service.jsonutils.CustomJsonTimestampDeserializer;
 import nl.remco.service.jsonutils.CustomJsonTimestampSerializer;

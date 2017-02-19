@@ -4,22 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import nl.remco.service.algemeen.TestHelper;
-import nl.remco.service.common.model.Identifiable;
-import nl.remco.service.common.model.LifeCycleBeheer.Status;
-import nl.remco.service.common.web.BadRequestException;
-import nl.remco.service.common.web.IDList;
-import nl.remco.service.groep.model.GroepsMutatieType;
-import nl.remco.service.groep.model.Lidmaatschap.Rol;
-import nl.remco.service.groep.web.GRP_CreateRequest;
-import nl.remco.service.groep.web.GRP_CreateResponse;
-import nl.remco.service.groep.web.GRP_GroepService;
-import nl.remco.service.groep.web.GRP_GetRequest;
-import nl.remco.service.groep.web.GRP_GetResponse;
-import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
-import nl.remco.service.groep.web.GRP_Selectie;
-import nl.remco.service.groep.web.GRP_UpdateRequest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +13,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.sun.jersey.api.ConflictException;
+import nl.remco.service.algemeen.TestHelper;
+import nl.remco.service.common.model.Identifiable;
+import nl.remco.service.common.model.LifeCycleBeheer.Status;
+import nl.remco.service.common.web.BadRequestException;
+import nl.remco.service.common.web.IDList;
+import nl.remco.service.groep.model.GroepsMutatieType;
+import nl.remco.service.groep.model.Lidmaatschap.Rol;
+import nl.remco.service.groep.web.GRP_CreateRequest;
+import nl.remco.service.groep.web.GRP_CreateResponse;
+import nl.remco.service.groep.web.GRP_GetRequest;
+import nl.remco.service.groep.web.GRP_GetResponse;
+import nl.remco.service.groep.web.GRP_GroepService;
+import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
+import nl.remco.service.groep.web.GRP_Selectie;
+import nl.remco.service.groep.web.GRP_UpdateRequest;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/testApplicationContext.xml"})	
@@ -130,8 +129,8 @@ public class AddLedenTest {
 		try {
 			groepenService.update( updateRequest);
 			Assert.fail( "Gebruiker 1 mag niet worden toegevoegd");
-		} catch (ConflictException e){
-			Assert.assertTrue( ((String) e.getResponse().getEntity()).contains("Test1"));
+		} catch (RuntimeException e){
+			Assert.assertTrue( e.getMessage().contains("Test1"));
 		} 
 
 

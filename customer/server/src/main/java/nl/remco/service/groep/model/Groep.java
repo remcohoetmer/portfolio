@@ -3,11 +3,11 @@ package nl.remco.service.groep.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer;
 import nl.remco.service.organisatie.model.OrganisatieDataHolder;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 
 public class Groep extends LifeCycleBeheer implements OrganisatieDataHolder {

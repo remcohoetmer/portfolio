@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import nl.remco.service.common.model.LifeCycleBeheer;
 import nl.remco.service.jsonutils.CustomJsonDateDeserializer;
-
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 public class Klant extends LifeCycleBeheer {
 
