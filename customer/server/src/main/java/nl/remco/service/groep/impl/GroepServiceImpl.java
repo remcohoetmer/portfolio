@@ -91,7 +91,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		request.setIds( IDList.create(id));
 		request.setSelectie( new GRP_Selectie());
 		request.getSelectie().setSelectLidmaatschappen(selectLidmaatschappen);
-		List<Groep> groepen= getGebruikersgroepDao().getGebruikersgroepen( request);
+		List<Groep> groepen= getGebruikersgroepDao().getGroepen( request);
 		if (groepen.size() ==1) {
 			return groepen.get(0);
 		}
@@ -103,7 +103,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		GRP_GetRequest request= new GRP_GetRequest();
 		request.setIds( IDList.create(id));
 		request.setSelectie( new GRP_Selectie());
-		List<Groep> groepen= groepDao.getGebruikersgroepen( request);
+		List<Groep> groepen= groepDao.getGroepen( request);
 		if (groepen.size()!= 1) {
 			throw new BadRequestException( "Gebruikersgroep ID niet geldig");
 		}
@@ -229,25 +229,25 @@ public class GroepServiceImpl implements GRP_GroepService {
 			}
 		}
 		// Check op de data
-		Groep gebruikersgroep= loadGroep( request.getId(), true);
-		if (gebruikersgroep==null) {
+		Groep groep= loadGroep( request.getId(), true);
+		if (groep==null) {
 			throw new NotFoundException( "Gebruikersgroep niet gevonden");
 		}
-		if (gebruikersgroep.getStatus() == Status.Verwijderd) {
+		if (groep.getStatus() == Status.Verwijderd) {
 			throw new BadRequestException( "Een verwijderd object kan niet worden gewijzigd");
 		}
-		HashSet<String> currentGebruikerIds= new HashSet<String>();
-		for (Lidmaatschap lidmaatschap: gebruikersgroep.getLidmaatschappen()) {
-			currentGebruikerIds.add( lidmaatschap.getGebruiker().getId());
+		HashSet<String> currentKlantIds= new HashSet<String>();
+		for (Lidmaatschap lidmaatschap: groep.getLidmaatschappen()) {
+			currentKlantIds.add( lidmaatschap.getKlant().getId());
 		}
 
 		if (request.getCreateLidmaatschappen()!= null) {
 			checkCreateLidmaatschapData(request.getCreateLidmaatschappen(),
-					gebruikersgroep.getOrganisatie(), gebruikersgroep.getLocatie(), currentGebruikerIds);
+					groep.getOrganisatie(), groep.getLocatie(), currentKlantIds);
 		}
 		if (request.getUpdateLidmaatschappen()!= null) {
 			checkUpdateLidmaatschapData(
-					request.getUpdateLidmaatschappen(), gebruikersgroep);
+					request.getUpdateLidmaatschappen(), groep);
 		}
 		return groepDao.updateGroep(request);
 	}
@@ -256,14 +256,14 @@ public class GroepServiceImpl implements GRP_GroepService {
 	 * Checkt bij nieuwe of bij bestaande groepen de scope voor de leden
 	 * Verder of een lid reeds bestaat
 	 * 
-	 * organisatie: de gescopede organisatie in geval van nieuwe Gebruikersgroep.
+	 * organisatie: de gescopede organisatie in geval van nieuwe Groep.
 	 * In geval van een bestaande wordt de gescopede organisatie uit de database opgehaald.
 	 * locatie: de gescopede locatie. Gelijk als organisatie.
 	 */
 
 	private void checkCreateLidmaatschapData(
 			List<GRP_LidmaatschapCreateUpdate> createdLidmaatschappen, Identifiable organisatieGroep, Identifiable locatieGroep, 
-			Set<String> currentGebruikerIds) {
+			Set<String> currentKlantIds) {
 
 		// collect gebruiker Ids
 		Set<String> gebruikerIds= new HashSet<String>();
@@ -277,7 +277,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		List<Klant> gebruikers= cRMCustomersDelegate.getKlanten( gebruikerIds);
 
 		for (Klant gebruiker: gebruikers) {
-			if (currentGebruikerIds!= null && currentGebruikerIds.contains(gebruiker.getId())) {
+			if (currentKlantIds!= null && currentKlantIds.contains(gebruiker.getId())) {
 				throw new ConflictException( gebruiker.shortString() + " is reeds lid van de groep" );
 			}
 			if (organisatieGroep!= null) {
@@ -291,10 +291,10 @@ public class GroepServiceImpl implements GRP_GroepService {
 	 * Dus foutmelding bij o.a.: lidmaatschap behorend bij een andere groep, of van een verwijderd lidmaatschapsrecord.
 	 */
 	private void checkUpdateLidmaatschapData(
-			List<GRP_LidmaatschapCreateUpdate> updateLidmaatschappen, Groep currentGebruikersgroep) {
+			List<GRP_LidmaatschapCreateUpdate> updateLidmaatschappen, Groep currentGroep) {
 		// verzamelen eerst de huidige lidmaatschap Ids
 		Set<String> lidmaatschapIds= new HashSet<String>();
-		for (Lidmaatschap lidmaatschap: currentGebruikersgroep.getLidmaatschappen()) {
+		for (Lidmaatschap lidmaatschap: currentGroep.getLidmaatschappen()) {
 			lidmaatschapIds.add( lidmaatschap.getId());
 		}
 		for (GRP_LidmaatschapCreateUpdate updateLidmaatschap: updateLidmaatschappen) {
@@ -304,9 +304,9 @@ public class GroepServiceImpl implements GRP_GroepService {
 		}
 	}
 
-	private void checkGebruikerOrganisatie(Klant gebruiker,
+	private void checkGebruikerOrganisatie(Klant klant,
 			Identifiable organisatie, Identifiable locatie) {
-		for (Inschrijving inschrijving: gebruiker.getInschrijvingen()) {
+		for (Inschrijving inschrijving: klant.getInschrijvingen()) {
 			if (organisatie.equals (inschrijving.getOrganisatie())) {
 				if (locatie == null) {
 					return; //groep niet gescoped aan een locatie. Gebruiker is lid van de organisatie en mag dus bij de groep
@@ -317,7 +317,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 			}
 			// ga door om te kijken voor een andere inschrijving
 		}
-		String melding= gebruiker.shortString() +  " is niet ingeschreven bij de organisatie ";
+		String melding= klant.shortString() +  " is niet ingeschreven bij de organisatie ";
 		if (locatie!= null) {
 			melding += "en locatie ";
 		}
@@ -331,7 +331,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 			throw new BadRequestException( "ID is leeg");
 		}
 
-		return groepDao.deleteGebruikersgroep(gebruikersgroep);
+		return groepDao.deleteGroep(gebruikersgroep);
 	}
 
 	@Override
@@ -360,9 +360,9 @@ public class GroepServiceImpl implements GRP_GroepService {
 				}
 			}
 		}
-		List<Groep> gebruikersgroepen= getGebruikersgroepDao().getGebruikersgroepen( request);
+		List<Groep> gebruikersgroepen= getGebruikersgroepDao().getGroepen( request);
 		GRP_Selectie selectie= request.getSelectie();
-		if (selectie.isSelectGebruikers()
+		if (selectie.isSelectKlanten()
 				|| selectie.isSelectOrganisaties()
 				|| selectie.isSelectScopes()
 				|| selectie.isSelectHoofdgroep()) {

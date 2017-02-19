@@ -45,18 +45,18 @@ public class GroepDao
 		this.groepMapper = groepMapper;
 	}
 
-	public String insertGroep(Groep gebruikersgroep) {
-		groepMapper.insertGroep( gebruikersgroep);
-		if (Util.isDefined( gebruikersgroep.getLidmaatschappen())) {
-			groepMapper.insertLidmaatschappen( gebruikersgroep);
+	public String insertGroep(Groep groep) {
+		groepMapper.insertGroep( groep);
+		if (Util.isDefined( groep.getLidmaatschappen())) {
+			groepMapper.insertLidmaatschappen( groep);
 		}
-		if (Util.isDefined( gebruikersgroep.getKenmerken())) {
-			groepMapper.insertKenmerken( gebruikersgroep);
+		if (Util.isDefined( groep.getKenmerken())) {
+			groepMapper.insertKenmerken( groep);
 		}
-		return gebruikersgroep.getId();
+		return groep.getId();
 	}
 
-	public List<Groep> getGebruikersgroepen(GRP_GetRequest request) {
+	public List<Groep> getGroepen(GRP_GetRequest request) {
 		List<Groep> groepen= groepMapper.getGroepen( request);
 		if (request.getSelectie()!= null && request.getSelectie().isSelectKenmerken()) {
 			addKenmerken( groepen, groepMapper);
@@ -95,10 +95,9 @@ public class GroepDao
 
 
 	public GRP_KlantMetGroepen searchGroepen(GRP_SearchForKlantRequest searchRequest) {
-		return groepMapper.searchGroepenForGebruikers( searchRequest);
+		return groepMapper.searchGroepenForKlanten( searchRequest);
 
 	}
-
 
 	private List<Lidmaatschap> convertCreateUpdates( List<GRP_LidmaatschapCreateUpdate> lidmaatschapCreateUpdates, Mapper mapper){
 
@@ -171,7 +170,7 @@ public class GroepDao
 		return 1;
 	}
 
-	public int deleteGebruikersgroep( Identifiable gebruikersgroep) {
-		return groepMapper.deleteGroep( gebruikersgroep);
+	public int deleteGroep( Identifiable groep) {
+		return groepMapper.deleteGroep( groep);
 	}
 }

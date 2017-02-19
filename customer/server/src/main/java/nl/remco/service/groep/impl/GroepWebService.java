@@ -129,7 +129,7 @@ public class GroepWebService {
 				switch (field){
 				case "sleutels":selectie.setSelectSleutels(true); break;
 				case "lidmaatschappen":selectie.setSelectLidmaatschappen(true); break;
-				case "klanten":selectie.setSelectGebruikers(true); break;
+				case "klanten":selectie.setSelectKlanten(true); break;
 				case "organisaties":selectie.setSelectOrganisaties(true); break;
 				case "scopes":selectie.setSelectScopes(true); break;
 				case "kenmerken":selectie.setSelectKenmerken(true); break;

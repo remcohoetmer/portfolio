@@ -12,7 +12,7 @@ public interface GroepMapper {
 	List<Groep> getGroepen(GRP_GetRequest request);
 	List<KenmerkRecord> getKenmerkRecords(List<String> ids);
 
-	GRP_KlantMetGroepen searchGroepenForGebruikers(GRP_SearchForKlantRequest zoekRequest);
+	GRP_KlantMetGroepen searchGroepenForKlanten(GRP_SearchForKlantRequest zoekRequest);
 
 	int insertGroep(Groep groep);
 	int updateGroep(Groep groep);

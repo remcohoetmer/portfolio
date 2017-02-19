@@ -31,38 +31,38 @@ public class CRMCustomersDelegate {
 	@Autowired
 	private CRMCustomersService cRMCustomersServices;
 
-	public List<Klant> getKlanten( Set<String> gebruikerIds) {
+	public List<Klant> getKlanten( Set<String> klantIds) {
 
-		RetrieveCustomersReq getUserProfile= new RetrieveCustomersReq();
-		getUserProfile.getUserId().addAll(gebruikerIds);
-		RetrieveCustomersRes getUserProfileResponse= getCRMCustomersServices().getUserProfile(getUserProfile);
-		if (gebruikerIds.size()!=getUserProfileResponse.getUserProfile().size()) {
-			throw new BadRequestException( "Gebruiker IDs niet geldig bij ATOL");
+		RetrieveCustomersReq getCustomerProfile= new RetrieveCustomersReq();
+		getCustomerProfile.getUserId().addAll(klantIds);
+		RetrieveCustomersRes getUserCustomerResponse= getCRMCustomersServices().getCustomerProfile(getCustomerProfile);
+		if (klantIds.size()!=getUserCustomerResponse.getUserProfile().size()) {
+			throw new BadRequestException( "Customer IDs niet geldig bij CRM");
 		}
-		List<Klant> gebruikers = new ArrayList<Klant>();
-		for (CustomerProfile user: getUserProfileResponse.getUserProfile()) {
-			convert( gebruikers, user);
+		List<Klant> klanten = new ArrayList<Klant>();
+		for (CustomerProfile user: getUserCustomerResponse.getUserProfile()) {
+			convert( klanten, user);
 		}
 
-		return gebruikers;
+		return klanten;
 	}
 
 
-	public Map<String, Klant> getGebruikers(
-			Set<String> gebruikerIdSet,
-			Map<String, Klant> gebruikerMap) {
+	public Map<String, Klant> getKlanten(
+			Set<String> klantIdSet,
+			Map<String, Klant> klantrMap) {
 
 		// Service aanroep
-		List<Klant> gebruikers = getKlanten( gebruikerIdSet);
+		List<Klant> klanten = getKlanten( klantIdSet);
 
-		if (gebruikerMap == null) {
-			gebruikerMap = new HashMap<String, Klant>();
+		if (klantrMap == null) {
+			klantrMap = new HashMap<String, Klant>();
 		}
 
-		for (Klant gebruiker : gebruikers) {
-			gebruikerMap.put(gebruiker.getId(), gebruiker);
+		for (Klant gebruiker : klanten) {
+			klantrMap.put(gebruiker.getId(), gebruiker);
 		}
-		return gebruikerMap;
+		return klantrMap;
 	}
 
 	public List<Klant> get(KLA_GetRequest request) {
@@ -77,26 +77,28 @@ public class CRMCustomersDelegate {
 
 	private List<Klant> searchKlanten(KLA_GetRequest request) {
 		Filter filter= request.getFilter();
-		SearchCustomersReq searchUsers= new SearchCustomersReq();
-		CustomerSearchProfile userSearchProfile= new CustomerSearchProfile();
-		userSearchProfile.setFirstname(filter.getVoornaam());
-		userSearchProfile.setLastname( filter.getAchternaam());
-		userSearchProfile.setDateOfBirth(  filter.getGeboortedatum());
-		userSearchProfile.setEMailAddress( filter.getEmailAdres());
+		SearchCustomersReq searchCustomers= new SearchCustomersReq();
+		CustomerSearchProfile customerSearchProfile= new CustomerSearchProfile();
+		customerSearchProfile.setFirstname(filter.getVoornaam());
+		customerSearchProfile.setLastname( filter.getAchternaam());
+		customerSearchProfile.setDateOfBirth(  filter.getGeboortedatum());
+		customerSearchProfile.setEMailAddress( filter.getEmailAdres());
 
 		if (filter.getOrganisatie()!= null && filter.getOrganisatie().getId() != null) {
-			userSearchProfile.setKvKNumber( new BigDecimal( filter.getOrganisatie().getId()));
+			customerSearchProfile.setKvKNumber( new BigDecimal( filter.getOrganisatie().getId()));
 		}
 
-		searchUsers.setUserProfile( userSearchProfile);
-		SearchCustomersRes searchUsersResponse= getCRMCustomersServices().searchUsers(searchUsers);
+		searchCustomers.setCustomerProfile( customerSearchProfile);
+		SearchCustomersRes searchUsersResponse= getCRMCustomersServices().searchCustomers(searchCustomers);
 
-		List<Klant> gebruikers= new ArrayList<Klant>();
+		//klantMap.putAll(klanten.stream().collect( Collectors.toMap( Klant::getId, Function.identity())));
+		
+		List<Klant> klanten= new ArrayList<Klant>();
 		for (CustomerProfileSummary userProfile: searchUsersResponse.getUserProfileLite()) {
 
-			convert( gebruikers, userProfile);
+			convert( klanten, userProfile);
 		}
-		return gebruikers;
+		return klanten;
 
 	}
 
@@ -120,28 +122,28 @@ public class CRMCustomersDelegate {
 
 		}
 	}
-	private void convert(List<Klant> gebruikers, CustomerProfile userProfile) {
-		if (userProfile.getUserId()!=null) {
-			Klant gebruiker= new Klant();
-			gebruikers.add(gebruiker);
+	private void convert(List<Klant> klanten, CustomerProfile customerProfile) {
+		if (customerProfile.getUserId()!=null) {
+			Klant klant= new Klant();
+			klanten.add(klant);
 
-			gebruiker.setId( userProfile.getUserId());
-			gebruiker.setVoornaam( userProfile.getFirstname());
-			gebruiker.setAchternaam(  userProfile.getLastname());
-			gebruiker.setVoorvoegselAchternaam( userProfile.getMiddlename());
+			klant.setId( customerProfile.getUserId());
+			klant.setVoornaam( customerProfile.getFirstname());
+			klant.setAchternaam(  customerProfile.getLastname());
+			klant.setVoorvoegselAchternaam( customerProfile.getMiddlename());
 
-			gebruiker.setGeboortedatum( userProfile.getDateOfBirth());
-			gebruiker.setGeslacht( convert( userProfile.getGender()));
-			gebruiker.setEmailAdres( userProfile.getEMailAddress());
+			klant.setGeboortedatum( customerProfile.getDateOfBirth());
+			klant.setGeslacht( convert( customerProfile.getGender()));
+			klant.setEmailAdres( customerProfile.getEMailAddress());
 
-			if (userProfile.getKvKNumber()!= null) {
+			if (customerProfile.getKvKNumber()!= null) {
 				Inschrijving inschrijving= new Inschrijving();
 				Identifiable organisatie= new Identifiable();
-				organisatie.setId(userProfile.getKvKNumber().toString());
+				organisatie.setId(customerProfile.getKvKNumber().toString());
 				inschrijving.setOrganisatie(organisatie);
 				
-				gebruiker.setInschrijvingen( new ArrayList<Inschrijving>());
-				gebruiker.getInschrijvingen().add(inschrijving);
+				klant.setInschrijvingen( new ArrayList<Inschrijving>());
+				klant.getInschrijvingen().add(inschrijving);
 			}
 
 		}

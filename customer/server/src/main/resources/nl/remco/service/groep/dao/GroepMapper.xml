@@ -31,7 +31,7 @@
 	</resultMap>
 
 	<resultMap type='nl.remco.service.groep.web.GRP_LidmaatschapMetGroep'
-		id='"lidmaatschapKlantResult"'>
+		id='lidmaatschapKlantResult'>
 		<id property='id' column='id' />
 		<result property='laatstgewijzigd' column='laatstgewijzigd' />
 		<result property='status' column='status' />

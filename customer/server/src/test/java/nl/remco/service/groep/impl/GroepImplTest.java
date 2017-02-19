@@ -1,4 +1,4 @@
-package nl.remco.service.gebruikersgroep.impl;
+package nl.remco.service.groep.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +132,7 @@ public class GroepImplTest {
 
 		Assert.assertEquals( 1, returnedGroep.getLidmaatschappen().size());
 		Lidmaatschap returnedLidmaatschap= returnedGroep.getLidmaatschappen().get(0);
-		Assert.assertEquals( "testgebruiker1", returnedLidmaatschap.getGebruiker().getId());
+		Assert.assertEquals( "testgebruiker1", returnedLidmaatschap.getKlant().getId());
 		Assert.assertEquals( Rol.GROEPSLID, returnedLidmaatschap.getRol());
 		Assert.assertEquals( Status.Actief, returnedLidmaatschap.getStatus());
 

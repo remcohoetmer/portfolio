@@ -4,7 +4,7 @@ public class GRP_Selectie {
 
 	private boolean selectSleutels;
 	private boolean selectLidmaatschappen;
-	private boolean selectGebruikers;
+	private boolean selectKlanten;
 	private boolean selectOrganisaties;
 	private boolean selectScopes;
 	private boolean selectKenmerken;
@@ -34,11 +34,11 @@ public class GRP_Selectie {
 	public void setSelectLidmaatschappen(boolean selectLidmaatschappen) {
 		this.selectLidmaatschappen = selectLidmaatschappen;
 	}
-	public boolean isSelectGebruikers() {
-		return selectGebruikers;
+	public boolean isSelectKlanten() {
+		return selectKlanten;
 	}
-	public void setSelectGebruikers(boolean selectGebruikers) {
-		this.selectGebruikers = selectGebruikers;
+	public void setSelectKlanten(boolean selectKlanten) {
+		this.selectKlanten = selectKlanten;
 	}
 
 	public boolean isSelectKenmerken() {

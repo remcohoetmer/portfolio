@@ -2,12 +2,12 @@
 package nl.remco.crm.customers;
 
 public class SearchCustomersReq {
-    protected CustomerSearchProfile userProfile;
-    public CustomerSearchProfile getUserProfile() {
-        return userProfile;
+    protected CustomerSearchProfile customerProfile;
+    public CustomerSearchProfile getCustomerProfile() {
+        return customerProfile;
     }
-    public void setUserProfile(CustomerSearchProfile value) {
-        this.userProfile = value;
+    public void setCustomerProfile(CustomerSearchProfile value) {
+        this.customerProfile = value;
     }
 
 }

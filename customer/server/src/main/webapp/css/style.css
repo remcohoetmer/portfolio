@@ -4,8 +4,6 @@ body {
 }
 
 p {
-	font-family: "Verdana";
-	font-size: 12px;
 }
 
 h1 {
@@ -15,7 +13,6 @@ h1 {
 	border-bottom: 1px solid #B0BED9;
 	clear: both;
 	font-weight: bold;
-	font-family: "Verdana";
 	color: #FF3366;
 }
 
@@ -23,7 +20,6 @@ h2 {
 	font-size: 1.4em;
 	line-height: 1.6em;
 	font-weight: bold;
-	font-family: "Verdana";
 	color: #EE2255;
 	clear: both;
 }
@@ -32,7 +28,6 @@ h3 {
 	font-size: 1.2em;
 	line-height: 1.6em;
 	font-weight: bold;
-	font-family: "Verdana";
 	color: #DD1144;
 	clear: both;
 }
@@ -41,130 +36,6 @@ h4 {
 	font-size: 1.0em;
 	line-height: 1.6em;
 	font-weight: bold;
-	font-family: "Verdana";
 	color: #CC0033;
 	clear: both;
-}
-
-
-.label {
-	width: 14em;
-}
-
-.close_button {
-	float: right;
-}
-
-button {
-	background-color: #FF3366;
-	color: white;
-}
-
-#saveEdit {
-	clear: both;
-}
-
-#saveCreateGroep {
-	clear: both;
-}
-
-#but_create_groep {
-	clear: both;
-}
-
-#groepsAttributen div {
-	margin-left: 4px;
-	float: left;
-	width: 25%;
-}
-
-#CreateGroepsAttributen div {
-	margin-left: 4px;
-	float: left;
-	width: 25%;
-}
-
-#popupboxEdit {
-	width: 95%;
-	height: 95%;
-	display: none;
-	float: left;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	z-index: 99999;
-	-webkit-box-shadow: 0px 0px 20px #000;
-	-moz-box-shadow: 0px 0px 20px #000;
-	box-shadow: 0px 0px 20px #000;
-	background: white;
-	color: black;
-	margin-top: 2em;
-	margin-left: 2em;
-}
-
-#popupboxCreate {
-	width: 95%;
-	height: 95%;
-	display: none;
-	float: left;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	z-index: 99999;
-	-webkit-box-shadow: 0px 0px 20px #000;
-	-moz-box-shadow: 0px 0px 20px #000;
-	box-shadow: 0px 0px 20px #000;
-	background: white;
-	color: black;
-}
-
-#popupboxAddLeden {
-	width: 95%;
-	height: 95%;
-	display: none;
-	float: left;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	z-index: 99999;
-	-webkit-box-shadow: 0px 0px 20px #000;
-	-moz-box-shadow: 0px 0px 20px #000;
-	box-shadow: 0px 0px 20px #000;
-	background: white;
-	color: black;
-}
-
-.markdown-body .highlight pre,.markdown-body pre {
-	background-color: #f8f8f8;
-	border: 1px solid #ddd;
-	font-size: 13px;
-	line-height: 19px;
-	overflow: auto;
-	padding: 6px 10px;
-	border-radius: 3px;
-}
-.markdown-body code, .markdown-body tt {
-	margin: 0 2px;
-	padding: 0px 5px;
-	border: 1px solid #ddd;
-	background-color: #f8f8f8;
-	border-radius: 3px;
-}
-
-b
-{
-	clear: both;
-	float: none;
-}
-
-.attributes {
-    border-collapse: collapse;
-    border: 1px solid black;
-  }
-.attributes td {
-	border:1px solid grey;
-}
-
-.attributes td {
-	border:1px solid grey;
 }

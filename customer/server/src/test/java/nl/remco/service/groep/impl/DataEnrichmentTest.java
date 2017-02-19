@@ -1,4 +1,4 @@
-package nl.remco.service.gebruikersgroep.impl;
+package nl.remco.service.groep.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +66,7 @@ public class DataEnrichmentTest {
 
 		Identifiable organisatie= new Identifiable( "8000");
 
-//		Identifyable gebruiker1Ref= testHelper.maakGebruiker( "gebruiker1", organisatie, locatie);
-
-		Identifiable gebruiker1Ref= new Identifiable("testgebruiker1");
+		Identifiable gebruiker1Ref= new Identifiable("testklant1");
 		Identifiable organisatieRef= new Identifiable(organisatie.getId());
 		Identifiable scopeRef= new Identifiable(scopeId);
 
@@ -92,27 +90,27 @@ public class DataEnrichmentTest {
 		request.setLidmaatschappen(lidmaatschappen);
 
 		GRP_CreateResponse response= groepenService.create(request);
-		String gebruikersgroepId= response.getId();
+		String groepId= response.getId();
 
 
 		// Vraag de groep weer op
 		GRP_GetRequest getRequest= new GRP_GetRequest();
-		getRequest.setIds( IDList.create( gebruikersgroepId));
+		getRequest.setIds( IDList.create( groepId));
 		getRequest.setSelectie( new GRP_Selectie());
 		getRequest.getSelectie().setSelectLidmaatschappen( true);
 		getRequest.getSelectie().setSelectOrganisaties( true);
-		getRequest.getSelectie().setSelectGebruikers( true);
+		getRequest.getSelectie().setSelectKlanten( true);
 		getRequest.getSelectie().setSelectScopes( true);
 
 		GRP_GetResponse getResponse= groepenService.get(getRequest);
 
 		Assert.assertEquals( 1, getResponse.getGroepen().size());
-		Groep gebruikersgroep= getResponse.getGroepen().get(0);
-		Assert.assertEquals( "Bedrijf A", ((Benoembaar)gebruikersgroep.getOrganisatie()).getNaam());
-		Assert.assertEquals( "Corporate", ((Benoembaar)gebruikersgroep.getScope()).getNaam());
+		Groep groep= getResponse.getGroepen().get(0);
+		Assert.assertEquals( "Bedrijf A", ((Benoembaar)groep.getOrganisatie()).getNaam());
+		Assert.assertEquals( "Corporate", ((Benoembaar)groep.getScope()).getNaam());
 		
-		Assert.assertEquals( 1, gebruikersgroep.getLidmaatschappen().size());
-		Klant gebruiker= (Klant)getResponse.getGroepen().get(0).getLidmaatschappen().get(0).getGebruiker();
+		Assert.assertEquals( 1, groep.getLidmaatschappen().size());
+		Klant gebruiker= (Klant)getResponse.getGroepen().get(0).getLidmaatschappen().get(0).getKlant();
 
 		Assert.assertEquals( 1, gebruiker.getInschrijvingen().size());
 		Inschrijving inschrijving= gebruiker.getInschrijvingen().get(0);

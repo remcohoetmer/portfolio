@@ -1,4 +1,4 @@
-package nl.remco.service.gebruikersgroep.impl;
+package nl.remco.service.groep.impl;
 
 import java.util.ArrayList;
 import java.util.Date;

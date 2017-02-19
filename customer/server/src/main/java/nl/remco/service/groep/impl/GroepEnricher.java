@@ -29,82 +29,82 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GroepEnricher {
 	@Autowired
-	private SCO_ScopeService groepscopeService;
+	private SCO_ScopeService scopeService;
 
 	@Autowired
-	private CRMCustomersDelegate aTOLGebruikerDelegate;
+	private CRMCustomersDelegate cRMCustomersDelegate;
 
 	@Autowired
-	private CRMOrganisationsDelegate aTOLOrganisatieDelegate;
+	private CRMOrganisationsDelegate cRMOrganisationsDelegate;
 
-	public CRMOrganisationsDelegate getaTOLOrganisatieDelegate() {
-		return aTOLOrganisatieDelegate;
+	public CRMOrganisationsDelegate getCRMOrganisationsDelegate() {
+		return cRMOrganisationsDelegate;
 	}
 
-	public void setaTOLOrganisatieDelegate(
-			CRMOrganisationsDelegate aTOLOrganisatieDelegate) {
-		this.aTOLOrganisatieDelegate = aTOLOrganisatieDelegate;
+	public void setCRMOrganisationsDelegate(
+			CRMOrganisationsDelegate cRMOrganisationsDelegate) {
+		this.cRMOrganisationsDelegate = cRMOrganisationsDelegate;
 	}
 
-	public CRMCustomersDelegate getaTOLGebruikerDelegate() {
-		return aTOLGebruikerDelegate;
+	public CRMCustomersDelegate getCRMCustomersDelegate() {
+		return cRMCustomersDelegate;
 	}
 
-	public void setaTOLGebruikerDelegate(CRMCustomersDelegate aTOLGebruikerDelegate) {
-		this.aTOLGebruikerDelegate = aTOLGebruikerDelegate;
+	public void setCRMCustomersDelegate(CRMCustomersDelegate cRMCustomersDelegate) {
+		this.cRMCustomersDelegate = cRMCustomersDelegate;
 	}
 
 	/*
-	 * Verrijkt gebruikersgroepen met data van externe services
-	 * Organisaties (incl. locaties), Groepscopes en Gebruikers.
-	 * Gebruikers refereren ook naar Organisatie: De eventuele verrijkig van Gebruikers met Organisatiegegevens wordt gedelegeerd naar de GebruikersService
+	 * Verrijkt groepen met data van externe services
+	 * Organisaties (incl. locaties), scopes en Gebruikers.
+	 * Gebruikers refereren ook naar Organisatie: De eventuele verrijkig van Klanten met Organisatiegegevens wordt gedelegeerd naar de KlantenService
 	 * Verrijking wordt gestuurd door een filter
 	 */
-	public void execute(List<Groep> gebruikersgroepen,
+	public void execute(List<Groep> groepen,
 			GRP_Selectie selectie,
-			GroepDao gebruikersgroepDao) {
-		Set<String> gebruikerIdSet= new HashSet<String>();
+			GroepDao groepDao) {
+		Set<String> klantIdSet= new HashSet<String>();
 		Set<String> organisatieIdSet= new HashSet<String>();
 		Set<String> groepscopeIdSet= new HashSet<String>();
 		Set<String> hoofdgroepIdSet= new HashSet<String>();
 
 		// zet alle Ids van de gebruiker/organisatie/locatie een lijst
 		// --> dit is een set zodat automatisch duplicates worden ge�limineerd
-		for (Groep gebruikersgroep: gebruikersgroepen) {
-			if (gebruikersgroep.getLidmaatschappen()!= null) {
-				for (Lidmaatschap lidmaatschap: gebruikersgroep.getLidmaatschappen()) {
-					if (lidmaatschap.getGebruiker()!=null) {
-						if (lidmaatschap.getGebruiker().getId()!= null) {
-							gebruikerIdSet.add( lidmaatschap.getGebruiker().getId());
+		for (Groep groep: groepen) {
+			if (groep.getLidmaatschappen()!= null) {
+				for (Lidmaatschap lidmaatschap: groep.getLidmaatschappen()) {
+					if (lidmaatschap.getKlant()!=null) {
+						if (lidmaatschap.getKlant().getId()!= null) {
+							klantIdSet.add( lidmaatschap.getKlant().getId());
 						}
 					}
 				}
 			}
-			if (gebruikersgroep.getOrganisatie()!=null
-					&& gebruikersgroep.getOrganisatie().getId()!= null) {
-				organisatieIdSet.add( gebruikersgroep.getOrganisatie().getId());
+			if (groep.getOrganisatie()!=null
+					&& groep.getOrganisatie().getId()!= null) {
+				organisatieIdSet.add( groep.getOrganisatie().getId());
 			}
-			if (gebruikersgroep.getScope()!=null
-					&& gebruikersgroep.getScope().getId()!= null) {
-				groepscopeIdSet.add( gebruikersgroep.getScope().getId());
+			if (groep.getScope()!=null
+					&& groep.getScope().getId()!= null) {
+				groepscopeIdSet.add( groep.getScope().getId());
 			}
-			if (gebruikersgroep.getHoofdgroep()!=null
-					&& gebruikersgroep.getHoofdgroep().getId()!= null) {
-				hoofdgroepIdSet.add( gebruikersgroep.getHoofdgroep().getId());
+			if (groep.getHoofdgroep()!=null
+					&& groep.getHoofdgroep().getId()!= null) {
+				hoofdgroepIdSet.add( groep.getHoofdgroep().getId());
 			}
 		}
 
-		// zet de gebruikers in een hashmap om ze snel te vinden
-		Map<String, Klant> gebruikerMap= new HashMap<String, Klant>();
+		// zet de klanten in een hashmap om ze snel te vinden
+		Map<String, Klant> klantMap= new HashMap<String, Klant>();
 		Map<String, Benoembaar> hoofdgroepMap= new HashMap<String, Benoembaar>();
 
 		// initialiseer default (omwille van robuustheid)
 
-		for (String id: gebruikerIdSet) {
+		for (String id: klantIdSet) {
 			Klant gebruiker= new Klant();
 			gebruiker.setId( id);
 			gebruiker.setAchternaam("Onbekend");
-			gebruikerMap.put( id, gebruiker);
+			klantMap.put( id, gebruiker);
 		}	
 
 		for (String id: hoofdgroepIdSet) {
@@ -115,12 +115,12 @@ public class GroepEnricher {
 		}	
 
 
-		if (selectie.isSelectGebruikers() && !gebruikerIdSet.isEmpty()) {
-			aTOLGebruikerDelegate.getGebruikers(
-					gebruikerIdSet,
-					gebruikerMap);
+		if (selectie.isSelectKlanten() && !klantIdSet.isEmpty()) {
+			cRMCustomersDelegate.getKlanten(
+					klantIdSet,
+					klantMap);
 			if (selectie.isSelectOrganisaties()) {
-				addOrganisatieIds( organisatieIdSet, gebruikerMap);
+				addOrganisatieIds( organisatieIdSet, klantMap);
 			}
 		}
 
@@ -128,12 +128,12 @@ public class GroepEnricher {
 		Map<String, Organisatie> returnedOrganisatieMap= null;
 		if (selectie.isSelectOrganisaties() && !organisatieIdSet.isEmpty()) {
 			// calls naar OrganisatieService: de betreffende organisaties inclusief alle locaties
-			returnedOrganisatieMap = aTOLOrganisatieDelegate.getOrganisaties( organisatieIdSet);
+			returnedOrganisatieMap = cRMOrganisationsDelegate.getOrganisaties( organisatieIdSet);
 		}
-		Map<String, Scope> returnedGroepscopesMap= null;
+		Map<String, Scope> returnedScopesMap= null;
 		if (selectie.isSelectScopes() && !groepscopeIdSet.isEmpty()) {
 
-			returnedGroepscopesMap = ScopeServiceHelper.getScopes(getGroepscopeService(), groepscopeIdSet);
+			returnedScopesMap = ScopeServiceHelper.getScopes(getScopeService(), groepscopeIdSet);
 		}
 		if (selectie.isSelectHoofdgroep() && !hoofdgroepIdSet.isEmpty()) {
 			// converteer de set naar een list om ze als Dao te kunnen zoeken
@@ -142,7 +142,7 @@ public class GroepEnricher {
 			request.setIds(new ArrayList<String>( hoofdgroepIdSet));
 			request.setSelectie( new GRP_Selectie());
 			// Dao aanroep
-			List<Groep> hoofdgroepen= gebruikersgroepDao.getGebruikersgroepen(request);
+			List<Groep> hoofdgroepen= groepDao.getGroepen(request);
 			// zet de geretourneerde data in de map: niet de objecten zelf want dan wordt teveel teruggegeven
 			for (Groep hoofdgroep: hoofdgroepen) {
 				Benoembaar enrichedgroep= new Benoembaar();
@@ -155,9 +155,9 @@ public class GroepEnricher {
 
 		// alle data is opgehaald. Loop nu door de objecten en vul de gewenste gegevens.
 
-		if (selectie.isSelectGebruikers() && selectie.isSelectOrganisaties()) {
-			for (Entry<String, Klant> gebruikerEntry: gebruikerMap.entrySet()) {
-				List<Inschrijving> inschrijvingen= gebruikerEntry.getValue().getInschrijvingen();
+		if (selectie.isSelectKlanten() && selectie.isSelectOrganisaties()) {
+			for (Entry<String, Klant> klantEntry: klantMap.entrySet()) {
+				List<Inschrijving> inschrijvingen= klantEntry.getValue().getInschrijvingen();
 				if (inschrijvingen!= null) {
 					for (Inschrijving inschrijving: inschrijvingen) {
 						OrganisatieDataEnrichmentHelper.enrich( returnedOrganisatieMap,
@@ -167,14 +167,14 @@ public class GroepEnricher {
 			}
 		}
 
-		for (Groep gebruikersgroep: gebruikersgroepen) {
-			if (selectie.isSelectGebruikers()) {
-				if (gebruikersgroep.getLidmaatschappen()!= null) {
-					for (Lidmaatschap lidmaatschap: gebruikersgroep.getLidmaatschappen()) {
-						if (lidmaatschap.getGebruiker()!=null && lidmaatschap.getGebruiker().getId()!= null) {
+		for (Groep groep: groepen) {
+			if (selectie.isSelectKlanten()) {
+				if (groep.getLidmaatschappen()!= null) {
+					for (Lidmaatschap lidmaatschap: groep.getLidmaatschappen()) {
+						if (lidmaatschap.getKlant()!=null && lidmaatschap.getKlant().getId()!= null) {
 
-							String id= lidmaatschap.getGebruiker().getId();
-							lidmaatschap.setGebruiker(gebruikerMap.get( id));
+							String id= lidmaatschap.getKlant().getId();
+							lidmaatschap.setKlant(klantMap.get( id));
 						}
 
 					}
@@ -183,15 +183,15 @@ public class GroepEnricher {
 
 			if (selectie.isSelectOrganisaties()) {
 				OrganisatieDataEnrichmentHelper.enrich( returnedOrganisatieMap,
-						gebruikersgroep);
+						groep);
 			}
 			if (selectie.isSelectScopes()) {
-				ScopeDataEnrichmentHelper.enrichScope( returnedGroepscopesMap,
-						gebruikersgroep);
+				ScopeDataEnrichmentHelper.enrichScope( returnedScopesMap,
+						groep);
 			}
 			if (selectie.isSelectHoofdgroep()) {
-				if (gebruikersgroep.getHoofdgroep()!= null && gebruikersgroep.getHoofdgroep().getId()!= null) {
-					gebruikersgroep.setHoofdgroep( hoofdgroepMap.get( gebruikersgroep.getHoofdgroep().getId()));
+				if (groep.getHoofdgroep()!= null && groep.getHoofdgroep().getId()!= null) {
+					groep.setHoofdgroep( hoofdgroepMap.get( groep.getHoofdgroep().getId()));
 				}
 			}
 		}
@@ -213,12 +213,12 @@ public class GroepEnricher {
 
 	}
 
-	public SCO_ScopeService getGroepscopeService() {
-		return groepscopeService;
+	public SCO_ScopeService getScopeService() {
+		return scopeService;
 	}
 
-	public void setGroepscopeService(SCO_ScopeService groepscopeService) {
-		this.groepscopeService = groepscopeService;
+	public void setScopeService(SCO_ScopeService scopeService) {
+		this.scopeService = scopeService;
 	}
 
 

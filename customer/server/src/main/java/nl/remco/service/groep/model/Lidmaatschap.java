@@ -5,23 +5,23 @@ import nl.remco.service.common.model.LifeCycleBeheer;
 
 public class Lidmaatschap extends LifeCycleBeheer {
 	public enum Rol { GROEPSLEIDER, GROEPSLID};
+	private Rol rol;
+	private Identifiable klant;
 	public Rol getRol() {
 		return rol;
 	}
 	public void setRol(Rol rol) {
 		this.rol = rol;
 	}
-	public Identifiable getGebruiker() {
-		return gebruiker;
+	public Identifiable getKlant() {
+		return klant;
 	}
-	public void setGebruiker(Identifiable gebruiker) {
-		this.gebruiker = gebruiker;
+	public void setKlant(Identifiable klant) {
+		this.klant = klant;
 	}
-	private Rol rol;
-	private Identifiable gebruiker;
 	@Override
 	public String toString()
 	{
-		return "Lidmaatschap van " + gebruiker==null?"Onbekende gebruiker":gebruiker.toString();
+		return "Lidmaatschap van " + klant==null?"Onbekende gebruiker":klant.toString();
 	}
 }

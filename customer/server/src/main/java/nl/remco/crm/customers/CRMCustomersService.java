@@ -1,8 +1,8 @@
 package nl.remco.crm.customers;
 public interface CRMCustomersService {
 
-	SearchCustomersRes searchUsers(SearchCustomersReq searchUsers);
+	SearchCustomersRes searchCustomers(SearchCustomersReq searchUsers);
 
-	RetrieveCustomersRes getUserProfile(RetrieveCustomersReq getUserProfile);
+	RetrieveCustomersRes getCustomerProfile(RetrieveCustomersReq getUserProfile);
 
 }
