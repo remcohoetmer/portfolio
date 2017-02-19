@@ -41,7 +41,7 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 		if (organisatieId!=null){
 			user.setKvKNumber( new BigDecimal(organisatieId));
 		}
-		response.getUserProfile().add( user);
+		response.getCustomerProfiles().add( user);
 	}
 
 
@@ -58,7 +58,7 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 		} else {
 			user.setKvKNumber( new BigDecimal(0));
 		}
-		response.getUserProfileLite().add( user);
+		response.getCustomerProfileSummary().add( user);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 			RetrieveCustomersReq getUserProfile) {
 		RetrieveCustomersRes response= new RetrieveCustomersRes();
 
-		for (String userId: getUserProfile.getUserId()){
+		for (String userId: getUserProfile.getUserIdList()){
 			if (userId.equals("testklant1")) {
 				addKlant(response, userId, "Test1", "klant", 8000L);
 			} else if (userId.equals("testklant2")) {
@@ -76,7 +76,7 @@ public class CRMCustomersServicesImp implements CRMCustomersService  {
 			} else if (userId.equals("testklant4")) {
 				addKlant(response, userId, "Test4", "klant", 8000L);
 			} else {
-				addKlant(response, userId, "Voornaam", "Achternaam"+ getUserProfile.getUserId(), 8000L);
+				addKlant(response, userId, "Voornaam", "Achternaam"+ getUserProfile.getUserIdList(), 8000L);
 			}
 		}
 		return response;

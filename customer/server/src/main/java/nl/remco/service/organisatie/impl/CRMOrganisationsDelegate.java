@@ -41,11 +41,11 @@ public class CRMOrganisationsDelegate
 				}
 			} else {
 				// doe een zoek
-				SearchOrganisationReq searchSchoolsRequest= new SearchOrganisationReq();
+				SearchOrganisationReq searchOrganisationsRequest= new SearchOrganisationReq();
 
-				searchSchoolsRequest.setPattern( request.getFilter().getNaam());
+				searchOrganisationsRequest.setPattern( request.getFilter().getNaam());
 
-				SearchOrganisationRes result= organisationServices.searchOrganisations( searchSchoolsRequest);
+				SearchOrganisationRes result= organisationServices.searchOrganisations( searchOrganisationsRequest);
 				for (OrganisationInfo org: result.getOrganisations()) {
 					convert( organisaties, org);
 				}

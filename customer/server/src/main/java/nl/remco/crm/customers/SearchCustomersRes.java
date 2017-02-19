@@ -7,13 +7,13 @@ import java.util.List;
 
 public class SearchCustomersRes {
 
-    protected List<CustomerProfileSummary> userProfileSummary;
+    protected List<CustomerProfileSummary> customerProfileSummary;
 
-    public List<CustomerProfileSummary> getUserProfileLite() {
-        if (userProfileSummary == null) {
-            userProfileSummary = new ArrayList<CustomerProfileSummary>();
+    public List<CustomerProfileSummary> getCustomerProfileSummary() {
+        if (customerProfileSummary == null) {
+            customerProfileSummary = new ArrayList<CustomerProfileSummary>();
         }
-        return this.userProfileSummary;
+        return this.customerProfileSummary;
     }
 
 }

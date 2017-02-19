@@ -83,6 +83,10 @@ public class Klant extends LifeCycleBeheer {
 		inschrijvingen= new ArrayList<Inschrijving>();
 	}
 	
+	public Klant(String id) {
+		super( id);
+		inschrijvingen= new ArrayList<Inschrijving>();
+	}
 	@Override
 	public String toString() {
 		String s="Gebruiker[id=" + id + ", status=" + status+ ", emailAdres=" + emailAdres

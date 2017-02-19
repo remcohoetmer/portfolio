@@ -2,30 +2,32 @@ package nl.remco.service.groep.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import nl.remco.service.common.helpers.OrganisatieDataEnrichmentHelper;
 import nl.remco.service.common.helpers.ScopeDataEnrichmentHelper;
 import nl.remco.service.common.helpers.ScopeServiceHelper;
 import nl.remco.service.common.model.Benoembaar;
+import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.groep.dao.GroepDao;
 import nl.remco.service.groep.model.Groep;
 import nl.remco.service.groep.model.Lidmaatschap;
-import nl.remco.service.groep.web.GRP_GetRequest;
 import nl.remco.service.groep.web.GRP_Selectie;
 import nl.remco.service.klant.impl.CRMCustomersDelegate;
-import nl.remco.service.klant.model.Klant;
 import nl.remco.service.klant.model.Inschrijving;
+import nl.remco.service.klant.model.Klant;
 import nl.remco.service.organisatie.impl.CRMOrganisationsDelegate;
 import nl.remco.service.organisatie.model.Organisatie;
 import nl.remco.service.scope.model.Scope;
 import nl.remco.service.scope.web.SCO_ScopeService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class GroepEnricher {
 	@Autowired
@@ -56,44 +58,38 @@ public class GroepEnricher {
 
 	/*
 	 * Verrijkt groepen met data van externe services
-	 * Organisaties (incl. locaties), scopes en Gebruikers.
-	 * Gebruikers refereren ook naar Organisatie: De eventuele verrijkig van Klanten met Organisatiegegevens wordt gedelegeerd naar de KlantenService
+	 * Organisaties, scopes en klanten.
+	 * Klanten refereren ook naar Organisatie: De eventuele verrijkig van Klanten met Organisatiegegevens wordt gedelegeerd naar de KlantenService
 	 * Verrijking wordt gestuurd door een filter
 	 */
 	public void execute(List<Groep> groepen,
 			GRP_Selectie selectie,
 			GroepDao groepDao) {
-		Set<String> klantIdSet= new HashSet<String>();
-		Set<String> organisatieIdSet= new HashSet<String>();
-		Set<String> groepscopeIdSet= new HashSet<String>();
-		Set<String> hoofdgroepIdSet= new HashSet<String>();
 
-		// zet alle Ids van de klanten/organisatie/locatie een lijst
+		// zet alle Ids van de klanten/organisatie/groep/scope een lijst
 		// --> dit is een set zodat automatisch duplicates worden ge�limineerd
-		for (Groep groep: groepen) {
-			if (groep.getLidmaatschappen()!= null) {
-				for (Lidmaatschap lidmaatschap: groep.getLidmaatschappen()) {
-					if (lidmaatschap.getKlant()!=null) {
-						if (lidmaatschap.getKlant().getId()!= null) {
-							klantIdSet.add( lidmaatschap.getKlant().getId());
-						}
-					}
-				}
-			}
-			if (groep.getOrganisatie()!=null
-					&& groep.getOrganisatie().getId()!= null) {
-				organisatieIdSet.add( groep.getOrganisatie().getId());
-			}
-			if (groep.getScope()!=null
-					&& groep.getScope().getId()!= null) {
-				groepscopeIdSet.add( groep.getScope().getId());
-			}
-			if (groep.getHoofdgroep()!=null
-					&& groep.getHoofdgroep().getId()!= null) {
-				hoofdgroepIdSet.add( groep.getHoofdgroep().getId());
-			}
-		}
-
+		
+		Set<String> klantIdSet= groepen.stream()
+				.map(Groep::getLidmaatschappen)
+				.flatMap(List::stream)
+				.map(Lidmaatschap::getKlant)
+				.map(Identifiable::getId)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+		Set<String> organisatieIdSet= groepen.stream()
+				.map(Groep::getOrganisatie)
+				.map(Identifiable::getId)
+				.collect(Collectors.toSet());
+		Set<String> scopeIdSet= groepen.stream()
+				.map(Groep::getScope)
+				.map(Identifiable::getId)
+				.collect(Collectors.toSet());
+		Set<String> hoofdgroepIdSet= groepen.stream()
+				.map(Groep::getHoofdgroep)
+				.filter(Objects::nonNull)
+				.map(Identifiable::getId)
+				.collect(Collectors.toSet());
+		
 		// zet de klanten in een hashmap om ze snel te vinden
 		Map<String, Klant> klantMap= new HashMap<String, Klant>();
 		Map<String, Benoembaar> hoofdgroepMap= new HashMap<String, Benoembaar>();
@@ -114,13 +110,24 @@ public class GroepEnricher {
 			hoofdgroepMap.put( id, gebruikersgroep);
 		}	
 
-
+		// Data ophalen
+		
 		if (selectie.isSelectKlanten() && !klantIdSet.isEmpty()) {
-			cRMCustomersDelegate.getKlanten(
-					klantIdSet,
-					klantMap);
+			
+			// Override the customer data with the data found in the CRM
+			Map<String,Klant> crmKlanten= cRMCustomersDelegate.getKlanten( klantIdSet)
+					.stream().collect(Collectors.toMap(Klant::getId, Function.identity()));
+			klantMap.putAll(crmKlanten);
+			// ensure that all the data for the organisations is retrieved as well
 			if (selectie.isSelectOrganisaties()) {
-				addOrganisatieIds( organisatieIdSet, klantMap);
+				organisatieIdSet.addAll (
+						klantMap.values().stream()
+						.map( Klant::getInschrijvingen)
+						.flatMap(List::stream)
+						.map( Inschrijving::getOrganisatie)
+						.map( Identifiable::getId)
+						.filter( Objects::nonNull)
+						.collect( Collectors.toSet()));
 			}
 		}
 
@@ -131,26 +138,15 @@ public class GroepEnricher {
 			returnedOrganisatieMap = cRMOrganisationsDelegate.getOrganisaties( organisatieIdSet);
 		}
 		Map<String, Scope> returnedScopesMap= null;
-		if (selectie.isSelectScopes() && !groepscopeIdSet.isEmpty()) {
+		if (selectie.isSelectScopes() && !scopeIdSet.isEmpty()) {
 
-			returnedScopesMap = ScopeServiceHelper.getScopes(getScopeService(), groepscopeIdSet);
+			returnedScopesMap = ScopeServiceHelper.getScopes(getScopeService(), scopeIdSet);
 		}
 		if (selectie.isSelectHoofdgroep() && !hoofdgroepIdSet.isEmpty()) {
-			// converteer de set naar een list om ze als Dao te kunnen zoeken
-			GRP_GetRequest request= new GRP_GetRequest();
-
-			request.setIds(new ArrayList<String>( hoofdgroepIdSet));
-			request.setSelectie( new GRP_Selectie());
-			// Dao aanroep
-			List<Groep> hoofdgroepen= groepDao.getGroepen(request);
-			// zet de geretourneerde data in de map: niet de objecten zelf want dan wordt teveel teruggegeven
-			for (Groep hoofdgroep: hoofdgroepen) {
-				Benoembaar enrichedgroep= new Benoembaar();
-				enrichedgroep.setId( hoofdgroep.getId());
-				enrichedgroep.setNaam(hoofdgroep.getNaam());
-				enrichedgroep.setStatus( hoofdgroep.getStatus());
-				hoofdgroepMap.put( enrichedgroep.getId(), enrichedgroep);
-			}
+			// override 
+			Map<String,Benoembaar> dbGroepen= groepDao.getGroepenAlsBenoembaar(
+					new ArrayList<String>( hoofdgroepIdSet));
+			hoofdgroepMap.putAll(dbGroepen);
 		}
 
 		// alle data is opgehaald. Loop nu door de objecten en vul de gewenste gegevens.
@@ -198,20 +194,6 @@ public class GroepEnricher {
 
 	}
 
-	private void addOrganisatieIds(Set<String> organisatieIdSet,
-			Map<String, Klant> gebruikerMap) {
-		for(Entry<String, Klant> gebruikerEntry: gebruikerMap.entrySet()) {
-			if (gebruikerEntry.getValue().getInschrijvingen()!= null) {
-				for (Inschrijving inschrijving: gebruikerEntry.getValue().getInschrijvingen()) {
-					if (inschrijving.getOrganisatie()!= null) {
-						organisatieIdSet.add( inschrijving.getOrganisatie().getId());
-					}
-				}
-			}
-
-		}
-
-	}
 
 	public SCO_ScopeService getScopeService() {
 		return scopeService;

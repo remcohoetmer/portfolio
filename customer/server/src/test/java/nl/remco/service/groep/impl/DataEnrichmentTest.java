@@ -3,6 +3,14 @@ package nl.remco.service.groep.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import nl.remco.service.algemeen.TestHelper;
 import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.common.model.Identifiable;
@@ -12,21 +20,13 @@ import nl.remco.service.groep.model.GroepsMutatieType;
 import nl.remco.service.groep.model.Lidmaatschap.Rol;
 import nl.remco.service.groep.web.GRP_CreateRequest;
 import nl.remco.service.groep.web.GRP_CreateResponse;
-import nl.remco.service.groep.web.GRP_GroepService;
 import nl.remco.service.groep.web.GRP_GetRequest;
 import nl.remco.service.groep.web.GRP_GetResponse;
+import nl.remco.service.groep.web.GRP_GroepService;
 import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
 import nl.remco.service.groep.web.GRP_Selectie;
-import nl.remco.service.klant.model.Klant;
 import nl.remco.service.klant.model.Inschrijving;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import nl.remco.service.klant.model.Klant;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/testApplicationContext.xml"})	
@@ -116,4 +116,5 @@ public class DataEnrichmentTest {
 		Inschrijving inschrijving= gebruiker.getInschrijvingen().get(0);
 		Assert.assertEquals( "Bedrijf A", ((Benoembaar)inschrijving.getOrganisatie()).getNaam());
 	}
+
 }

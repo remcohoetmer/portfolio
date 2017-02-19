@@ -56,8 +56,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 	private GroepDao groepDao;
 	@Autowired
 	private GroepEnricher groepEnricher;
-	@Autowired
-	private KLA_KlantService klantService;
+
 	@Autowired
 	private CRMCustomersDelegate cRMCustomersDelegate;
 	@Autowired
@@ -279,7 +278,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 				throw new ConflictException( gebruiker.shortString() + " is reeds lid van de groep" );
 			}
 			if (organisatieGroep!= null) {
-				checkGebruikerOrganisatie( gebruiker, organisatieGroep);
+				checkKlantOrganisatie( gebruiker, organisatieGroep);
 			}
 		}
 	}
@@ -302,7 +301,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		}
 	}
 
-	private void checkGebruikerOrganisatie(Klant klant,
+	private void checkKlantOrganisatie(Klant klant,
 			Identifiable organisatie) {
 		for (Inschrijving inschrijving: klant.getInschrijvingen()) {
 			if (organisatie.equals (inschrijving.getOrganisatie())) {

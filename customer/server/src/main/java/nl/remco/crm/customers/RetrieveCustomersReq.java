@@ -9,7 +9,7 @@ public class RetrieveCustomersReq {
 
     protected List<String> userId;
 
-    public List<String> getUserId() {
+    public List<String> getUserIdList() {
         if (userId == null) {
             userId = new ArrayList<String>();
         }
