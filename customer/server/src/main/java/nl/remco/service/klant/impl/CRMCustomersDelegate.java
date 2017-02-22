@@ -11,14 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import nl.remco.crm.customers.CRMCustomersService;
 import nl.remco.crm.customers.CustomerProfile;
-import nl.remco.crm.customers.CustomerProfileSummary;
-import nl.remco.crm.customers.CustomerSearchProfile;
 import nl.remco.crm.customers.Gender;
 import nl.remco.crm.customers.RetrieveCustomersReq;
 import nl.remco.crm.customers.RetrieveCustomersRes;
 import nl.remco.crm.customers.SearchCustomersReq;
 import nl.remco.crm.customers.SearchCustomersRes;
-import nl.remco.service.common.model.Identifiable;
+import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.common.web.BadRequestException;
 import nl.remco.service.klant.model.Geslacht;
 import nl.remco.service.klant.model.Inschrijving;
@@ -59,14 +57,14 @@ public class CRMCustomersDelegate {
 	private List<Klant> searchKlanten(KLA_GetRequest request) {
 		Filter filter= request.getFilter();
 		SearchCustomersReq searchCustomers= new SearchCustomersReq();
-		CustomerSearchProfile customerSearchProfile= new CustomerSearchProfile();
+		CustomerProfile customerSearchProfile= new CustomerProfile();
 		customerSearchProfile.setFirstname(filter.getVoornaam());
 		customerSearchProfile.setLastname( filter.getAchternaam());
 		customerSearchProfile.setDateOfBirth(  filter.getGeboortedatum());
 		customerSearchProfile.setEMailAddress( filter.getEmailAdres());
 
 		if (filter.getOrganisatie()!= null && filter.getOrganisatie().getId() != null) {
-			customerSearchProfile.setKvKNumber( new BigDecimal( filter.getOrganisatie().getId()));
+			customerSearchProfile.setOrganisationNumber( new BigDecimal( filter.getOrganisatie().getId()));
 		}
 
 		searchCustomers.setCustomerProfile( customerSearchProfile);
@@ -74,7 +72,7 @@ public class CRMCustomersDelegate {
 
 
 		List<Klant> klanten= new ArrayList<Klant>();
-		for (CustomerProfileSummary userProfile: searchUsersResponse.getCustomerProfileSummary()) {
+		for (CustomerProfile userProfile: searchUsersResponse.getCustomerProfiles()) {
 
 			convert( klanten, userProfile);
 		}
@@ -82,24 +80,9 @@ public class CRMCustomersDelegate {
 
 	}
 
-	private void convert(List<Klant> gebruikers, CustomerProfileSummary userProfile) {
-		if (userProfile.getUserId()!=null) {
-			Klant gebruiker= new Klant();
-			gebruikers.add(gebruiker);
-
-			gebruiker.setId( userProfile.getUserId());
-			gebruiker.setVoornaam( userProfile.getFirstname());
-			gebruiker.setAchternaam(  userProfile.getLastname());
-			gebruiker.setVoorvoegselAchternaam( userProfile.getMiddlename());
-
-
-			if (userProfile.getKvKNumber()!= null) {
-				Inschrijving inschrijving= new Inschrijving();
-				Identifiable organisatie= new Identifiable();
-				organisatie.setId(userProfile.getKvKNumber().toString());
-				inschrijving.setOrganisatie(organisatie);
-			}
-
+	private void convert(List<Klant> gebruikers, CustomerProfile customerProfile) {
+		if (customerProfile.getUserId()!=null) {
+			gebruikers.add(convert( customerProfile));
 		}
 	}
 	static Klant convert(CustomerProfile customerProfile) {
@@ -109,15 +92,16 @@ public class CRMCustomersDelegate {
 		klant.setVoornaam( customerProfile.getFirstname());
 		klant.setAchternaam(  customerProfile.getLastname());
 		klant.setVoorvoegselAchternaam( customerProfile.getMiddlename());
+		klant.setVoorletters("");
 
 		klant.setGeboortedatum( customerProfile.getDateOfBirth());
 		klant.setGeslacht( convert( customerProfile.getGender()));
 		klant.setEmailAdres( customerProfile.getEMailAddress());
 
-		if (customerProfile.getKvKNumber()!= null) {
+		if (customerProfile.getOrganisationNumber()!= null) {
 			Inschrijving inschrijving= new Inschrijving();
-			Identifiable organisatie= new Identifiable();
-			organisatie.setId(customerProfile.getKvKNumber().toString());
+			Benoembaar organisatie= new Benoembaar();
+			organisatie.setId(customerProfile.getOrganisationNumber().toString());
 			inschrijving.setOrganisatie(organisatie);
 
 			klant.setInschrijvingen( new ArrayList<Inschrijving>());

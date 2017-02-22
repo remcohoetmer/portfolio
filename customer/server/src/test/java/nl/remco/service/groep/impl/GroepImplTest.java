@@ -79,6 +79,7 @@ public class GroepImplTest {
 		request.setLidmaatschappen(lidmaatschappen);
 
 		request.setProduct( "Fiets");
+		request.setGroepscode( "Code2");
 
 		GRP_CreateResponse response= groepService.create(request);
 		String hoofdgroepId= response.getId();
@@ -89,6 +90,7 @@ public class GroepImplTest {
 		subCreateRequest.setNaam( "mail");
 		subCreateRequest.setBeschrijving( "Marketing Mailgroep");
 		subCreateRequest.setGeplandePeriode("juni217");
+		subCreateRequest.setScope(new Identifiable("1123"));
 
 		subCreateRequest.setGroepsMutatieType( GroepsMutatieType.SELFSERVICE);
 
@@ -98,11 +100,13 @@ public class GroepImplTest {
 
 		List<GRP_LidmaatschapCreateUpdate> lidmaatschappenZelfRegistratie= new ArrayList<GRP_LidmaatschapCreateUpdate>();
 		GRP_LidmaatschapCreateUpdate lidmaatschapSelfService= new GRP_LidmaatschapCreateUpdate();
-		Identifiable gebruikerSS= new Identifiable("testgebruiker4");
+		Identifiable gebruikerSS= new Identifiable("testklant4");
 		lidmaatschapSelfService.setKlant( gebruikerSS);
 		lidmaatschapSelfService.setRol( Rol.GROEPSLEIDER);
 		lidmaatschappenZelfRegistratie.add( lidmaatschapSelfService);
 		subCreateRequest.setLidmaatschappen(lidmaatschappenZelfRegistratie);
+		subCreateRequest.setProduct( "Banaan");
+		subCreateRequest.setGroepscode( "Codesub");
 
 		GRP_CreateResponse subCreateResponse= groepService.create(subCreateRequest);
 		String subgroepId= subCreateResponse.getId();

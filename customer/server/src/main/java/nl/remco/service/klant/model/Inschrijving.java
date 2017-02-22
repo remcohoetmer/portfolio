@@ -1,6 +1,6 @@
 package nl.remco.service.klant.model;
 
-import nl.remco.service.common.model.Identifiable;
+import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.organisatie.model.OrganisatieDataHolder;
 
 public class Inschrijving implements OrganisatieDataHolder {
@@ -8,16 +8,16 @@ public class Inschrijving implements OrganisatieDataHolder {
 	public enum Rol{ Medewerker, Manager};
 
 	private String id;
-	private Identifiable organisatie;
+	private Benoembaar organisatie;
 	private String product;
 	private String geplandePeriode;
 	private Rol rol;
 
 	
-	public Identifiable getOrganisatie() {
+	public Benoembaar getOrganisatie() {
 		return organisatie;
 	}
-	public void setOrganisatie(Identifiable organisatie) {
+	public void setOrganisatie(Benoembaar organisatie) {
 		this.organisatie = organisatie;
 	}
 	public String getProduct() {

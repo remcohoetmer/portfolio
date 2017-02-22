@@ -17,7 +17,7 @@ public class CustomerProfile {
     protected String eMailAddress;
     protected String bsn;
 
-    protected BigDecimal kvkNumber;
+    protected BigDecimal organisationNumber;
 
     protected String role;
 
@@ -80,7 +80,7 @@ public class CustomerProfile {
         this.eMailAddress = value;
     }
 
-    public String getBSB() {
+    public String getBSN() {
         return bsn;
     }
 
@@ -88,12 +88,12 @@ public class CustomerProfile {
         this.bsn = value;
     }
 
-    public BigDecimal getKvKNumber() {
-        return kvkNumber;
+    public BigDecimal getOrganisationNumber() {
+        return organisationNumber;
     }
 
-    public void setKvKNumber(BigDecimal value) {
-        this.kvkNumber = value;
+    public void setOrganisationNumber(BigDecimal value) {
+        this.organisationNumber = value;
     }
 
     public String getRole() {

@@ -76,7 +76,7 @@ public class DataEnrichmentTest {
 		request.setOrganisatie(organisatieRef);
 		request.setScope(scopeRef);
 		request.setGroepsMutatieType( GroepsMutatieType.MANAGED);
-
+		request.setGroepscode( "Code1");
 
 		List<GRP_LidmaatschapCreateUpdate> lidmaatschappen= new ArrayList<GRP_LidmaatschapCreateUpdate>();
 		request.setLidmaatschappen(lidmaatschappen);

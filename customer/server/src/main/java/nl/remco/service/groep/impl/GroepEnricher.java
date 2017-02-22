@@ -34,26 +34,26 @@ public class GroepEnricher {
 	private SCO_ScopeService scopeService;
 
 	@Autowired
-	private CRMCustomersDelegate cRMCustomersDelegate;
+	private CRMCustomersDelegate crmCustomersDelegate;
 
 	@Autowired
-	private CRMOrganisationsDelegate cRMOrganisationsDelegate;
+	private CRMOrganisationsDelegate crmOrganisationsDelegate;
 
 	public CRMOrganisationsDelegate getCRMOrganisationsDelegate() {
-		return cRMOrganisationsDelegate;
+		return crmOrganisationsDelegate;
 	}
 
 	public void setCRMOrganisationsDelegate(
 			CRMOrganisationsDelegate cRMOrganisationsDelegate) {
-		this.cRMOrganisationsDelegate = cRMOrganisationsDelegate;
+		this.crmOrganisationsDelegate = cRMOrganisationsDelegate;
 	}
 
 	public CRMCustomersDelegate getCRMCustomersDelegate() {
-		return cRMCustomersDelegate;
+		return crmCustomersDelegate;
 	}
 
 	public void setCRMCustomersDelegate(CRMCustomersDelegate cRMCustomersDelegate) {
-		this.cRMCustomersDelegate = cRMCustomersDelegate;
+		this.crmCustomersDelegate = cRMCustomersDelegate;
 	}
 
 	/*
@@ -82,6 +82,7 @@ public class GroepEnricher {
 				.collect(Collectors.toSet());
 		Set<String> scopeIdSet= groepen.stream()
 				.map(Groep::getScope)
+				.filter(Objects::nonNull)
 				.map(Identifiable::getId)
 				.collect(Collectors.toSet());
 		Set<String> hoofdgroepIdSet= groepen.stream()
@@ -115,7 +116,7 @@ public class GroepEnricher {
 		if (selectie.isSelectKlanten() && !klantIdSet.isEmpty()) {
 			
 			// Override the customer data with the data found in the CRM
-			Map<String,Klant> crmKlanten= cRMCustomersDelegate.getKlanten( klantIdSet)
+			Map<String,Klant> crmKlanten= crmCustomersDelegate.getKlanten( klantIdSet)
 					.stream().collect(Collectors.toMap(Klant::getId, Function.identity()));
 			klantMap.putAll(crmKlanten);
 			// ensure that all the data for the organisations is retrieved as well
@@ -135,7 +136,7 @@ public class GroepEnricher {
 		Map<String, Organisatie> returnedOrganisatieMap= null;
 		if (selectie.isSelectOrganisaties() && !organisatieIdSet.isEmpty()) {
 			// calls naar OrganisatieService: de betreffende organisaties inclusief alle locaties
-			returnedOrganisatieMap = cRMOrganisationsDelegate.getOrganisaties( organisatieIdSet);
+			returnedOrganisatieMap = crmOrganisationsDelegate.getOrganisaties( organisatieIdSet);
 		}
 		Map<String, Scope> returnedScopesMap= null;
 		if (selectie.isSelectScopes() && !scopeIdSet.isEmpty()) {

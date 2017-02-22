@@ -17,6 +17,25 @@ import nl.remco.service.klant.model.Klant;
 
 public class StreamTest {
 	@Test
+	public void scope1Test() {
+		List<Groep> groepen= new ArrayList<>();
+		
+		Groep groep1= new Groep();
+
+		groepen.add( groep1);
+		Identifiable scope=null;
+		scope = new Identifiable();
+		
+		groep1.setScope(scope);
+		Set<String> scopeIdSet= groepen.stream()
+				.map(Groep::getScope)
+				.filter(Objects::nonNull)
+				.map(Identifiable::getId)
+				.collect(Collectors.toSet());
+		Assert.assertEquals(1, scopeIdSet.size());
+		Assert.assertNull(scopeIdSet.iterator().next());
+	}
+	@Test
 	public void streamTest (){
 		
 		List<Groep> groepen= new ArrayList<>();
