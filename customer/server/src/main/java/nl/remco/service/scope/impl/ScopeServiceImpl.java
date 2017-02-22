@@ -2,6 +2,11 @@ package nl.remco.service.scope.impl;
 
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
+
+import org.dozer.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer.Status;
 import nl.remco.service.common.web.BadRequestException;
@@ -12,17 +17,13 @@ import nl.remco.service.scope.model.Scope;
 import nl.remco.service.scope.web.SCO_CreateRequest;
 import nl.remco.service.scope.web.SCO_CreateResponse;
 import nl.remco.service.scope.web.SCO_GetRequest;
+import nl.remco.service.scope.web.SCO_GetRequest.Filter;
 import nl.remco.service.scope.web.SCO_GetResponse;
 import nl.remco.service.scope.web.SCO_ScopeService;
 import nl.remco.service.scope.web.SCO_Selectie;
 import nl.remco.service.scope.web.SCO_UpdateRequest;
-import nl.remco.service.scope.web.SCO_GetRequest.Filter;
 import nl.remco.service.utils.Util;
 
-import org.dozer.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.sun.jersey.api.NotFoundException;
 
 public class ScopeServiceImpl implements SCO_ScopeService {
 	

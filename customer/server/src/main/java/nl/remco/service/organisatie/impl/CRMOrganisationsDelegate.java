@@ -32,20 +32,20 @@ public class CRMOrganisationsDelegate
 				// query op basis van unieke ID
 				GetOrganisationInfoRequest getOrganisationInfo= new GetOrganisationInfoRequest();
 				for (String id: request.getIds()) {
-					getOrganisationInfo.getKvKNumber().add( new BigDecimal( id));
+					getOrganisationInfo.getCRMNumber().add( new BigDecimal( id));
 				}
 
 				GetOrganisationInfoResponse result= organisationServices.getOrganisationInfo( getOrganisationInfo);
-				for (OrganisationInfo school: result.getSchool()) {
+				for (OrganisationInfo school: result.getOrganisations()) {
 					convert( organisaties, school);
 				}
 			} else {
 				// doe een zoek
-				SearchOrganisationReq searchSchoolsRequest= new SearchOrganisationReq();
+				SearchOrganisationReq searchOrganisationsRequest= new SearchOrganisationReq();
 
-				searchSchoolsRequest.setPattern( request.getFilter().getNaam());
+				searchOrganisationsRequest.setPattern( request.getFilter().getNaam());
 
-				SearchOrganisationRes result= organisationServices.searchOrganisations( searchSchoolsRequest);
+				SearchOrganisationRes result= organisationServices.searchOrganisations( searchOrganisationsRequest);
 				for (OrganisationInfo org: result.getOrganisations()) {
 					convert( organisaties, org);
 				}
@@ -59,7 +59,7 @@ public class CRMOrganisationsDelegate
 		request.setIds( new ArrayList<String>(organisatieIdSet));
 		List<Organisatie> organisaties= getOrganisaties( request);
 
-		// zet de organisaties& locaties in een map om ze snel te vinden
+		// zet de organisaties in een map om ze snel te vinden
 		Map<String, Organisatie> returnedOrganisatieMap= new HashMap<String, Organisatie>();
 		for( Organisatie organisatie: organisaties) {
 			returnedOrganisatieMap.put(organisatie.getId(), organisatie);
@@ -74,6 +74,10 @@ public class CRMOrganisationsDelegate
 		organisatie.setNaam(org.getOrganisationName());
 		organisatie.setKvkNummer( org.getKvkNumber());
 		organisatie.setStatus( Status.Actief);
+		organisatie.setStraatnaam( "Street");
+		organisatie.setNummer("1");
+		organisatie.setPostcode("1234AB");
+		organisatie.setPlaatsnaam("Town");
 		organisaties.add( organisatie);
 	}
 

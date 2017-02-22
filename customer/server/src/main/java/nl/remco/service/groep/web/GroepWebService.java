@@ -1,4 +1,4 @@
-package nl.remco.service.groep.impl;
+package nl.remco.service.groep.web;
 
 
 import java.util.ArrayList;
@@ -31,15 +31,6 @@ import nl.remco.service.common.web.BadRequestException;
 import nl.remco.service.common.web.IDList;
 import nl.remco.service.groep.model.Groep;
 import nl.remco.service.groep.model.Lidmaatschap;
-import nl.remco.service.groep.web.GRP_CreateRequest;
-import nl.remco.service.groep.web.GRP_CreateResponse;
-import nl.remco.service.groep.web.GRP_KlantMetGroepen;
-import nl.remco.service.groep.web.GRP_GroepService;
-import nl.remco.service.groep.web.GRP_GetRequest;
-import nl.remco.service.groep.web.GRP_GetResponse;
-import nl.remco.service.groep.web.GRP_SearchForKlantRequest;
-import nl.remco.service.groep.web.GRP_Selectie;
-import nl.remco.service.groep.web.GRP_UpdateRequest;
 import nl.remco.service.groep.web.GRP_GetRequest.Filter;
 import nl.remco.service.utils.HTTPServerUtil;
 import nl.remco.service.utils.HTTPUtil;

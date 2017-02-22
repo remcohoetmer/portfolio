@@ -5,6 +5,12 @@ public abstract class LifeCycleBeheer extends Identifiable {
 
 	protected Status status;
 
+	protected LifeCycleBeheer(String id) {
+		super(id);
+	}
+	protected LifeCycleBeheer() {
+		super();
+	}
 	public Status getStatus() {
 		return status;
 	}

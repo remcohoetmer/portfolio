@@ -3,11 +3,12 @@ package nl.remco.service.groep.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer;
 import nl.remco.service.organisatie.model.OrganisatieDataHolder;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 
 public class Groep extends LifeCycleBeheer implements OrganisatieDataHolder {
@@ -20,7 +21,7 @@ public class Groep extends LifeCycleBeheer implements OrganisatieDataHolder {
 	private String product;
 	private String geplandePeriode;
 	private Identifiable scope;
-	private Identifiable organisatie;
+	private Benoembaar organisatie;
 	private List<String> kenmerken;
 	private Identifiable hoofdgroep;
 	private GroepsMutatieType groepsMutatieType;
@@ -58,10 +59,10 @@ public class Groep extends LifeCycleBeheer implements OrganisatieDataHolder {
 	public void setScope(Identifiable scope) {
 		this.scope = scope;
 	}
-	public Identifiable getOrganisatie() {
+	public Benoembaar getOrganisatie() {
 		return organisatie;
 	}
-	public void setOrganisatie(Identifiable organisatie) {
+	public void setOrganisatie(Benoembaar organisatie) {
 		this.organisatie = organisatie;
 	}
 

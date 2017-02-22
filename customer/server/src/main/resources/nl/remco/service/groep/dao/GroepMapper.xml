@@ -62,7 +62,7 @@
 		<association property="scope" javaType="Identifiable">
 			<id property="id" column="scope_id" />
 		</association>
-		<association property="organisatie" javaType="Identifiable">
+		<association property="organisatie" javaType="Benoembaar">
 			<id property="id" column="organisatie_id" />
 		</association>
 		<collection property="lidmaatschappen" resultMap="lidmaatschapResult"

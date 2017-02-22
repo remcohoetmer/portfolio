@@ -4,21 +4,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.dozer.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer.Status;
 import nl.remco.service.groep.model.Groep;
 import nl.remco.service.groep.model.Lidmaatschap;
-import nl.remco.service.groep.web.GRP_KlantMetGroepen;
 import nl.remco.service.groep.web.GRP_GetRequest;
+import nl.remco.service.groep.web.GRP_KlantMetGroepen;
 import nl.remco.service.groep.web.GRP_LidmaatschapCreateUpdate;
 import nl.remco.service.groep.web.GRP_SearchForKlantRequest;
+import nl.remco.service.groep.web.GRP_Selectie;
 import nl.remco.service.groep.web.GRP_UpdateRequest;
 import nl.remco.service.utils.HTTPServerUtil;
 import nl.remco.service.utils.Util;
-
-import org.dozer.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class GroepDao
@@ -28,7 +32,7 @@ public class GroepDao
 	private GroepMapper groepMapper;
 	@Autowired
 	private Mapper mapper;
-	
+
 	public Mapper getMapper() {
 		return mapper;
 	}
@@ -69,6 +73,26 @@ public class GroepDao
 			}
 		}
 		return groepen;
+	}
+
+	public Map<String,Benoembaar> getGroepenAlsBenoembaar( List<String> groepIds)
+	{
+		GRP_GetRequest request= new GRP_GetRequest();
+		request.setIds( groepIds);
+		request.setSelectie( new GRP_Selectie());
+
+		List<Groep> groepen= getGroepen(request);
+		return groepen.stream().map( GroepDao::convertToBenoembaar)
+				.collect(Collectors.toMap(Benoembaar::getId, Function.identity()));
+	}
+	
+	private static Benoembaar convertToBenoembaar(Groep groep)
+	{
+		Benoembaar ben_groep= new Benoembaar();
+		ben_groep.setId( groep.getId());
+		ben_groep.setNaam(groep.getNaam());
+		ben_groep.setStatus( groep.getStatus());
+		return ben_groep;
 	}
 
 	private void addKenmerken(List<Groep> groepen,
@@ -131,7 +155,7 @@ public class GroepDao
 		Groep groep= mapper.map(request, Groep.class);
 
 		int aantal_updates;
-		
+
 		// conversie naar Gebruikersgroep object om te kunnen persisteren.
 		//GebruikersgroepMapper gebruikersgroepMapper = sqlSession.getMapper(GebruikersgroepMapper.class);
 
@@ -140,7 +164,7 @@ public class GroepDao
 				||	groep.getStatus()!= null) {
 			aantal_updates= groepMapper.updateGroep( groep);
 			HTTPServerUtil.check(aantal_updates, groep);
-			
+
 		}
 		// persisteer de inschrijvingen
 		if (Util.isDefined( request.getCreateLidmaatschappen())) {

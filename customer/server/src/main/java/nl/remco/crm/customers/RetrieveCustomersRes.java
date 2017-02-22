@@ -9,7 +9,7 @@ public class RetrieveCustomersRes {
 
     protected List<CustomerProfile> userProfile;
 
-    public List<CustomerProfile> getUserProfile() {
+    public List<CustomerProfile> getCustomerProfiles() {
         if (userProfile == null) {
             userProfile = new ArrayList<CustomerProfile>();
         }

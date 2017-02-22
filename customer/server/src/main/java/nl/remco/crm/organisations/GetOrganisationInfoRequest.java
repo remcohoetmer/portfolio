@@ -7,12 +7,12 @@ import java.util.List;
 
 public class GetOrganisationInfoRequest {
 
-    protected List<BigDecimal> kvkNumber;
-    public List<BigDecimal> getKvKNumber() {
-        if (kvkNumber == null) {
-            kvkNumber = new ArrayList<BigDecimal>();
+    protected List<BigDecimal> crmNumber;
+    public List<BigDecimal> getCRMNumber() {
+        if (crmNumber == null) {
+            crmNumber = new ArrayList<BigDecimal>();
         }
-        return this.kvkNumber;
+        return this.crmNumber;
     }
 
 

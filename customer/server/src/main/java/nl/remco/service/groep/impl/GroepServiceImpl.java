@@ -5,11 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.NotFoundException;
+
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.sun.jersey.api.ConflictException;
-import com.sun.jersey.api.NotFoundException;
 
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer.Status;
@@ -35,7 +34,6 @@ import nl.remco.service.groep.web.GRP_UpdateRequest;
 import nl.remco.service.klant.impl.CRMCustomersDelegate;
 import nl.remco.service.klant.model.Inschrijving;
 import nl.remco.service.klant.model.Klant;
-import nl.remco.service.klant.web.KLA_KlantService;
 import nl.remco.service.utils.Util;
 /*
  * Implementatie van de Service: naast de aanroep van de DAO worden de volgende business regels gerealiseerd:
@@ -56,8 +54,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 	private GroepDao groepDao;
 	@Autowired
 	private GroepEnricher groepEnricher;
-	@Autowired
-	private KLA_KlantService klantService;
+
 	@Autowired
 	private CRMCustomersDelegate cRMCustomersDelegate;
 	@Autowired
@@ -276,10 +273,10 @@ public class GroepServiceImpl implements GRP_GroepService {
 
 		for (Klant gebruiker: gebruikers) {
 			if (currentKlantIds!= null && currentKlantIds.contains(gebruiker.getId())) {
-				throw new ConflictException( gebruiker.shortString() + " is reeds lid van de groep" );
+				throw new RuntimeException( gebruiker.shortString() + " is reeds lid van de groep" );
 			}
 			if (organisatieGroep!= null) {
-				checkGebruikerOrganisatie( gebruiker, organisatieGroep);
+				checkKlantOrganisatie( gebruiker, organisatieGroep);
 			}
 		}
 	}
@@ -302,7 +299,7 @@ public class GroepServiceImpl implements GRP_GroepService {
 		}
 	}
 
-	private void checkGebruikerOrganisatie(Klant klant,
+	private void checkKlantOrganisatie(Klant klant,
 			Identifiable organisatie) {
 		for (Inschrijving inschrijving: klant.getInschrijvingen()) {
 			if (organisatie.equals (inschrijving.getOrganisatie())) {
