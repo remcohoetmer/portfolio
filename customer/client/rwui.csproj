@@ -22,7 +22,6 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="src\app.css" />
     <Content Include="index.html" />
     <Content Include="web.config">
       <SubType>Designer</SubType>
@@ -30,9 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="includes\organisaties.ts" />
-    <TypeScriptCompile Include="src\app.ts" />
-    <TypeScriptCompile Include="src\RequestHandler.ts" />
-    <TypeScriptCompile Include="src\MessageHandler.ts" />
+    <TypeScriptCompile Include="includes\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">

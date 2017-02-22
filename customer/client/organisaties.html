@@ -14,36 +14,7 @@
 		</style>
 		<script type="text/javascript" language="javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
-		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
         <script data-main="includes/organisaties" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
-
-		<script type="text/javascript" language="javascript" src="includes/filter.js"></script>
-		<script type="text/javascript" language="javascript" src="includes/windows.js"></script>
-		<script type="text/javascript" language="javascript" src="includes/organisatie.js"></script>
-		<script type="text/javascript" language="javascript" src="includes/organisatieCreate.js"></script>
-		<script type="text/javascript" language="javascript" src="includes/organisatieEdit.js"></script>
-		<script type="text/javascript" language="javascript">
-            var service_path = "http://localhost:8080/rw/rest/organisatie";
-	
-		$(document).ready(function() {
-			$('#closePopupboxEdit').click( function() {
-				searchOrganisaties();
-				closeWindow( "popupboxEdit");
-			} );
-		
-			$('#closePopupboxCreate').click( function() {
-				searchOrganisaties(); 
-				closeWindow( "popupboxCreate");
-			} );
-
-			$('#closeMain').click( function() {
-				window.location.href="index.html";
-			} );
-	
-			searchOrganisaties();
-		});
-		
-		</script>
 	</head>
 	<body id="dt_example">
 		<a id="closeMain"><img class="close_button" src="images/close_button.png"/></a>
