@@ -1,19 +1,21 @@
-﻿/// <reference path="jquery.d.ts" />
-
+﻿/// <reference path="./jquery.d.ts" />
+import {WindowUtil} from "WindowUtil";
+import {FilterUtil} from "FilterUtil";
 class Organisation {
     service_path = "http://localhost:8080/rw/rest/organisatie";
     gOrganisatieId = null;
 
     obj_ScopeTable = null;
     initialise() {
+        var _this = this;
         $('#closePopupboxEdit').click(function () {
-            this.searchOrganisaties();
-            this.closeWindow("popupboxEdit");
+            _this.searchOrganisaties();
+            WindowUtil.closeWindow("popupboxEdit");
         });
 
         $('#closePopupboxCreate').click(function () {
-            this.searchOrganisaties();
-            this.closeWindow("popupboxCreate");
+            _this.searchOrganisaties();
+            WindowUtil.closeWindow("popupboxCreate");
         });
 
         $('#closeMain').click(function () {
@@ -23,18 +25,18 @@ class Organisation {
 
         /* Add a click handler to the rows - this could be used as a callback */
         $("#organisatietable tbody").click(function (event) {
-            this.jump2EditOrganisatie(this.getIdFromEvent(event));
+            _this.jump2EditOrganisatie(this.getIdFromEvent(event));
         });
 
         $('#but_create').click(function () {
-            this.jump2Create();
+            _this.jump2Create();
         });
         $('#but_saveCreate').click(function () {
             // alert(configuration.getServicePath());
-            this.submitCreateRequest();
+            _this.submitCreateRequest();
         });
         $('#but_saveEdit').click(function () {
-            this.submitUpdateAttributesRequest(this.gOrganisatieId);
+            _this.submitUpdateAttributesRequest(_this.gOrganisatieId);
         });
 
         this.searchOrganisaties();
@@ -44,23 +46,22 @@ class Organisation {
 
     searchOrganisaties(): any {
         var filter = { string: "" };
-        var _this = this;
-        this.updateFilterStringWildcard(filter, "organisatieSearchNaam", "naam");
-        this.updateFilterString(filter, "organisatieSearchStatus", "status");
-
+        FilterUtil.updateFilterStringWildcard(filter, "organisatieSearchNaam", "naam");
+        FilterUtil.updateFilterString(filter, "organisatieSearchStatus", "status");
+        let _this = this;
         $.ajax({
-            url: _this.service_path + filter.string,
+            url: this.service_path + filter.string,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.showSearchResults(response);
             },
             cache: false,
-            error: _this.ajaxErrorHandler.bind(_this)
+            error: FilterUtil.ajaxErrorHandler.bind(FilterUtil)
         });
     }
 
     showSearchResults(response) {
-        var table: any= $('#organisatietable');
+        var table: any = $('#organisatietable');
         this.obj_ScopeTable = table.dataTable({
             "aaData": response.organisaties,
             "bDestroy": true,
@@ -79,29 +80,28 @@ class Organisation {
             }
         });
         //$('#scopetable tr').click( selectionHandler);
-     
+
     }
-
-
 
 
     jump2EditOrganisatie(organisatieId): void {
         if (organisatieId != null) {
             this.gOrganisatieId = organisatieId;
         }
-        this.popupWindow("popupboxEdit");
+        WindowUtil.popupWindow("popupboxEdit");
         this.retrieveDetails(this.gOrganisatieId);
     }
 
     retrieveDetails(organisatieId) {
+        var _this = this;
         $.ajax({
             url: this.service_path + "/" + organisatieId,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
-                this.showEditData(response);
+                _this.showEditData(response);
             },
             cache: false,
-            error: this.ajaxErrorHandler.bind(this)
+            error: FilterUtil.ajaxErrorHandler.bind(FilterUtil)
         });
     }
 
@@ -121,22 +121,23 @@ class Organisation {
             naam: $("#naamEdit").val(),
             status: $("#statusEdit").val()
         };
+        var _this = this;
         $.ajax({
             url: this.service_path,
             data: JSON.stringify(updateRequest),
             type: "PUT",
             success: function (response, textStatus, jqXHR) {
-                this.searchOrganisaties();
-                this.closeWindow("popupboxEdit");
+                _this.searchOrganisaties();
+                WindowUtil.closeWindow("popupboxEdit");
             },
-            error: this.ajaxErrorHandler.bind(this)
+            error: FilterUtil.ajaxErrorHandler.bind(this)
         });
     }
 
 
 
     jump2Create(): void {
-        this.popupWindow("popupboxCreate");
+        WindowUtil.popupWindow("popupboxCreate");
         this.initialiseCreate();
     }
 
@@ -150,117 +151,19 @@ class Organisation {
             naam: $("#naamCreate").val(),
             status: $("#statusCreate").val(),
         };
-
+        let _this = this;
         $.ajax({
             url: this.service_path,
             data: JSON.stringify(createRequest),
             type: "POST",
             success: function (response, textStatus, jqXHR) {
-                this.closeWindow("popupboxCreate");
-                this.searchOrganisaties();
+                WindowUtil.closeWindow("popupboxCreate");
+                _this.searchOrganisaties();
             },
-            error: this.ajaxErrorHandler.bind(this)
+            error: FilterUtil.ajaxErrorHandler.bind(FilterUtil)
         });
     }
 
-
-    updateFilterString(filter, tag, paramnaam) {
-        var value = $("#" + tag).val();
-        if (value != "") {
-            if (filter.string == "") {
-                filter.string = "?";
-            } else {
-                filter.string += "&";
-            }
-            filter.string += paramnaam + '=' + value;
-        }
-    }
-    updateFilterStringWildcard(filter, tag, paramnaam) {
-        var value = $("#" + tag).val();
-        if (value != "") {
-            if (filter.string == "") {
-                filter.string = "?";
-            } else {
-                filter.string += "&";
-            }
-            // HTML &#42; = *
-            filter.string += paramnaam + "=\*" + value + "\*";
-        }
-    }
-
-    listProperties(obj) {
-        var propList = "";
-        for (var propName in obj) {
-            if (typeof (obj[propName]) != "undefined") {
-                propList += (propName + ", ");
-            }
-        }
-        alert(propList);
-    }
-
-    getIdFromEvent(event) {
-        return this.getIdFromRow($(event.target.parentNode));
-    }
-
-    getIdFromRow(row) {
-        return $(row).attr("id").substr(3);
-    }
-
-
-    /* Get the rows which are currently selected */
-    fnGetSelected(tableLocal) {
-        var aReturn = new Array();
-        var aTrs = tableLocal.fnGetNodes();
-        for (var i = 0; i < aTrs.length; i++) {
-            if ($(aTrs[i]).hasClass('row_selected')) {
-                aReturn.push(aTrs[i]);
-            }
-        }
-        return aReturn;
-    }
-
-    selectionHandler() {
-        if ($(this).hasClass('row_selected'))
-            $(this).removeClass('row_selected');
-        else
-            $(this).addClass('row_selected');
-    };
-
-    ajaxErrorHandler(response, textStatus, jqXHR): void {
-        if (response.status == 0) {
-            // geen verbinding -> hier kan de klant niets mee
-            return;
-        }
-        if (response.responseXML != null) {
-            let newwindow: any = window.open('Error', 'height=200,width=200');
-
-            newwindow.write(response.responseText);
-
-            if (window.focus) {
-                newwindow.focus()
-            }
-            return;
-        }
-
-        if (response.status < 500) {
-            alert(response.statusText + "[" + response.status + "]:" + response.responseText);
-        } else {
-            alert(response.statusText + "[" + response.status + "]:Een systeemfout is opgetreden");
-        }
-    };
-    popupWindow(popupid) {
-        $('#' + popupid).fadeIn();
-        var popuptopmargin = ($('#' + popupid).height() + 10) / 2;
-        var popupleftmargin = ($('#' + popupid).width() + 10) / 2;
-        // Then using .css function style our popup box for center alignment
-        $('#' + popupid).css({
-            'margin-top': -popuptopmargin,
-            'margin-left': -popupleftmargin
-        });
-    }
-    closeWindow(popupid) {
-        $('#' + popupid).fadeOut();
-    }
 }
 let org = new Organisation();
 $(document).ready(function () {

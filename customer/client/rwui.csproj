@@ -22,13 +22,28 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="groepen.html" />
+    <Content Include="includes\filter.js" />
+    <Content Include="includes\groepAddLeden.js" />
+    <Content Include="includes\groepCreate.js" />
+    <Content Include="includes\groepEdit.js" />
+    <Content Include="includes\groepOverview.js" />
+    <Content Include="includes\klanten.js" />
+    <Content Include="includes\windows.js" />
     <Content Include="index.html" />
+    <Content Include="klanten.html" />
+    <Content Include="organisaties.html" />
+    <Content Include="scopes.html" />
     <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="includes\organisaties.ts" />
+    <TypeScriptCompile Include="includes\FilterUtil.ts" />
+    <TypeScriptCompile Include="includes\DataModel.ts" />
+    <TypeScriptCompile Include="includes\Scopes.ts" />
+    <TypeScriptCompile Include="includes\WindowUtil.ts" />
+    <TypeScriptCompile Include="includes\Organisaties.ts" />
     <TypeScriptCompile Include="includes\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
