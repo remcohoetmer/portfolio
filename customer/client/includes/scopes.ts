@@ -1,6 +1,6 @@
 ﻿/// <reference path="./jquery.d.ts" />
 import {WindowUtil} from "WindowUtil";
-import {FilterUtil} from "FilterUtil";
+import {FilterUtil, Filter} from "FilterUtil";
 class Scopes {
     service_path = "http://localhost:8080/rw/rest/scope";
 
@@ -10,54 +10,48 @@ class Scopes {
 
     initialise() {
         let _this = this;
-        $(document).ready(function () {
 
-            /* Add a click handler to the rows - this could be used as a callback */
-            $("#scopetable tbody").click(function (event) {
-                _this.jump2Edit(FilterUtil.getIdFromEvent(event));
-            });
 
-            $('#but_create').click(function () {
-                _this.jump2Create();
-            });
-            $('#closePopupboxEdit').click(function () {
-                _this.searchEntities();
-                WindowUtil.closeWindow("popupboxEdit");
-            });
-
-            $('#closePopupboxCreate').click(function () {
-                _this.searchEntities();
-                WindowUtil.closeWindow("popupboxCreate");
-            });
-
-            $('#closeMain').click(function () {
-                window.location.href = "index.html";
-            });
-
-            $('#but_saveCreate').click(function () {
-                _this.submitCreateRequest();
-            });
-            $('#but_saveEdit').click(function () {
-                _this.submitUpdateAttributesRequest(_this.gScopeId);
-            });
-            $('#scopeNaamFilter').change(_this.searchEntities.bind(_this));
-            $('#scopeStatusFilter').change(_this.searchEntities.bind(_this));
-            
-            _this.searchEntities();
-
+        /* Add a click handler to the rows - this could be used as a callback */
+        $("#scopetable tbody").click(function (event) {
+            _this.jump2Edit(FilterUtil.getIdFromEvent(event));
         });
+
+        $('#but_create').click(function () {
+            _this.jump2Create();
+        });
+        $('#closePopupboxEdit').click(function () {
+            _this.searchEntities();
+            WindowUtil.closeWindow("popupboxEdit");
+        });
+
+        $('#closePopupboxCreate').click(function () {
+            _this.searchEntities();
+            WindowUtil.closeWindow("popupboxCreate");
+        });
+
+        $('#closeMain').click(function () {
+            window.location.href = "index.html";
+        });
+
+        $('#but_saveCreate').click(function () {
+            _this.submitCreateRequest();
+        });
+        $('#but_saveEdit').click(function () {
+            _this.submitUpdateAttributesRequest(_this.gScopeId);
+        });
+        $('#scopeNaamFilter').change(_this.searchEntities.bind(_this));
+        $('#scopeStatusFilter').change(_this.searchEntities.bind(_this));
+
+        this.searchEntities();
+
     }
 
     searchEntities() {
         let _this = this;
-        var filter = {
-            string: ""
-        };
-
-        FilterUtil.updateFilterStringWildcard(filter, "scopeNaamFilter", "naam");
-        FilterUtil.updateFilterString(filter, "scopeStatusFilter", "status");
-
-
+        let filter = new Filter();
+        filter.updateWildcard("scopeNaamFilter", "naam");
+        filter.update("scopeStatusFilter", "status");
         $.ajax({
             url: this.service_path + filter.string,
             type: "GET",
@@ -174,8 +168,7 @@ class Scopes {
         });
     }
 }
-var scopes = new Scopes();
-scopes.initialise();
-
-
-
+$(document).ready(function () {
+    var scopes = new Scopes();
+    scopes.initialise();
+});

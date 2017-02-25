@@ -12,8 +12,9 @@
         @import "css/demo_page.css";
         @import "css/demo_table.css";
     </style>
-    <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
-    <script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+    <script type="text/javascript" language="javascript" src="node_modules/jquery-1.8/jquery.min.js"></script>
+    <script type="text/javascript" language="javascript" src="node_modules/datatables.net/js/jquery.dataTables.js"></script>
+
     <script data-main="includes/Groepen" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
 </head>
 <body id="dt_example">
@@ -22,20 +23,20 @@
         <h1>Groepen Overzicht</h1>
         <div>
             <div>
-                <input type="text" placeholder="naam" id="searchNaam" onChange="searchGroepen()" />
-                <input type="text" placeholder="beschrijving" id="searchBeschrijving" onChange="searchGroepen()" />
-                <input type="text" placeholder="groepscode" id="searchGroepscode" onChange="searchGroepen()" />
-                <select id="searchOrganisatie" onChange="searchGroepen()">
+                <input type="text" placeholder="naam" id="searchNaam" />
+                <input type="text" placeholder="beschrijving" id="searchBeschrijving" />
+                <input type="text" placeholder="groepscode" id="searchGroepscode" />
+                <select id="searchOrganisatie">
                     <option value="">(organisatie)</option>
                 </select>
-                <select id="searchScope" onChange="searchGroepen()">
+                <select id="searchScope">
                     <option value="">(scope)</option>
                 </select>
 
-                <input type="text" placeholder="product" id="searchProduct" onChange="searchGroepen()" />
-                <input type="text" placeholder="kenmerk" id="searchKenmerk" onChange="searchGroepen()" />
+                <input type="text" placeholder="product" id="searchProduct" />
+                <input type="text" placeholder="kenmerk" id="searchKenmerk" />
 
-                <select id="searchStatus" onChange="searchGroepen()">
+                <select id="searchStatus">
                     <option value="">(status)</option>
                     <option value="Actief">Actief</option>
                     <option value="Passief">Passief</option>

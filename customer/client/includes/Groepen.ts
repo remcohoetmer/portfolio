@@ -1,5 +1,5 @@
 ﻿import {WindowUtil} from "WindowUtil";
-import {FilterUtil} from "FilterUtil";
+import {FilterUtil,Filter} from "FilterUtil";
 import {Klant, Organisatie} from "DataModel";
 import {KlantenLijst} from "KlantenLijst";
 
@@ -113,7 +113,15 @@ export class Groepen {
             cache: false,
             error: FilterUtil.ajaxErrorHandler
         });
-
+        let fun = this.searchGroepen.bind(this);
+        $('#searchNaam').change(fun);
+        $('#searchBeschrijving').change(fun);
+        $('#searchGroepscode').change(fun);
+        $('#searchOrganisatie').change(fun);
+        $('#searchScope').change(fun);
+        $('#searchProduct').change(fun);
+        $('#searchKenmerk').change(fun);
+        $('#searchStatus').change(fun);
         this.searchGroepen();
     }
 
@@ -416,7 +424,7 @@ export class Groepen {
 
 
     searchGroepen() {
-        var filter = { string: "?select=organisaties,scopes" };
+        var filter : Filter= new Filter ("?select=organisaties,scopes" );
 
         FilterUtil.updateFilterStringWildcard(filter, "searchNaam", "naam");
         FilterUtil.updateFilterStringWildcard(filter, "searchBeschrijving", "beschrijving");
@@ -475,6 +483,7 @@ export class Groepen {
 $(document).ready(function () {
     let groepen = new Groepen();
     let klantenLijst = new KlantenLijst();
+    klantenLijst.initialise();
     groepen.initialise(klantenLijst);
 
 });

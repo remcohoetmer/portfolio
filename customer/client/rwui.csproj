@@ -23,13 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="groepen.html" />
-    <Content Include="includes\filter.js" />
-    <Content Include="includes\groepAddLeden.js" />
-    <Content Include="includes\groepCreate.js" />
-    <Content Include="includes\groepEdit.js" />
-    <Content Include="includes\groepOverview.js" />
-    <Content Include="includes\klanten.js" />
-    <Content Include="includes\windows.js" />
     <Content Include="index.html" />
     <Content Include="klanten.html" />
     <Content Include="organisaties.html" />
@@ -50,6 +43,7 @@
     <TypeScriptCompile Include="includes\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="package.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

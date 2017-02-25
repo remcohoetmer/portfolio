@@ -1,6 +1,6 @@
 ﻿/// <reference path="./jquery.d.ts" />
 import {WindowUtil} from "WindowUtil";
-import {FilterUtil} from "FilterUtil";
+import {FilterUtil,Filter} from "FilterUtil";
 class Organisation {
     service_path = "http://localhost:8080/rw/rest/organisatie";
     gOrganisatieId = null;
@@ -44,8 +44,8 @@ class Organisation {
     }
 
 
-    searchOrganisaties(): any {
-        var filter = { string: "" };
+    searchOrganisaties(): void {
+        let filter: Filter= new Filter();
         FilterUtil.updateFilterStringWildcard(filter, "organisatieSearchNaam", "naam");
         FilterUtil.updateFilterString(filter, "organisatieSearchStatus", "status");
         let _this = this;

@@ -7,5 +7,12 @@ $(document).ready(function () {
     });
     let klantenlijst = new KlantenLijst();
     klantenlijst.initialise();
-    klantenlijst.searchKlanten();
+    let fun = klantenlijst.searchKlanten.bind(klantenlijst);
+    $('#voornaam').change(fun);
+    $('#achternaam').change(fun);
+    $('#emailAdres').change(fun);
+    $('#status').change(fun);
+    $('#searchKlantOrganisatie').change(fun);
+
+    fun.apply();
 });

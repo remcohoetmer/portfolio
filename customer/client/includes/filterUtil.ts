@@ -1,7 +1,35 @@
-﻿import {Klant, Inschrijving, Organisatie} from "DataModel"
-
+﻿import {Klant, Inschrijving, Organisatie} from "./DataModel"
+export class Filter {
+    constructor(public string: string = "") { }
+    update(tag: string, paramnaam: string) {
+        var value = $("#" + tag).val();
+        if (value != "") {
+            if (this.string == "") {
+                this.string = "?";
+            } else {
+                this.string += "&";
+            }
+            this.string += paramnaam + '=' + value;
+        }
+    }
+    updateWildcard(tag: string, paramnaam: string) {
+        var value = $("#" + tag).val();
+        if (value != "") {
+            if (this.string == "") {
+                this.string = "?";
+            } else {
+                this.string += "&";
+            }
+            // HTML &#42; = *
+            this.string += paramnaam + "=\*" + value + "\*";
+        }
+    }
+    toString():string  {
+        return this.string;
+    }
+}
 export class FilterUtil {
-    static updateFilterString(filter, tag, paramnaam) {
+    static updateFilterString(filter: Filter, tag: string, paramnaam: string) {
         var value = $("#" + tag).val();
         if (value != "") {
             if (filter.string == "") {
@@ -12,7 +40,7 @@ export class FilterUtil {
             filter.string += paramnaam + '=' + value;
         }
     }
-    static updateFilterStringWildcard(filter, tag, paramnaam) {
+    static updateFilterStringWildcard(filter: Filter, tag:string, paramnaam:string) {
         var value = $("#" + tag).val();
         if (value != "") {
             if (filter.string == "") {
@@ -25,7 +53,7 @@ export class FilterUtil {
         }
     }
 
-    static listProperties(obj) {
+    static listProperties(obj:any) {
         var propList = "";
         for (var propName in obj) {
             if (typeof (obj[propName]) != "undefined") {
@@ -35,17 +63,17 @@ export class FilterUtil {
         alert(propList);
     }
 
-    static getIdFromEvent(event) {
-        return FilterUtil.getIdFromRow($(event.target.parentNode));
+    static getIdFromEvent(event: Event) {
+        return FilterUtil.getIdFromRow(<string><any>$((<Node>event.target).parentNode));
     }
 
-    static getIdFromRow(row) {
+    static getIdFromRow(row:string) {
         return $(row).attr("id").substr(3);
     }
 
 
     /* Get the rows which are currently selected */
-    static fnGetSelected(tableLocal) {
+    static fnGetSelected(tableLocal:any) {
         var aReturn = new Array();
         var aTrs = tableLocal.fnGetNodes();
         for (var i = 0; i < aTrs.length; i++) {
@@ -63,7 +91,7 @@ export class FilterUtil {
             $(this).addClass('row_selected');
     };
 
-    static ajaxErrorHandler(response, textStatus, jqXHR) {
+    static ajaxErrorHandler(response:any, textStatus:string, jqXHR:any) {
         if (response.status == 0) {
             // geen verbinding -> hier kan de klant niets mee
             return;

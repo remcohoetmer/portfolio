@@ -1,5 +1,5 @@
 ﻿import {WindowUtil} from "WindowUtil";
-import {FilterUtil} from "FilterUtil";
+import {FilterUtil,Filter} from "FilterUtil";
 import {Klant, Organisatie} from "DataModel";
 
 export class KlantenLijst {
@@ -10,7 +10,7 @@ export class KlantenLijst {
             url: "http://localhost:8080/rw/rest/organisatie",
             type: "GET",
             success: function (response, textStatus, jqXHR) {
-                var searchGebruikerOrganisatie = $("#searchGebruikerOrganisatie");
+                var searchGebruikerOrganisatie = $("#searchKlantOrganisatie");
                 $.each(response.organisaties, function () {
                     searchGebruikerOrganisatie.append($("<option />").val(this.id).text(this.naam));
                 });
@@ -25,21 +25,18 @@ export class KlantenLijst {
     }
 
     searchKlanten() {
-        var filter = { string: "?select=organisaties" };
+        var filter = new Filter ("?select=organisaties" );
 
-        FilterUtil.updateFilterStringWildcard(filter, "voornaam", "voornaam");
-        FilterUtil.updateFilterStringWildcard(filter, "achternaam", "achternaam");
-        FilterUtil.updateFilterString(filter, "geslacht", "geslacht");
-        FilterUtil.updateFilterString(filter, "emailAdres", "emailAdres");
-        FilterUtil.updateFilterString(filter, "status", "status");
-        FilterUtil.updateFilterString(filter, "searchKlantOrganisatie", "organisatieId");
-        FilterUtil.updateFilterString(filter, "product", "product");
-        FilterUtil.updateFilterString(filter, "geplandePeriode", "geplandePeriode");
-        FilterUtil.updateFilterString(filter, "rol", "rol");
+        filter.updateWildcard( "voornaam", "voornaam");
+        filter.updateWildcard( "achternaam", "achternaam");
+        filter.update("emailAdres", "emailAdres");
+        filter.update("status", "status");
+        filter.update("searchKlantOrganisatie", "organisatieId");
+
 
         let _this = this;
         $.ajax({
-            url: "http://localhost:8080/rw/rest/klant" + filter.string,
+            url: "http://localhost:8080/rw/rest/klant" + filter,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.updateResults(response);
