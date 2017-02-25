@@ -1,91 +1,80 @@
 ﻿
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" href="css/jquery-ui.css" />
-		<link rel="stylesheet" href="css/style.css" />
-  		<link rel="shortcut icon" href="favicon.ico" />
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="shortcut icon" href="favicon.ico" />
 
-		<title>Klanten Beheer</title>
-		<style type="text/css" title="currentStyle">
-			@import "css/demo_page.css";
-			@import "css/demo_table.css";
-		</style>
-		<script type="text/javascript" language="javascript" src="js/jquery.js"></script>
-		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
-		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-		<script type="text/javascript" language="javascript" src="includes/filter.js"></script>
-		<script type="text/javascript" language="javascript" src="includes/klanten.js"></script>
-		<script type="text/javascript" language="javascript">
-		$(document).ready(function() {
-			$('#closeGebruikersBeheer').click( function() {
-				window.location.href="index.html";
-			} );
-	
-			searchKlanten();
-		});
-		
-		</script>
-	</head>
-	<body id="dt_example">
-		<a id="closeGebruikersBeheer"><img class="close_button" src="images/close_button.png"/></a>
-		<div id="container">
-			<h1>
-				Klanten Overzicht
-			</h1>
-            <div>
-                <form id="gebruikerFilter" action="">
-                    <input type="text" placeholder="Voornaam" id="voornaam" onChange="searchKlanten();" />
-                    <input type="text" placeholder="Achternaam" id="achternaam" onChange="searchKlanten();" />
-                    <input type="text" placeholder="E-mail" id="emailAdres" onChange="searchKlanten();" />
+    <title>Klanten Beheer</title>
+    <style type="text/css" title="currentStyle">
+        @import "css/demo_page.css";
+        @import "css/demo_table.css";
+    </style>
+    <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+    <script data-main="includes/Klanten" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
 
-                    <select id="geslacht" onChange="searchKlanten()">
-                        <option value="">(geslacht)</option>
-                        <option value="Man">Man</option>
-                        <option value="Vrouw">Vrouw</option>
-                    </select>
+</head>
+<body id="dt_example">
+    <a id="closeGebruikersBeheer"><img class="close_button" src="images/close_button.png" /></a>
+    <div id="container">
+        <h1>
+            Klanten Overzicht
+        </h1>
+        <div>
+            <form id="gebruikerFilter" action="">
+                <input type="text" placeholder="Voornaam" id="voornaam" onChange="searchKlanten();" />
+                <input type="text" placeholder="Achternaam" id="achternaam" onChange="searchKlanten();" />
+                <input type="text" placeholder="E-mail" id="emailAdres" onChange="searchKlanten();" />
 
-                    <select id="rol" onChange="searchKlanten()">
-                        <option value="">(rol)</option>
-                        <option value="Medewerker">Medewerker</option>
-                        <option value="Manager">Manager</option>
-                    </select>
+                <select id="geslacht" onChange="searchKlanten()">
+                    <option value="">(geslacht)</option>
+                    <option value="Man">Man</option>
+                    <option value="Vrouw">Vrouw</option>
+                </select>
 
-                    <select id="status" onChange="searchKlanten()">
-                        <option value="Actief">Actief</option>
-                        <option value="Passief">Passief</option>
-                        <option value="Verwijderd">Verwijderd</option>
-                    </select>
-                    <select id="searchKlantOrganisatie" onChange="searchKlanten()">
-                        <option value="">(organisatie)</option>
-                    </select>
+                <select id="rol" onChange="searchKlanten()">
+                    <option value="">(rol)</option>
+                    <option value="Medewerker">Medewerker</option>
+                    <option value="Manager">Manager</option>
+                </select>
 
-                    <input type="text" placeholder="Product" id="product" onChange="searchKlanten();" />
-                    <input type="text" placeholder="Geplande periode" id="geplandePeriode" onChange="searchKlanten();" />
+                <select id="status" onChange="searchKlanten()">
+                    <option value="Actief">Actief</option>
+                    <option value="Passief">Passief</option>
+                    <option value="Verwijderd">Verwijderd</option>
+                </select>
+                <select id="searchKlantOrganisatie" onChange="searchKlanten()">
+                    <option value="">(organisatie)</option>
+                </select>
 
-                </form>
+                <input type="text" placeholder="Product" id="product" onChange="searchKlanten();" />
+                <input type="text" placeholder="Geplande periode" id="geplandePeriode" onChange="searchKlanten();" />
 
-                <div id="dynamic">
-                    <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
-                        <thead>
-                            <tr>
-                                <th>Voornaam</th>
-                                <th>Voorletters</th>
-                                <th>Achternaam</th>
-                                <th>Email</th>
-                                <th>Geslacht</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="6" class="dataTables_empty"></td>
-                            </tr>
-                        </tbody>
+            </form>
 
-                    </table>
-                </div>
+            <div id="dynamic">
+                <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+                    <thead>
+                        <tr>
+                            <th>Voornaam</th>
+                            <th>Voorletters</th>
+                            <th>Achternaam</th>
+                            <th>Email</th>
+                            <th>Geslacht</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" class="dataTables_empty"></td>
+                        </tr>
+                    </tbody>
+
+                </table>
             </div>
-		</div>
-	</body>
+        </div>
+    </div>
+</body>
 </html>

@@ -86,16 +86,6 @@ export class FilterUtil {
         }
     };
 
-    static prepareInschrijving(klant: Klant) {
-        if (klant.inschrijvingen === undefined) {
-            klant.inschrijvingen = new Array();
-            //[{ organisatie: null, locatie: null, product: "", geplandePeriode: "", rol: "" }];
-        }
-        for (let inschrijving of klant.inschrijvingen) {
-            if (inschrijving.organisatie == null) {
-                inschrijving.organisatie = new Organisatie(0, "");
-            }
-        }
-    }
+
 
 }

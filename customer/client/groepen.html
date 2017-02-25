@@ -14,41 +14,7 @@
     </style>
     <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
     <script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
-    <script type="text/javascript" language="javascript" src="js/ui/1.10.2/jquery-ui.js"></script>
-
-    <script type="text/javascript" language="javascript" src="includes/windows.js"></script>
-    <script type="text/javascript" language="javascript" src="includes/filter.js"></script>
-    <script type="text/javascript" language="javascript" src="includes/klanten.js"></script>
-    <script type="text/javascript" language="javascript" src="includes/groepOverview.js"></script>
-    <script type="text/javascript" language="javascript" src="includes/groepCreate.js"></script>
-    <script type="text/javascript" language="javascript" src="includes/groepAddLeden.js"></script>
-    <script type="text/javascript" language="javascript" src="includes/groepEdit.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        var service_path = "http://localhost:8080/rw/rest/groep";
-        $(document).ready(function () {
-
-            $('#closePopupboxEdit').click(function () {
-                searchGroepen();
-                closeWindow("popupboxEdit");
-            });
-
-            $('#closePopupboxCreate').click(function () {
-                searchGroepen();
-                closeWindow("popupboxCreate");
-            });
-
-            $('#closePopupboxAddLeden').click(function () {
-                jump2EditGroep();
-                closeWindow("popupboxAddLeden");
-            });
-
-            $('#closeGebruikersgroepenBeheer').click(function () {
-                window.location.href = "index.html";
-            });
-            searchGroepen();
-        });
-
-    </script>
+    <script data-main="includes/Groepen" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
 </head>
 <body id="dt_example">
     <a id="closeGebruikersgroepenBeheer"><img class="close_button" src="images/close_button.png" /></a>

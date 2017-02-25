@@ -41,6 +41,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="includes\FilterUtil.ts" />
     <TypeScriptCompile Include="includes\DataModel.ts" />
+    <TypeScriptCompile Include="includes\Groepen.ts" />
+    <TypeScriptCompile Include="includes\Klanten.ts" />
+    <TypeScriptCompile Include="includes\KlantenLijst.ts" />
     <TypeScriptCompile Include="includes\Scopes.ts" />
     <TypeScriptCompile Include="includes\WindowUtil.ts" />
     <TypeScriptCompile Include="includes\Organisaties.ts" />

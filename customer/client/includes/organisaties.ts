@@ -79,7 +79,7 @@ class Organisation {
                 return nRow;
             }
         });
-        //$('#scopetable tr').click( selectionHandler);
+        $('#organisatietable tr').click( FilterUtil.selectionHandler);
 
     }
 
