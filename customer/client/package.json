@@ -10,8 +10,6 @@
   "devDependencies": {
   },
   "scripts": {
-    "prestart": "npm install",
-        "start": "gulp",
-    "pretest": "npm install"
+    "prestart": "npm install"
   }
 }
