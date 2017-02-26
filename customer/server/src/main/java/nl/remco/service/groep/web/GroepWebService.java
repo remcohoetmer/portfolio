@@ -16,6 +16,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,7 +39,7 @@ import nl.remco.service.utils.HTTPUtil;
 import nl.remco.service.utils.Util;
 
 
-@Path("/groep")
+@Path("/group")
 public class GroepWebService {
 
 	@Context ServletContext servletContext;
@@ -92,8 +94,9 @@ public class GroepWebService {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get( @PathParam("id") String id,
-			@QueryParam("select") String select)
+	public void get( @PathParam("id") String id,
+			@QueryParam("select") String select,
+			@Suspended final AsyncResponse asyncResponse)
 	{
 		GRP_GroepService service= getService();
 		GRP_GetRequest request= new GRP_GetRequest();
@@ -102,13 +105,15 @@ public class GroepWebService {
 
 		GRP_GetResponse response= service.get(request);
 		if (response.getGroepen().size()!= 1) {
-			throw new BadRequestException( "Groep ID niet geldig");
+			asyncResponse.resume( new BadRequestException( "Group ID invalid"));
 		}
 
 		Groep groep= response.getGroepen().get(0);
 		ResponseBuilder builder= Response.status(HttpServletResponse.SC_OK).entity(groep);
 		builder.lastModified(groep.getLaatstgewijzigd());
-		return  builder.build();
+
+		asyncResponse.resume( builder.build());
+
 	}
 
 	private void parseSelectie(String select, GRP_GetRequest request) {
@@ -134,7 +139,7 @@ public class GroepWebService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response search(
+	public void search(
 			@QueryParam("select") String select,
 			@QueryParam("naam") String naam,
 			@QueryParam("beschrijving") String beschrijving,
@@ -146,7 +151,8 @@ public class GroepWebService {
 			@QueryParam("scopeId") String scopeId,
 			@QueryParam("product")  String product,
 			@QueryParam("geplandePeriode")  String geplandePeriode,
-			@QueryParam("kenmerk")  String kenmerk)
+			@QueryParam("kenmerk")  String kenmerk,
+			@Suspended final AsyncResponse asyncResponse)
 	{
 		GRP_GroepService service= getService();
 		GRP_GetRequest request= new GRP_GetRequest();
@@ -175,7 +181,7 @@ public class GroepWebService {
 			filter.setKenmerken(kenmerken);
 		}
 		GRP_GetResponse response= service.get(request);
-		return Response.status(HttpServletResponse.SC_OK).entity(response).build();		
+		asyncResponse.resume( response);
 	}
 
 	@GET
