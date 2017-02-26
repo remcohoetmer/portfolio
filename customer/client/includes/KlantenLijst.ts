@@ -1,13 +1,13 @@
 ﻿import {WindowUtil} from "WindowUtil";
 import {FilterUtil,Filter} from "FilterUtil";
 import {Klant, Organisatie} from "DataModel";
-
+import {Configuration} from "Configuration";
 export class KlantenLijst {
     obj_GebruikersTable = null;
     initialise() {
 
         $.ajax({
-            url: "http://localhost:8080/rw/rest/organisatie",
+            url: Configuration.organisation_service,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 var searchGebruikerOrganisatie = $("#searchKlantOrganisatie");
@@ -18,10 +18,6 @@ export class KlantenLijst {
             cache: false,
             error: FilterUtil.ajaxErrorHandler
         });
-
-        //$( "#geboortedatum" ).datepicker({"dateFormat": "yy-mm-dd"});
-        //	$("#geboortedatum").datepicker("setDate", new Date());
-
     }
 
     searchKlanten() {
@@ -36,7 +32,7 @@ export class KlantenLijst {
 
         let _this = this;
         $.ajax({
-            url: "http://localhost:8080/rw/rest/klant" + filter,
+            url: Configuration.customer_service + filter,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.updateResults(response);
@@ -48,7 +44,6 @@ export class KlantenLijst {
     prepareInschrijving(klant: Klant) {
         if (klant.inschrijvingen === undefined) {
             klant.inschrijvingen = new Array();
-            //[{ organisatie: null, locatie: null, product: "", geplandePeriode: "", rol: "" }];
         }
         for (let inschrijving of klant.inschrijvingen) {
             if (inschrijving.organisatie == null) {

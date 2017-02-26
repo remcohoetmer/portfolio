@@ -1,10 +1,10 @@
 ﻿/// <reference path="./jquery.d.ts" />
 import {WindowUtil} from "WindowUtil";
-import {FilterUtil,Filter} from "FilterUtil";
-class Organisation {
-    service_path = "http://localhost:8080/rw/rest/organisatie";
-    gOrganisatieId = null;
+import {FilterUtil, Filter} from "FilterUtil";
+import {Configuration} from "Configuration";
 
+class Organisation {
+    gOrganisatieId = null;
     obj_ScopeTable = null;
     initialise() {
         var _this = this;
@@ -50,7 +50,7 @@ class Organisation {
         FilterUtil.updateFilterString(filter, "organisatieSearchStatus", "status");
         let _this = this;
         $.ajax({
-            url: this.service_path + filter.string,
+            url: Configuration.organisation_service + filter.string,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.showSearchResults(response);
@@ -95,7 +95,7 @@ class Organisation {
     retrieveDetails(organisatieId) {
         var _this = this;
         $.ajax({
-            url: this.service_path + "/" + organisatieId,
+            url: Configuration.organisation_service + "/" + organisatieId,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.showEditData(response);
@@ -123,7 +123,7 @@ class Organisation {
         };
         var _this = this;
         $.ajax({
-            url: this.service_path,
+            url: Configuration.organisation_service,
             data: JSON.stringify(updateRequest),
             type: "PUT",
             success: function (response, textStatus, jqXHR) {
@@ -153,7 +153,7 @@ class Organisation {
         };
         let _this = this;
         $.ajax({
-            url: this.service_path,
+            url: Configuration.organisation_service,
             data: JSON.stringify(createRequest),
             type: "POST",
             success: function (response, textStatus, jqXHR) {

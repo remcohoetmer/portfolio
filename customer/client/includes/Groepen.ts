@@ -2,9 +2,9 @@
 import {FilterUtil,Filter} from "FilterUtil";
 import {Klant, Organisatie} from "DataModel";
 import {KlantenLijst} from "KlantenLijst";
+import {Configuration} from "Configuration";
 
 export class Groepen {
-    groep_service_path = "http://localhost:8080/rw/rest/groep";
 
     gAdd_Gebruikersgroep = null;
     gAdd_Rol = null;
@@ -86,7 +86,7 @@ export class Groepen {
         });
 
         $.ajax({
-            url: "http://localhost:8080/rw/rest/scope",
+            url: Configuration.scope_service,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 var searchScope = $("#searchScope");
@@ -100,7 +100,7 @@ export class Groepen {
             error: FilterUtil.ajaxErrorHandler
         });
         $.ajax({
-            url: "http://localhost:8080/rw/rest/organisatie",
+            url: Configuration.organisation_service,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 var searchOrganisatie = $("#searchOrganisatie");
@@ -151,7 +151,7 @@ export class Groepen {
         }
         let _this = this;
         $.ajax({
-            url: this.groep_service_path + "/" + groepId,
+            url: Configuration.group_service+ "/" + groepId,
             data: JSON.stringify(updateRequest),
             contentType: "application/json; charset=UTF-8",
             type: "PUT",
@@ -214,7 +214,7 @@ export class Groepen {
             */
         let _this = this;
         $.ajax({
-            url: "http://localhost:8080/rw/rest/groep",
+            url: Configuration.group_service,
             data: JSON.stringify(createRequest),
             type: "POST",
             contentType: "application/json; charset=UTF-8",
@@ -240,7 +240,7 @@ export class Groepen {
         }
         let _this = this;
         $.ajax({
-            url: this.groep_service_path + "/" + groepId +
+            url: Configuration.group_service + "/" + groepId +
             "?select=kenmerken,klanten,lidmaatschappen,organisaties,scopes,hoofdgroep",
             type: "GET",
             success: function (response, textStatus, jqXHR) {
@@ -361,7 +361,7 @@ export class Groepen {
         };
         let _this = this;
         $.ajax({
-            url: this.groep_service_path + "/" + gebruikersgroepId,
+            url: Configuration.group_service + "/" + gebruikersgroepId,
             data: JSON.stringify(updateRequest),
             type: "PUT",
             headers: { "If-Unmodified-Since": this.gGebruikersgroepTimestamp },
@@ -410,7 +410,7 @@ export class Groepen {
         }
         let _this = this;
         $.ajax({
-            url: this.groep_service_path + "/" + gebruikersgroepId,
+            url: Configuration.group_service + "/" + gebruikersgroepId,
             data: JSON.stringify(updateRequest),
             contentType: "application/json; charset=UTF-8",
             type: "PUT",
@@ -424,19 +424,19 @@ export class Groepen {
 
 
     searchGroepen() {
-        var filter : Filter= new Filter ("?select=organisaties,scopes" );
+        let filter = new Filter ("?select=organisaties,scopes" );
 
-        FilterUtil.updateFilterStringWildcard(filter, "searchNaam", "naam");
-        FilterUtil.updateFilterStringWildcard(filter, "searchBeschrijving", "beschrijving");
-        FilterUtil.updateFilterString(filter, "searchGroepscode", "groepscode");
-        FilterUtil.updateFilterString(filter, "searchOrganisatie", "organisatieId");
-        FilterUtil.updateFilterString(filter, "searchScope", "scopeId");
-        FilterUtil.updateFilterString(filter, "searchProduct", "product");
-        FilterUtil.updateFilterString(filter, "searchStatus", "status");
-        FilterUtil.updateFilterString(filter, "searchKenmerk", "kenmerk");
+        filter.updateWildcard("searchNaam", "naam");
+        filter.updateWildcard("searchBeschrijving", "beschrijving");
+        filter.update("searchGroepscode", "groepscode");
+        filter.update("searchOrganisatie", "organisatieId");
+        filter.update("searchScope", "scopeId");
+        filter.update("searchProduct", "product");
+        filter.update("searchStatus", "status");
+        filter.update("searchKenmerk", "kenmerk");
         let _this = this;
         $.ajax({
-            url: "http://localhost:8080/rw/rest/groep" + filter.string,
+            url: Configuration.group_service + filter.string,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.showGroepSearchResults(response);

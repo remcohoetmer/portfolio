@@ -32,6 +32,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="includes\Configuration.ts" />
     <TypeScriptCompile Include="includes\FilterUtil.ts" />
     <TypeScriptCompile Include="includes\DataModel.ts" />
     <TypeScriptCompile Include="includes\Groepen.ts" />
