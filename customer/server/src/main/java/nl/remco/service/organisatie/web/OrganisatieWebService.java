@@ -4,7 +4,6 @@ package nl.remco.service.organisatie.web;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,7 +22,7 @@ import nl.remco.service.organisatie.web.ORG_GetRequest.Filter;
 import nl.remco.service.utils.Util;
 
 
-@Path("/organisatie")
+@Path("/organisation")
 public class OrganisatieWebService {
 
 	@Context ServletContext servletContext;
@@ -48,7 +47,7 @@ public class OrganisatieWebService {
 
 		ORG_GetResponse response= service.get(request);
 
-		return Response.status(HttpServletResponse.SC_OK).entity(response).build();
+		return Response.status(Response.Status.OK).entity(response).build();
 	}
 
 
@@ -66,7 +65,7 @@ public class OrganisatieWebService {
 		processSelect(select, request);
 		
 		ORG_GetResponse response= service.get(request);
-		return Response.status(HttpServletResponse.SC_OK).entity(response).build();		
+		return Response.status(Response.Status.OK).entity(response).build();		
 	}
 	
 	/*

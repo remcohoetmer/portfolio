@@ -11,9 +11,9 @@ export class KlantenLijst {
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 var searchGebruikerOrganisatie = $("#searchKlantOrganisatie");
-                $.each(response.organisaties, function () {
-                    searchGebruikerOrganisatie.append($("<option />").val(this.id).text(this.naam));
-                });
+                for (let org of response.organisaties) {
+                    searchGebruikerOrganisatie.append(`<option value="${org.id}">${org.naam}</option>`);
+                }
             },
             cache: false,
             error: FilterUtil.ajaxErrorHandler

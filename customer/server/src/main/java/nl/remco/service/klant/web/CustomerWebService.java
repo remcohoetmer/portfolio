@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -15,6 +14,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer;
 import nl.remco.service.common.web.BadRequestException;
@@ -23,19 +25,16 @@ import nl.remco.service.klant.model.Inschrijving;
 import nl.remco.service.klant.web.KLA_GetRequest.Filter;
 import nl.remco.service.utils.Util;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
-
-@Path("/klant")
-public class KlantenWebService {
+@Path("/customer")
+public class CustomerWebService {
 	@Context ServletContext servletContext;
-	
+
 	private KLA_KlantService getService() {
-        ApplicationContext ctx= WebApplicationContextUtils.getWebApplicationContext(servletContext);
-        
-        KLA_KlantService service = ctx.getBean(KLA_KlantService.class);
-        return service;
+		ApplicationContext ctx= WebApplicationContextUtils.getWebApplicationContext(servletContext);
+
+		KLA_KlantService service = ctx.getBean(KLA_KlantService.class);
+		return service;
 	}
 
 	@GET
@@ -43,15 +42,17 @@ public class KlantenWebService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get( @PathParam("ids") String ids,
 			@QueryParam("select") String select
-)
+			)
 	{
 		KLA_GetRequest request= new KLA_GetRequest();
 		request.setIds( Util.toStringList( ids));
-		parseSelect(select, request);
-          
-		KLA_GetResponse response= getService().get(request);
-
-		return Response.status(HttpServletResponse.SC_OK).entity(response).build();
+		try {
+			parseSelect(select, request);
+		} catch (BadRequestException bre) {
+			return Response.status(Response.Status.NOT_FOUND).
+				    entity(bre.getMessage()).type("text/plain").build();
+		}
+		return Response.status(Response.Status.OK).entity( getService().get(request)).build();
 	}
 
 
@@ -110,9 +111,9 @@ public class KlantenWebService {
 		if (aangemaaktDoorId!= null) {
 			filter.setAangemaaktDoor( new Identifiable(aangemaaktDoorId));
 		}
-                
+
 		KLA_GetResponse response= getService().get(request);
-		return Response.status(HttpServletResponse.SC_OK).entity(response).build();		
+		return Response.status(Response.Status.OK).entity(response).build();		
 	}
 
 

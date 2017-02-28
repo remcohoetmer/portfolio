@@ -105,10 +105,11 @@ export class Groepen {
             success: function (response, textStatus, jqXHR) {
                 var searchOrganisatie = $("#searchOrganisatie");
                 var organisatieCreate = $("#organisatieCreate");
-                $.each(response.organisaties, function () {
-                    searchOrganisatie.append($("<option />").val(this.id).text(this.naam));
-                    organisatieCreate.append($("<option />").val(this.id).text(this.naam));
-                });
+                for (let org of response.organisaties) {
+                    let option = `<option value="${org.id}">${org.naam}</option>`;
+                    searchOrganisatie.append(option);
+                    organisatieCreate.append(option);
+                }
             },
             cache: false,
             error: FilterUtil.ajaxErrorHandler

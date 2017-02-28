@@ -4,7 +4,6 @@ package nl.remco.service.scope.web;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,6 +19,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer;
 import nl.remco.service.common.web.BadRequestException;
@@ -28,9 +30,6 @@ import nl.remco.service.scope.web.SCO_GetRequest.Filter;
 import nl.remco.service.utils.HTTPServerUtil;
 import nl.remco.service.utils.HTTPUtil;
 import nl.remco.service.utils.Util;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 
 @Path("/scope")
@@ -105,11 +104,11 @@ public class ScopeWebService {
 
 		ResponseBuilder builder= null;
 		if (response.getScopes().size()==1){
-			builder= Response.status(HttpServletResponse.SC_OK);
+			builder= Response.status(Response.Status.OK);
 			builder= builder.entity(response.getScopes().get(0));
 			builder= builder.lastModified( response.getScopes().get(0).getLaatstgewijzigd());
 		} else {
-			builder= Response.status(HttpServletResponse.SC_NOT_FOUND);
+			builder= Response.status(Response.Status.NOT_FOUND);
 		}
 		return builder.build();
 	}
@@ -125,6 +124,6 @@ public class ScopeWebService {
 		request.getFilter().setStatus( status);
 
 		SCO_GetResponse response= service.get(request);
-		return Response.status(HttpServletResponse.SC_OK).entity(response).build();		
+		return Response.status(Response.Status.OK).entity(response).build();		
 	}
 }

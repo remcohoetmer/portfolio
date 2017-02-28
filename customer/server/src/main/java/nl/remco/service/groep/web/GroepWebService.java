@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -25,6 +24,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.common.model.LifeCycleBeheer;
@@ -109,7 +110,7 @@ public class GroepWebService {
 		}
 
 		Groep groep= response.getGroepen().get(0);
-		ResponseBuilder builder= Response.status(HttpServletResponse.SC_OK).entity(groep);
+		ResponseBuilder builder= Response.status(Response.Status.OK).entity(groep);
 		builder.lastModified(groep.getLaatstgewijzigd());
 
 		asyncResponse.resume( builder.build());
@@ -154,34 +155,40 @@ public class GroepWebService {
 			@QueryParam("kenmerk")  String kenmerk,
 			@Suspended final AsyncResponse asyncResponse)
 	{
-		GRP_GroepService service= getService();
-		GRP_GetRequest request= new GRP_GetRequest();
-		parseSelectie(select, request);
-		Filter filter= new Filter();
-		request.setFilter(filter);
-		filter.setNaam( naam);
-		filter.setBeschrijving(beschrijving);
-		filter.setStatus(status);
-		filter.setStatusLidmaatschap( statusLidmaatschap);
-		filter.setGroepscode(groepscode);
-		if (organisatieId!= null) {
-			filter.setOrganisatie( new Identifiable(organisatieId));
+		try {
+			GRP_GroepService service= getService();
+			GRP_GetRequest request= new GRP_GetRequest();
+			parseSelectie(select, request);
+			Filter filter= new Filter();
+			request.setFilter(filter);
+			filter.setNaam( naam);
+			filter.setBeschrijving(beschrijving);
+			filter.setStatus(status);
+			filter.setStatusLidmaatschap( statusLidmaatschap);
+			filter.setGroepscode(groepscode);
+			if (organisatieId!= null) {
+				filter.setOrganisatie( new Identifiable(organisatieId));
+			}
+			if (locatieId!= null) {
+				filter.setLocatie( new Identifiable(locatieId));
+			}
+			if (scopeId!= null) {
+				filter.setScope( new Identifiable(scopeId));
+			}
+			filter.setProduct(product);
+			filter.setGeplandePeriode(geplandePeriode);
+			if (kenmerk!= null){
+				List<String> kenmerken= new ArrayList<String>();
+				kenmerken.add( kenmerk);
+				filter.setKenmerken(kenmerken);
+			}
+			GRP_GetResponse response= service.get(request);
+			asyncResponse.resume( response);
+			ObjectMapper mapper = new ObjectMapper();
+		} catch (BadRequestException bre) {
+			asyncResponse.resume( Response.status(Response.Status.NOT_FOUND).
+					entity(bre.getMessage()).type("text/plain").build());
 		}
-		if (locatieId!= null) {
-			filter.setLocatie( new Identifiable(locatieId));
-		}
-		if (scopeId!= null) {
-			filter.setScope( new Identifiable(scopeId));
-		}
-		filter.setProduct(product);
-		filter.setGeplandePeriode(geplandePeriode);
-		if (kenmerk!= null){
-			List<String> kenmerken= new ArrayList<String>();
-			kenmerken.add( kenmerk);
-			filter.setKenmerken(kenmerken);
-		}
-		GRP_GetResponse response= service.get(request);
-		asyncResponse.resume( response);
 	}
 
 	@GET
@@ -212,6 +219,6 @@ public class GroepWebService {
 			filter.setScope( new Identifiable(scopeId));
 		}
 		GRP_KlantMetGroepen response= service.searchForKlanten(request);
-		return Response.status(HttpServletResponse.SC_OK).entity(response).build();		
+		return Response.status(Response.Status.OK).entity(response).build();		
 	}
 }

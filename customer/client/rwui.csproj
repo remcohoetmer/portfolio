@@ -22,6 +22,7 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="echo.html" />
     <Content Include="groepen.html" />
     <Content Include="index.html" />
     <Content Include="klanten.html" />
@@ -38,6 +39,7 @@
     <TypeScriptCompile Include="includes\Groepen.ts" />
     <TypeScriptCompile Include="includes\Klanten.ts" />
     <TypeScriptCompile Include="includes\KlantenLijst.ts" />
+    <TypeScriptCompile Include="includes\Leden.ts" />
     <TypeScriptCompile Include="includes\Scopes.ts" />
     <TypeScriptCompile Include="includes\WindowUtil.ts" />
     <TypeScriptCompile Include="includes\Organisaties.ts" />

@@ -1,8 +1,9 @@
 ﻿/// <reference path="./jquery.d.ts" />
 import {WindowUtil} from "WindowUtil";
 import {FilterUtil, Filter} from "FilterUtil";
+import {Configuration} from "Configuration";
+
 class Scopes {
-    service_path = "http://localhost:8080/rw/rest/scope";
 
     obj_ScopeTable = null;
     gScopeId = null;
@@ -53,7 +54,7 @@ class Scopes {
         filter.updateWildcard("scopeNaamFilter", "naam");
         filter.update("scopeStatusFilter", "status");
         $.ajax({
-            url: this.service_path + filter.string,
+            url: Configuration.scope_service + filter.string,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.showSearchResults(response);
@@ -103,7 +104,7 @@ class Scopes {
         let _this = this;
 
         $.ajax({
-            url: this.service_path,
+            url: Configuration.scope_service,
             data: JSON.stringify(createRequest),
             type: "POST",
             contentType: "application/json; charset=UTF-8",
@@ -127,7 +128,7 @@ class Scopes {
     retrieveDetails(scopeId) {
         let _this = this;
         $.ajax({
-            url: this.service_path + "/" + scopeId,
+            url: Configuration.scope_service + "/" + scopeId,
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 _this.gScopeTimestamp = jqXHR.getResponseHeader("Last-Modified");
@@ -155,7 +156,7 @@ class Scopes {
         };
         let _this = this;
         $.ajax({
-            url: this.service_path,
+            url: Configuration.scope_service,
             data: JSON.stringify(updateRequest),
             type: "PUT",
             headers: { "If-Unmodified-Since": _this.gScopeTimestamp },
