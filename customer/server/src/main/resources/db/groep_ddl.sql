@@ -1,8 +1,6 @@
 DROP TABLE IF EXISTS kenmerk;
 DROP TABLE IF EXISTS lidmaatschap;
 DROP TABLE IF EXISTS groep;
-DROP TABLE IF EXISTS scopes;
-
 
 CREATE TABLE  groep (
   id int(18) unsigned NOT NULL auto_increment,
@@ -15,7 +13,7 @@ CREATE TABLE  groep (
   hoofdgroep_id int(18) unsigned NULL,
   groepscode varchar(100) NULL,
   product varchar(100) NULL,
-  scope_id varchar(40) unsigned NULL,
+  scope_id varchar(40) NULL,
   organisatie_id varchar(25) NULL,
   geplande_periode varchar(100) NULL,
   PRIMARY KEY  (id),
