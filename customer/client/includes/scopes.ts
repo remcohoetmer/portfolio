@@ -51,7 +51,7 @@ class Scopes {
     searchEntities() {
         let _this = this;
         let filter = new Filter();
-        filter.updateWildcard("scopeNaamFilter", "naam");
+        filter.updateWildcard("scopeNaamFilter", "name");
         filter.update("scopeStatusFilter", "status");
         $.ajax({
             url: Configuration.scope_service + filter.string,
@@ -69,10 +69,10 @@ class Scopes {
 
         $(document).ready(function () {
             this.obj_ScopeTable = (<any>$('#scopetable')).dataTable({
-                "aaData": response.scopes,
+                "aaData": response,
                 "bDestroy": true,
                 "aoColumns": [
-                    { "mData": "naam" },
+                    { "mData": "name" },
                     { "mData": "status" }
                 ],
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
@@ -98,7 +98,7 @@ class Scopes {
 
     submitCreateRequest() {
         var createRequest = {
-            naam: $("#naamCreate").val(),
+            name: $("#naamCreate").val(),
             status: $("#statusCreate").val(),
         };
         let _this = this;
@@ -144,22 +144,21 @@ class Scopes {
             return;
         }
 
-        $("#naamEdit").prop("value", scope.naam);
+        $("#naamEdit").prop("value", scope.name);
         $("#statusEdit").prop("value", scope.status);
     }
 
     submitUpdateAttributesRequest(scopeId) {
         var updateRequest = {
-            id: scopeId,
-            naam: $("#naamEdit").val(),
+            name: $("#naamEdit").val(),
             status: $("#statusEdit").val()
         };
         let _this = this;
+           // headers: { "If-Unmodified-Since": _this.gScopeTimestamp },
         $.ajax({
-            url: Configuration.scope_service,
-            data: JSON.stringify(updateRequest),
+            url: Configuration.scope_service + "/" + scopeId,
+            data: JSON.stringify(updateRequest)  ,
             type: "PUT",
-            headers: { "If-Unmodified-Since": _this.gScopeTimestamp },
             contentType: "application/json; charset=UTF-8",
             success: function (response, textStatus, jqXHR) {
                 _this.searchEntities();

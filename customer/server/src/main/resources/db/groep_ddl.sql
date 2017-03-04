@@ -15,7 +15,7 @@ CREATE TABLE  groep (
   hoofdgroep_id int(18) unsigned NULL,
   groepscode varchar(100) NULL,
   product varchar(100) NULL,
-  scope_id int(18) unsigned NULL,
+  scope_id varchar(40) unsigned NULL,
   organisatie_id varchar(25) NULL,
   geplande_periode varchar(100) NULL,
   PRIMARY KEY  (id),
@@ -57,25 +57,4 @@ SET NEW.laatstgewijzigd = NOW();
 CREATE TRIGGER lidmaatschap_laatstgewijzigd_update BEFORE UPDATE ON lidmaatschap 
 FOR EACH ROW
 SET NEW.laatstgewijzigd = NOW();
-
-CREATE TABLE scopes (
-  id int(18) unsigned NOT NULL auto_increment,
-  status varchar(1) NOT NULL,
-  aangemaakt_door int(18) unsigned NULL,
-  laatstgewijzigd TIMESTAMP not null,
-  naam varchar(100) NOT NULL, 
-  PRIMARY KEY  (id)
-);
-
-
-CREATE TRIGGER scope_laatstgewijzigd_insert BEFORE INSERT ON scopes 
-FOR EACH ROW
-SET NEW.laatstgewijzigd = NOW();
-
-CREATE TRIGGER scope_laatstgewijzigd_update BEFORE UPDATE ON scopes 
-FOR EACH ROW
-SET NEW.laatstgewijzigd = NOW();
-
-
-
 

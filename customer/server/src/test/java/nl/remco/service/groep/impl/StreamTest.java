@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.groep.model.Groep;
 import nl.remco.service.groep.model.Lidmaatschap;
@@ -23,8 +24,8 @@ public class StreamTest {
 		Groep groep1= new Groep();
 
 		groepen.add( groep1);
-		Identifiable scope=null;
-		scope = new Identifiable();
+		Benoembaar scope=null;
+		scope = new Benoembaar();
 		
 		groep1.setScope(scope);
 		Set<String> scopeIdSet= groepen.stream()

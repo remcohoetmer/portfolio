@@ -20,18 +20,16 @@ import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.groep.dao.GroepDao;
 import nl.remco.service.groep.model.Groep;
 import nl.remco.service.groep.model.Lidmaatschap;
+import nl.remco.service.groep.model.Scope;
 import nl.remco.service.groep.web.GRP_Selectie;
 import nl.remco.service.klant.impl.CRMCustomersDelegate;
 import nl.remco.service.klant.model.Inschrijving;
 import nl.remco.service.klant.model.Klant;
 import nl.remco.service.organisatie.impl.CRMOrganisationsDelegate;
 import nl.remco.service.organisatie.model.Organisatie;
-import nl.remco.service.scope.model.Scope;
-import nl.remco.service.scope.web.SCO_ScopeService;
+
 
 public class GroepEnricher {
-	@Autowired
-	private SCO_ScopeService scopeService;
 
 	@Autowired
 	private CRMCustomersDelegate crmCustomersDelegate;
@@ -141,7 +139,7 @@ public class GroepEnricher {
 		Map<String, Scope> returnedScopesMap= null;
 		if (selectie.isSelectScopes() && !scopeIdSet.isEmpty()) {
 
-			returnedScopesMap = ScopeServiceHelper.getScopes(getScopeService(), scopeIdSet);
+			returnedScopesMap = new ScopeServiceHelper().getScopes(scopeIdSet);
 		}
 		if (selectie.isSelectHoofdgroep() && !hoofdgroepIdSet.isEmpty()) {
 			// override 
@@ -194,15 +192,4 @@ public class GroepEnricher {
 		}
 
 	}
-
-
-	public SCO_ScopeService getScopeService() {
-		return scopeService;
-	}
-
-	public void setScopeService(SCO_ScopeService scopeService) {
-		this.scopeService = scopeService;
-	}
-
-
 }

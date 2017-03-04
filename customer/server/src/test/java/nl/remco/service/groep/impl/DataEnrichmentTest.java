@@ -62,8 +62,8 @@ public class DataEnrichmentTest {
 	@Test
 	public void testDataEnrichment() {
 
-		String scopeId= testHelper.maakScope( "Corporate");
-
+	//	String scopeId= testHelper.maakScope( "Corporate");
+		String scopeId="58ba9f03d521a30c646123f0";
 		Identifiable organisatie= new Identifiable( "8000");
 
 		Identifiable gebruiker1Ref= new Identifiable("testklant1");
@@ -107,7 +107,7 @@ public class DataEnrichmentTest {
 		Assert.assertEquals( 1, getResponse.getGroepen().size());
 		Groep groep= getResponse.getGroepen().get(0);
 		Assert.assertEquals( "Bedrijf A", ((Benoembaar)groep.getOrganisatie()).getNaam());
-		Assert.assertEquals( "Corporate", ((Benoembaar)groep.getScope()).getNaam());
+		Assert.assertEquals( "Productie", ((Benoembaar)groep.getScope()).getNaam());
 		
 		Assert.assertEquals( 1, groep.getLidmaatschappen().size());
 		Klant gebruiker= (Klant)getResponse.getGroepen().get(0).getLidmaatschappen().get(0).getKlant();

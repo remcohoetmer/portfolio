@@ -4,5 +4,5 @@ export class Configuration {
     static group_service = Configuration.service_url + "group";
     static organisation_service = Configuration.service_url + "organisation";
     static customer_service = Configuration.service_url + "customer";
-    static scope_service = Configuration.service_url + "scope";
+    static scope_service = "http://localhost:8081/api/" + "scope";
 }

@@ -5,7 +5,8 @@ import java.util.Map;
 import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.common.model.Identifiable;
 import nl.remco.service.groep.model.Groep;
-import nl.remco.service.scope.model.Scope;
+import nl.remco.service.groep.model.Scope;
+
 
 public class ScopeDataEnrichmentHelper {
 
@@ -23,8 +24,7 @@ public class ScopeDataEnrichmentHelper {
 		} else  {
 			Scope returnedScope= returnedScopeMap.get( product.getId());
 			if (returnedScope!= null) {
-				enriched.setNaam( returnedScope.getNaam());
-				enriched.setStatus( returnedScope.getStatus());
+				enriched.setNaam( returnedScope.getName());
 			} else {
 				enriched.setNaam( ONBEKEND);
 			}

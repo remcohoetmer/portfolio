@@ -20,7 +20,7 @@ public class Groep extends LifeCycleBeheer implements OrganisatieDataHolder {
 	private String groepscode;
 	private String product;
 	private String geplandePeriode;
-	private Identifiable scope;
+	private Benoembaar scope;
 	private Benoembaar organisatie;
 	private List<String> kenmerken;
 	private Identifiable hoofdgroep;
@@ -53,10 +53,10 @@ public class Groep extends LifeCycleBeheer implements OrganisatieDataHolder {
 	public void setGeplandePeriode(String geplandePeriode) {
 		this.geplandePeriode = geplandePeriode;
 	}
-	public Identifiable getScope() {
+	public Benoembaar getScope() {
 		return scope;
 	}
-	public void setScope(Identifiable scope) {
+	public void setScope(Benoembaar scope) {
 		this.scope = scope;
 	}
 	public Benoembaar getOrganisatie() {

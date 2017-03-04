@@ -59,7 +59,7 @@
 		<association property="aangemaaktDoor" javaType="Identifiable">
 			<id property="id" column="aangemaakt_door" />
 		</association>
-		<association property="scope" javaType="Identifiable">
+		<association property="scope" javaType="Benoembaar">
 			<id property="id" column="scope_id" />
 		</association>
 		<association property="organisatie" javaType="Benoembaar">

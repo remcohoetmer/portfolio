@@ -106,7 +106,7 @@ public class ScopeWebService {
 		if (response.getScopes().size()==1){
 			builder= Response.status(Response.Status.OK);
 			builder= builder.entity(response.getScopes().get(0));
-			builder= builder.lastModified( response.getScopes().get(0).getLaatstgewijzigd());
+			builder= builder.lastModified( response.getScopes().get(0).getModified_time());
 		} else {
 			builder= Response.status(Response.Status.NOT_FOUND);
 		}
