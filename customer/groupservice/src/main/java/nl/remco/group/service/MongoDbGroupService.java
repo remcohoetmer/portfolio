@@ -2,6 +2,7 @@ package nl.remco.group.service;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -9,12 +10,15 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import nl.remco.group.domain.Group;
+import nl.remco.group.domain.Membership;
+import nl.remco.group.service.dto.GroupDTO;
+import nl.remco.group.service.dto.MembershipDTO;
+import nl.remco.group.service.dto.PersonDTO;
 
-@PropertySource("application.properties")
+
 @Service
 public class MongoDbGroupService implements GroupService {
 
@@ -22,6 +26,9 @@ public class MongoDbGroupService implements GroupService {
 
     private final GroupRepository repository;
 
+    @Autowired
+    GroupEnricher enricher;
+    
     @Autowired
     MongoDbGroupService(GroupRepository repository) {
         this.repository = repository;
@@ -60,10 +67,12 @@ public class MongoDbGroupService implements GroupService {
 
         CompletableFuture<List<Group>> groupEntries = repository.findAll();
 
-        return groupEntries.thenApply(entries -> {
+        return groupEntries
+        		.thenApply(entries -> {
             LOGGER.info("Found {} group entries", entries.size());
             return convertToDTOs(entries);
-        });
+        })
+        		.thenCompose( enricher::enrichPersons);
     }
 
     private List<GroupDTO> convertToDTOs(List<Group> models) {
@@ -108,7 +117,14 @@ public class MongoDbGroupService implements GroupService {
         dto.setId(model.getId());
         dto.setStatus(model.getStatus());
         dto.setName(model.getName());
-
+        List<MembershipDTO> mbsDTO= new ArrayList<>();
+        for (Membership ms: model.getMemberships()) {
+        	MembershipDTO mbDTO= new MembershipDTO();
+        	mbDTO.setPersoon( new PersonDTO( ms.getPersoon().getId()));
+        	mbDTO.setRol( ms.getRol());
+        	mbsDTO.add(mbDTO);
+        }
+        dto.setMemberships( mbsDTO);
         return dto;
     }
 }

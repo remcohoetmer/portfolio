@@ -16,7 +16,7 @@ public class Group  {
 	private String geplandePeriode;
 	private Scope scope;
 	private Organisation organisatie;
-	private List<Membership> lidmaatschappen;
+	private List<Membership> memberships;
 	private List<String> kenmerken;
 	private Group hoofdgroep;
 	private String createdBy;
@@ -62,14 +62,14 @@ public class Group  {
 	}
 
 
-	public List<Membership> getLidmaatschappen() {
-		if (lidmaatschappen==null) {
-			lidmaatschappen= new ArrayList<Membership>();
+	public List<Membership> getMemberships() {
+		if (memberships==null) {
+			memberships= new ArrayList<Membership>();
 		}
-		return lidmaatschappen;
+		return memberships;
 	}
-	public void setLidmaatschappen(List<Membership> lidmaatschappen) {
-		this.lidmaatschappen = lidmaatschappen;
+	public void setMemberships(List<Membership> lidmaatschappen) {
+		this.memberships = lidmaatschappen;
 	}
 	public String getName() {
 		return name;
@@ -77,10 +77,10 @@ public class Group  {
 	public void setName(String naam) {
 		this.name = naam;
 	}
-	public String getBeschrijving() {
+	public String getDescription() {
 		return beschrijving;
 	}
-	public void setBeschrijving(String beschrijving) {
+	public void setDescription(String beschrijving) {
 		this.beschrijving = beschrijving;
 	}
 	public Group getHoofdgroep() {

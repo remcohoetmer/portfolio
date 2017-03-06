@@ -20,6 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import nl.remco.group.service.dto.GroupDTO;
+import nl.remco.group.service.dto.MembershipDTO;
+import nl.remco.group.service.dto.OrganisationDTO;
+import nl.remco.group.service.dto.PersonDTO;
+import nl.remco.group.service.dto.ScopeDTO;
+
 
 @RestController
 @RequestMapping("/api/group")
@@ -33,7 +39,7 @@ public final class GroupController {
     GroupController(GroupService service) {
         this.groupService = service;
     }
-	void insert() {
+    GroupDTO get() {
 		GroupDTO group= new GroupDTO();
 		group.setName( "Groepie");
 		group.setDescription( "Beschrijving");
@@ -57,14 +63,13 @@ public final class GroupController {
 
 		List<MembershipDTO> lidmaatschappen= new ArrayList<>();
 		MembershipDTO lidmaatschap= new MembershipDTO();
-		PersonDTO persoon= new PersonDTO("klant1");
+		PersonDTO persoon= new PersonDTO("person1");
 		lidmaatschap.setPersoon( persoon);
 		lidmaatschap.setRol( "member");
 		lidmaatschappen.add( lidmaatschap);
 		group.setMemberships(lidmaatschappen);
 
-
-		GroupDTO response= groupService.create(group);
+		return group;
 
 	}
     @RequestMapping(method = RequestMethod.POST)
@@ -72,6 +77,8 @@ public final class GroupController {
     @CrossOrigin(origins = "http://localhost:63062")
     GroupDTO create(@RequestBody @Valid GroupDTO groupEntry) {
         LOGGER.info("Creating a new group entry with information: {}", groupEntry);
+    
+        groupEntry= get();
 
         GroupDTO created = groupService.create(groupEntry);
         LOGGER.info("Created a new group entry with information: {}", created);
@@ -80,7 +87,7 @@ public final class GroupController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     GroupDTO delete(@PathVariable("id") String id) {
         LOGGER.info("Deleting group entry with id: {}", id);
 
@@ -95,7 +102,6 @@ public final class GroupController {
     @Async
     CompletableFuture<List<GroupDTO>> findAll() {
         LOGGER.info("Finding all group entries");
-        insert();
         CompletableFuture<List<GroupDTO>> groupEntries = groupService.findAll();
 //        LOGGER.info("Found {} group entries", groupEntries.size());
 

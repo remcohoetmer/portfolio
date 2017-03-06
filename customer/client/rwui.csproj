@@ -28,6 +28,7 @@
     <Content Include="klanten.html" />
     <Content Include="organisaties.html" />
     <Content Include="scopes.html" />
+    <Content Include="streaming.html" />
     <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -41,6 +42,7 @@
     <TypeScriptCompile Include="includes\KlantenLijst.ts" />
     <TypeScriptCompile Include="includes\Leden.ts" />
     <TypeScriptCompile Include="includes\Scopes.ts" />
+    <TypeScriptCompile Include="includes\Streaming.ts" />
     <TypeScriptCompile Include="includes\WindowUtil.ts" />
     <TypeScriptCompile Include="includes\Organisaties.ts" />
     <TypeScriptCompile Include="includes\jquery.d.ts" />

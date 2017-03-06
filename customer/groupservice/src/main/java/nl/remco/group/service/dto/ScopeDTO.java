@@ -1,4 +1,4 @@
-package nl.remco.group.service;
+package nl.remco.group.service.dto;
 
 public class ScopeDTO {
     public String getId() {

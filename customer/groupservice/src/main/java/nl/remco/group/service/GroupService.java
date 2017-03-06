@@ -3,6 +3,8 @@ package nl.remco.group.service;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import nl.remco.group.service.dto.GroupDTO;
+
 
 public interface GroupService {
 	GroupDTO create(GroupDTO scope);

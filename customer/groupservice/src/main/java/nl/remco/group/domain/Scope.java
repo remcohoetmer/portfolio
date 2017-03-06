@@ -12,10 +12,14 @@ public class Scope {
     }
     
     public Scope(String id2, String string) {
-    	id=id2;
-    	name= string;
+    	setId(id2);
+    	setName(string);
     }
 
+	public void setId(String id) {
+		this.id = id;
+	}
+	
     public String getId() {
         return id;
     }
@@ -32,11 +36,20 @@ public class Scope {
     public String toString() {
         return String.format(
                 "Scope[id=%s, name=%s, status=%s]",
-                this.id,
-                this.name,
-                this.status
+                this.getId(),
+                this.getName(),
+                this.getStatus()
         );
     }
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 
 
 

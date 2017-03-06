@@ -1,9 +1,10 @@
-package nl.remco.group.service;
+package nl.remco.group.service.dto;
 
 public class PersonDTO {
 	private String id;
 	private String name;
-
+	public PersonDTO() {
+	}
 	public PersonDTO(String name) {
 		this.setId(name);
 		this.setName(name);

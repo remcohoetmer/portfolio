@@ -1,4 +1,4 @@
-package nl.remco.group.service;
+package nl.remco.group.service.dto;
 
 import java.util.List;
 
