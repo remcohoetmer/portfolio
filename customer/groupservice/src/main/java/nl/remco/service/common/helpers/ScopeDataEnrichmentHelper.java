@@ -2,8 +2,8 @@ package nl.remco.service.common.helpers;
 
 import java.util.Map;
 
-import nl.remco.group.domain.Group;
-import nl.remco.group.domain.Scope;
+import nl.remco.group.service.domain.Group;
+import nl.remco.group.service.domain.Scope;
 import nl.remco.service.common.model.Benoembaar;
 import nl.remco.service.common.model.Identifiable;
 

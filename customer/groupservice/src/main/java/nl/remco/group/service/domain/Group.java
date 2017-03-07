@@ -1,4 +1,4 @@
-package nl.remco.group.domain;
+package nl.remco.group.service.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,57 +10,45 @@ public class Group  {
 
 	private String name;
 	private String status;
-	private String beschrijving;
-	private String groepscode;
-	private String product;
-	private String geplandePeriode;
+	private String description;
+	private String code;
 	private Scope scope;
 	private Organisation organisatie;
 	private List<Membership> memberships;
-	private List<String> kenmerken;
-	private Group hoofdgroep;
+	private List<String> features;
+	private Group master;
 	private String createdBy;
 
-
-	public String getGroepscode() {
-		return groepscode;
-	}
-	public void setGroepscode(String groepscode) {
-		this.groepscode = groepscode;
-	}
-	public String getProduct() {
-		return product;
-	}
-	public void setProduct(String product) {
-		this.product = product;
+    public Group(String id) {
+    	this.id=id;
 	}
 
-	public String getGeplandePeriode() {
-		return geplandePeriode;
+	public String getCode() {
+		return code;
 	}
-	public void setGeplandePeriode(String geplandePeriode) {
-		this.geplandePeriode = geplandePeriode;
+	public void setCode(String code) {
+		this.code = code;
 	}
+
 	public Scope getScope() {
 		return scope;
 	}
 	public void setScope(Scope scope) {
 		this.scope = scope;
 	}
-	public Organisation getOrganisatie() {
+	public Organisation getOrganisation() {
 		return organisatie;
 	}
-	public void setOrganisatie(Organisation organisatie) {
-		this.organisatie = organisatie;
+	public void setOrganisation(Organisation organisation) {
+		this.organisatie = organisation;
 	}
 
-	public List<String> getKenmerken() {
-		return kenmerken;
+	public List<String> getFeatures() {
+		if (features==null) {
+			features= new ArrayList<>();
+		}
+		return features;
 	}
-	public void setKenmerken(List<String> kenmerken) {
-		this.kenmerken = kenmerken;
-	}
-
 
 	public List<Membership> getMemberships() {
 		if (memberships==null) {
@@ -68,9 +56,7 @@ public class Group  {
 		}
 		return memberships;
 	}
-	public void setMemberships(List<Membership> lidmaatschappen) {
-		this.memberships = lidmaatschappen;
-	}
+
 	public String getName() {
 		return name;
 	}
@@ -78,16 +64,16 @@ public class Group  {
 		this.name = naam;
 	}
 	public String getDescription() {
-		return beschrijving;
+		return description;
 	}
-	public void setDescription(String beschrijving) {
-		this.beschrijving = beschrijving;
+	public void setDescription(String description) {
+		this.description = description;
 	}
-	public Group getHoofdgroep() {
-		return hoofdgroep;
+	public Group getMaster() {
+		return master;
 	}
-	public void setHoofdgroep(Group hoofdgroep) {
-		this.hoofdgroep = hoofdgroep;
+	public void setMaster(Group master) {
+		this.master = master;
 	}
 
 
@@ -116,7 +102,7 @@ public class Group  {
         this.setStatus(builder.status);
     }
 
-    public static Builder getBuilder() {
+	public static Builder getBuilder() {
         return new Builder();
     }
 	public String getId() {

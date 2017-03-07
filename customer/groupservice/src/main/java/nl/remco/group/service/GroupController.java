@@ -1,6 +1,5 @@
 package nl.remco.group.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -43,7 +42,6 @@ public final class GroupController {
 		GroupDTO group= new GroupDTO();
 		group.setName( "Groepie");
 		group.setDescription( "Beschrijving");
-		group.setPeriod("2017");
 
 		group.setProduct( "Fiets");
 		group.setCode( "Code2");
@@ -55,26 +53,22 @@ public final class GroupController {
 		
 		group.setScope(scope);
 
-
-		List<String> features= new ArrayList<String>();
+		List<String> features= group.getFeatures();
 		features.add( "KK1");
 		features.add( "KK2");
-		group.setFeatures(features);
 
-		List<MembershipDTO> lidmaatschappen= new ArrayList<>();
 		MembershipDTO lidmaatschap= new MembershipDTO();
 		PersonDTO persoon= new PersonDTO("person1");
-		lidmaatschap.setPersoon( persoon);
-		lidmaatschap.setRol( "member");
-		lidmaatschappen.add( lidmaatschap);
-		group.setMemberships(lidmaatschappen);
+		lidmaatschap.setPerson( persoon);
+		lidmaatschap.setRole( "member");
+		group.getMemberships().add( lidmaatschap);
 
 		return group;
 
 	}
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     GroupDTO create(@RequestBody @Valid GroupDTO groupEntry) {
         LOGGER.info("Creating a new group entry with information: {}", groupEntry);
     
@@ -109,7 +103,7 @@ public final class GroupController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     GroupDTO findById(@PathVariable("id") String id) {
         LOGGER.info("Finding group entry with id: {}", id);
 
@@ -133,7 +127,7 @@ public final class GroupController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     public void handlegroupNotFound(GroupNotFoundException ex) {
         LOGGER.error("Handling error with message: {}", ex.getMessage());
     }

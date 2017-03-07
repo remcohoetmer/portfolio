@@ -1,19 +1,19 @@
 package nl.remco.group.service.dto;
 
 public class MembershipDTO {
-	private String rol;
-	private PersonDTO persoon;
-	public String getRol() {
-		return rol;
+	private String role;
+	private PersonDTO person;
+	public String getRole() {
+		return role;
 	}
-	public void setRol(String rol) {
-		this.rol = rol;
+	public void setRole(String rol) {
+		this.role = rol;
 	}
-	public PersonDTO getPersoon() {
-		return persoon;
+	public PersonDTO getPerson() {
+		return person;
 	}
-	public void setPersoon(PersonDTO persoon) {
-		this.persoon = persoon;
+	public void setPerson(PersonDTO person) {
+		this.person = person;
 	}
 
 }

@@ -1,7 +1,14 @@
 package nl.remco.group.service.dto;
 
 public class ScopeDTO {
-    public String getId() {
+    public ScopeDTO(String id) {
+		this.id=id;
+	}
+
+	public ScopeDTO() {
+	}
+
+	public String getId() {
 		return id;
 	}
 

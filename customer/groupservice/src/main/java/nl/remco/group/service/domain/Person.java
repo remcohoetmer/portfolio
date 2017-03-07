@@ -1,11 +1,11 @@
-package nl.remco.group.domain;
+package nl.remco.group.service.domain;
 
 public class Person {
 	private String id;
 	private String name;
 
-	public Person(String name) {
-		this.setId(name);
+	public Person(String id, String name) {
+		this.setId(id);
 		this.setName(name);
 	
 	}

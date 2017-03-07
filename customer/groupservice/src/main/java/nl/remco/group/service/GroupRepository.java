@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.repository.Repository;
 
-import nl.remco.group.domain.Group;
+import nl.remco.group.service.domain.Group;
 
 
 interface GroupRepository extends Repository<Group, String> {

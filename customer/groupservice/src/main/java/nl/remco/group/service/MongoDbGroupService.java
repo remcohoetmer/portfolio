@@ -2,7 +2,6 @@ package nl.remco.group.service;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -12,119 +11,101 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import nl.remco.group.domain.Group;
-import nl.remco.group.domain.Membership;
+import nl.remco.group.service.domain.Group;
 import nl.remco.group.service.dto.GroupDTO;
-import nl.remco.group.service.dto.MembershipDTO;
-import nl.remco.group.service.dto.PersonDTO;
 
 
 @Service
 public class MongoDbGroupService implements GroupService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbGroupService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbGroupService.class);
 
-    private final GroupRepository repository;
+	private final GroupRepository repository;
 
-    @Autowired
-    GroupEnricher enricher;
-    
-    @Autowired
-    MongoDbGroupService(GroupRepository repository) {
-        this.repository = repository;
-    }
+	@Autowired
+	GroupEnricher enricher;
 
-    @Override
-    public GroupDTO create(GroupDTO group) {
-        LOGGER.info("Creating a new group entry with information: {}", group);
+	@Autowired
+	Converter converter;
 
-        Group persisted = Group.getBuilder()
-                .status(group.getStatus())
-                .name(group.getName())
-                .build();
+	@Autowired
+	MongoDbGroupService(GroupRepository repository) {
+		this.repository = repository;
+	}
 
-        persisted = repository.save(persisted);
-        LOGGER.info("Created a new group entry with information: {}", persisted);
+	@Override
+	public GroupDTO create(GroupDTO group) {
+		LOGGER.info("Creating a new group entry with information: {}", group);
 
-        return convertToDTO(persisted);
-    }
+		Group persisted = converter.convertfromDTO(group);
+		
+		persisted = repository.save(persisted);
+		LOGGER.info("Created a new group entry with information: {}", persisted);
 
-    @Override
-    public GroupDTO delete(String id) {
-        LOGGER.info("Deleting a group entry with id: {}", id);
+		return converter.convertToDTO(persisted);
+	}
 
-        Group deleted = findGroupById(id);
-        repository.delete(deleted);
+	@Override
+	public GroupDTO delete(String id) {
+		LOGGER.info("Deleting a group entry with id: {}", id);
 
-        LOGGER.info("Deleted group entry with informtation: {}", deleted);
+		Group deleted = findGroupById(id);
+		repository.delete(deleted);
 
-        return convertToDTO(deleted);
-    }
+		LOGGER.info("Deleted group entry with informtation: {}", deleted);
 
-    @Override
-    public CompletableFuture<List<GroupDTO>> findAll() {
-        LOGGER.info("Finding all group entries.");
+		return converter.convertToDTO(deleted);
+	}
 
-        CompletableFuture<List<Group>> groupEntries = repository.findAll();
+	@Override
+	public CompletableFuture<List<GroupDTO>> findAll() {
+		LOGGER.info("Finding all group entries.");
 
-        return groupEntries
-        		.thenApply(entries -> {
-            LOGGER.info("Found {} group entries", entries.size());
-            return convertToDTOs(entries);
-        })
-        		.thenCompose( enricher::enrichPersons);
-    }
+		CompletableFuture<List<Group>> groupEntries = repository.findAll();
 
-    private List<GroupDTO> convertToDTOs(List<Group> models) {
-        return models.stream()
-                .map(this::convertToDTO)
-                .collect(toList());
-    }
+		return groupEntries
+				.thenApply(entries -> {
+					LOGGER.info("Found {} group entries", entries.size());
+					return convertToDTOs(entries);
+				})
+				.thenCompose( enricher::enrichPersons);
+	}
 
-    @Override
-    public GroupDTO findById(String id) {
-        LOGGER.info("Finding group entry with id: {}", id);
+	private List<GroupDTO> convertToDTOs(List<Group> models) {
+		return models.stream()
+				.map(converter::convertToDTO)
+				.collect(toList());
+	}
 
-        Group found = findGroupById(id);
+	@Override
+	public GroupDTO findById(String id) {
+		LOGGER.info("Finding group entry with id: {}", id);
 
-        LOGGER.info("Found group entry: {}", found);
+		Group found = findGroupById(id);
 
-        return convertToDTO(found);
-    }
+		LOGGER.info("Found group entry: {}", found);
 
-    @Override
-    public GroupDTO update(GroupDTO group) {
-        LOGGER.info("Updating group entry with information: {}", group);
+		return converter.convertToDTO(found);
+	}
 
-        Group updated = findGroupById(group.getId());
-        updated.update(group.getStatus(), group.getName());
-        updated = repository.save(updated);
+	@Override
+	public GroupDTO update(GroupDTO group) {
+		LOGGER.info("Updating group entry with information: {}", group);
 
-        LOGGER.info("Updated group entry with information: {}", updated);
+		Group updated = findGroupById(group.getId());
+		updated.update(group.getStatus(), group.getName());
+		updated = repository.save(updated);
 
-        return convertToDTO(updated);
-    }
+		LOGGER.info("Updated group entry with information: {}", updated);
 
-    private Group findGroupById(String id) {
-        Optional<Group> result = repository.findOne(id);
-        return result.orElseThrow(() -> new GroupNotFoundException(id));
+		return converter.convertToDTO(updated);
+	}
 
-    }
+	private Group findGroupById(String id) {
+		Optional<Group> result = repository.findOne(id);
+		return result.orElseThrow(() -> new GroupNotFoundException(id));
 
-    private GroupDTO convertToDTO(Group model) {
-        GroupDTO dto = new GroupDTO();
+	}
 
-        dto.setId(model.getId());
-        dto.setStatus(model.getStatus());
-        dto.setName(model.getName());
-        List<MembershipDTO> mbsDTO= new ArrayList<>();
-        for (Membership ms: model.getMemberships()) {
-        	MembershipDTO mbDTO= new MembershipDTO();
-        	mbDTO.setPersoon( new PersonDTO( ms.getPersoon().getId()));
-        	mbDTO.setRol( ms.getRol());
-        	mbsDTO.add(mbDTO);
-        }
-        dto.setMemberships( mbsDTO);
-        return dto;
-    }
+
 }

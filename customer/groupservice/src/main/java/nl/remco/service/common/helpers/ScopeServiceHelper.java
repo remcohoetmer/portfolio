@@ -11,7 +11,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import nl.remco.group.domain.Scope;
+import nl.remco.group.service.domain.Scope;
 
 
 

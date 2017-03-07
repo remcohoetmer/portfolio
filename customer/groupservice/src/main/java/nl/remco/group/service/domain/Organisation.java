@@ -1,10 +1,21 @@
-package nl.remco.group.domain;
+package nl.remco.group.service.domain;
 
 
 public class Organisation  {
+	private String id;
 	private String name;
 	private String status;
 
+	public Organisation(String id) {
+		this.id=id;
+	}
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}
@@ -20,5 +31,7 @@ public class Organisation  {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+
 	
 }

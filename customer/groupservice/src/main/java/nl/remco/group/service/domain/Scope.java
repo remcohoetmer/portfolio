@@ -1,20 +1,23 @@
-package nl.remco.group.domain;
+package nl.remco.group.service.domain;
 
 
 public class Scope {
 
     private String id;
-
     private String name;
-
     private String status;
+    
     public Scope() {
     }
     
-    public Scope(String id2, String string) {
-    	setId(id2);
+	public Scope(String id) {
+    	setId(id);
+	}
+    public Scope(String id, String string) {
+    	setId(id);
     	setName(string);
     }
+
 
 	public void setId(String id) {
 		this.id = id;

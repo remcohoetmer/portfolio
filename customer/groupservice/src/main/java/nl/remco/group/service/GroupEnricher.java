@@ -26,11 +26,11 @@ public class GroupEnricher {
 				});
 	}
 
-	public CompletableFuture<List<GroupDTO>> enrichPersons(List<GroupDTO> groups) {
+	public CompletableFuture<List<GroupDTO>> enrichPersons(final List<GroupDTO> groups) {
 		List<CompletableFuture<Void>> list= new ArrayList<>();
 		for (GroupDTO group: groups) {
 			for (MembershipDTO membership: group.getMemberships()) {
-				list.add( enrich( membership.getPersoon()));
+				list.add( enrich( membership.getPerson()));
 
 			}
 		}
