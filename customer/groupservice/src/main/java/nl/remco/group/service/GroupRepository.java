@@ -11,11 +11,11 @@ import nl.remco.group.service.domain.Group;
 
 interface GroupRepository extends Repository<Group, String> {
 
-    void delete(Group deleted);
+	CompletableFuture<Void> delete(Group deleted);
 
     CompletableFuture<List<Group>> findAll();
 
-    Optional<Group> findOne(String id);
+    CompletableFuture<Group> findOne(String id);
 
-    Group save(Group saved);
+    CompletableFuture<Group> save(Group saved);
 }

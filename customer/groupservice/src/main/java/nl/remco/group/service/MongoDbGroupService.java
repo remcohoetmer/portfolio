@@ -34,27 +34,36 @@ public class MongoDbGroupService implements GroupService {
 	}
 
 	@Override
-	public GroupDTO create(GroupDTO group) {
+	public CompletableFuture<GroupDTO> create(GroupDTO group) {
 		LOGGER.info("Creating a new group entry with information: {}", group);
 
-		Group persisted = converter.convertfromDTO(group);
-		
-		persisted = repository.save(persisted);
-		LOGGER.info("Created a new group entry with information: {}", persisted);
+		Group groupDTO = converter.convertfromDTO(group);
 
-		return converter.convertToDTO(persisted);
+		return repository.save(groupDTO)
+				.thenApply( persisted-> {
+					LOGGER.info("Created a new group entry with information: {}", persisted);
+
+					return converter.convertToDTO(persisted);
+				})
+				.thenCompose( enricher::enrichPersons);
 	}
 
 	@Override
-	public GroupDTO delete(String id) {
+	public CompletableFuture<GroupDTO> delete(String id) {
 		LOGGER.info("Deleting a group entry with id: {}", id);
 
-		Group deleted = findGroupById(id);
-		repository.delete(deleted);
+		return findGroupById(id)
+				.thenCompose( group-> {
+					return repository.delete(group)
+							.thenApply( dummy -> {
 
-		LOGGER.info("Deleted group entry with informtation: {}", deleted);
+								LOGGER.info("Deleted group entry with informtation: {}", group);
 
-		return converter.convertToDTO(deleted);
+								return converter.convertToDTO(group);
+							}
+
+									);
+				});
 	}
 
 	@Override
@@ -78,34 +87,47 @@ public class MongoDbGroupService implements GroupService {
 	}
 
 	@Override
-	public GroupDTO findById(String id) {
+	public CompletableFuture<GroupDTO> findById(String id) {
 		LOGGER.info("Finding group entry with id: {}", id);
 
-		Group found = findGroupById(id);
+		return findGroupById(id)
+				.thenApply( found -> {
+					LOGGER.info("Found group entry: {}", found);
+					return converter.convertToDTO(found);
 
-		LOGGER.info("Found group entry: {}", found);
-
-		return converter.convertToDTO(found);
+				})
+				.thenCompose( enricher::enrichPersons);
 	}
 
 	@Override
-	public GroupDTO update(GroupDTO group) {
+	public CompletableFuture<GroupDTO> update(GroupDTO group) {
 		LOGGER.info("Updating group entry with information: {}", group);
 
-		Group updated = findGroupById(group.getId());
-		updated.update(group.getStatus(), group.getName());
-		updated = repository.save(updated);
+		return findGroupById(group.getId())
+				.thenApply( updated-> {
+					updated.update(group.getStatus(), group.getName());
+					return updated;
+				})
+				.thenCompose( repository::save)
+				.thenApply( updated -> {
+					LOGGER.info("Updated group entry with information: {}", updated);
 
-		LOGGER.info("Updated group entry with information: {}", updated);
-
-		return converter.convertToDTO(updated);
+					return converter.convertToDTO(updated);
+				})
+				.thenCompose( enricher::enrichPersons);
 	}
 
-	private Group findGroupById(String id) {
-		Optional<Group> result = repository.findOne(id);
-		return result.orElseThrow(() -> new GroupNotFoundException(id));
 
+
+	private CompletableFuture<Group> findGroupById(String id) {
+		return repository.findOne(id);
+				
+		/*
+				gives classcast exception
+		Optional<Group> result= repository
+				.findOne(id).join();
+				
+					return CompletableFuture.supplyAsync(()-> result.orElseThrow(() -> new GroupNotFoundException(id));
+*/
 	}
-
-
 }

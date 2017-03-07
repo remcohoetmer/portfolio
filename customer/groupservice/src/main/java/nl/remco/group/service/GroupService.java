@@ -7,9 +7,9 @@ import nl.remco.group.service.dto.GroupDTO;
 
 
 public interface GroupService {
-	GroupDTO create(GroupDTO scope);
-    GroupDTO delete(String id);
+	CompletableFuture<GroupDTO> create(GroupDTO scope);
+	CompletableFuture<GroupDTO> delete(String id);
     CompletableFuture<List<GroupDTO>> findAll();
-    GroupDTO findById(String id);
-    GroupDTO update(GroupDTO scope);
+    CompletableFuture<GroupDTO> findById(String id);
+    CompletableFuture<GroupDTO> update(GroupDTO scope);
 }

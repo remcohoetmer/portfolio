@@ -20,12 +20,22 @@ public class GroupEnricher {
 	CompletableFuture<Void> enrich( PersonDTO person)
 	{
 		return crmCustomersDelegate.findPerson( person.getId())
-				.thenApply( enrichedperson -> {
-					person.setName( enrichedperson.getName());
+				.thenApply( servicePerson -> {
+					person.copyFrom( servicePerson);
 					return null;
 				});
 	}
 
+	public CompletableFuture<GroupDTO> enrichPersons(final GroupDTO group) {
+		List<CompletableFuture<Void>> list= new ArrayList<>();
+			for (MembershipDTO membership: group.getMemberships()) {
+				list.add( enrich( membership.getPerson()));
+
+		}
+		return CompletableFuture.allOf(list.stream().toArray(CompletableFuture[]::new))
+				.thenApply(dummy->{ return group;});
+	}
+	
 	public CompletableFuture<List<GroupDTO>> enrichPersons(final List<GroupDTO> groups) {
 		List<CompletableFuture<Void>> list= new ArrayList<>();
 		for (GroupDTO group: groups) {

@@ -9,8 +9,6 @@ public final class GroupDTO {
     private String status;
 	private String description;
 	private String code;
-	private String product;
-;
 	private ScopeDTO scope;
 	private OrganisationDTO organisation;
 	private List<MembershipDTO> memberships;
@@ -40,15 +38,6 @@ public final class GroupDTO {
 	public void setCode(String code) {
 		this.code = code;
 	}
-
-	public String getProduct() {
-		return product;
-	}
-
-	public void setProduct(String product) {
-		this.product = product;
-	}
-
 	public ScopeDTO getScope() {
 		return scope;
 	}

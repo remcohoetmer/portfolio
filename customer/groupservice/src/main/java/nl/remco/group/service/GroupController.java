@@ -20,10 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import nl.remco.group.service.dto.GroupDTO;
-import nl.remco.group.service.dto.MembershipDTO;
-import nl.remco.group.service.dto.OrganisationDTO;
-import nl.remco.group.service.dto.PersonDTO;
-import nl.remco.group.service.dto.ScopeDTO;
 
 
 @RestController
@@ -38,57 +34,22 @@ public final class GroupController {
     GroupController(GroupService service) {
         this.groupService = service;
     }
-    GroupDTO get() {
-		GroupDTO group= new GroupDTO();
-		group.setName( "Groepie");
-		group.setDescription( "Beschrijving");
 
-		group.setProduct( "Fiets");
-		group.setCode( "Code2");
-		OrganisationDTO organisation=  new OrganisationDTO();
-		organisation.setName( "Company");
-		group.setOrganisation(organisation);
-		ScopeDTO scope= new ScopeDTO();
-		group.setName("Marketing");
-		
-		group.setScope(scope);
-
-		List<String> features= group.getFeatures();
-		features.add( "KK1");
-		features.add( "KK2");
-
-		MembershipDTO lidmaatschap= new MembershipDTO();
-		PersonDTO persoon= new PersonDTO("person1");
-		lidmaatschap.setPerson( persoon);
-		lidmaatschap.setRole( "member");
-		group.getMemberships().add( lidmaatschap);
-
-		return group;
-
-	}
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @CrossOrigin(origins = "*")
-    GroupDTO create(@RequestBody @Valid GroupDTO groupEntry) {
+    CompletableFuture<GroupDTO> create(@RequestBody @Valid GroupDTO groupEntry) {
         LOGGER.info("Creating a new group entry with information: {}", groupEntry);
     
-        groupEntry= get();
-
-        GroupDTO created = groupService.create(groupEntry);
-        LOGGER.info("Created a new group entry with information: {}", created);
-
-        return created;
+        return groupService.create(groupEntry);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @CrossOrigin(origins = "*")
-    GroupDTO delete(@PathVariable("id") String id) {
+    CompletableFuture<GroupDTO> delete(@PathVariable("id") String id) {
         LOGGER.info("Deleting group entry with id: {}", id);
 
-        GroupDTO deleted = groupService.delete(id);
-        LOGGER.info("Deleted group entry with information: {}", deleted);
-
-        return deleted;
+        return groupService.delete(id);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -96,33 +57,24 @@ public final class GroupController {
     @Async
     CompletableFuture<List<GroupDTO>> findAll() {
         LOGGER.info("Finding all group entries");
-        CompletableFuture<List<GroupDTO>> groupEntries = groupService.findAll();
-//        LOGGER.info("Found {} group entries", groupEntries.size());
-
-        return groupEntries;
+        return groupService.findAll();
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     @CrossOrigin(origins = "*")
-    GroupDTO findById(@PathVariable("id") String id) {
+    CompletableFuture<GroupDTO> findById(@PathVariable("id") String id) {
         LOGGER.info("Finding group entry with id: {}", id);
 
-        GroupDTO groupEntry = groupService.findById(id);
-        LOGGER.info("Found group entry with information: {}", groupEntry);
-
-        return groupEntry;
+        return groupService.findById(id);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     @CrossOrigin(origins = "*")
-    GroupDTO update(@RequestBody @Valid GroupDTO groupEntry, @PathVariable("id") String id) {
+    CompletableFuture<GroupDTO> update(@RequestBody @Valid GroupDTO groupEntry, @PathVariable("id") String id) {
         LOGGER.info("Updating group entry with information: {}", groupEntry);
         groupEntry.setId(id);
 
-        GroupDTO updated = groupService.update(groupEntry);
-        LOGGER.info("Updated group entry with information: {}", updated);
-
-        return updated;
+        return groupService.update(groupEntry);
     }
 
     @ExceptionHandler

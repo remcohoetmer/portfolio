@@ -49,6 +49,7 @@ class Converter {
 
 		group.setId(dto.getId());
 		group.setName(dto.getName());
+		group.setDescription(dto.getDescription());
 		group.setStatus(dto.getStatus());
 		group.setCode(dto.getCode());
 		if (dto.getScope()!=null) {
