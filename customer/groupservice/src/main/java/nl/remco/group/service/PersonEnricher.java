@@ -13,7 +13,7 @@ import nl.remco.group.service.dto.MembershipDTO;
 import nl.remco.group.service.dto.PersonDTO;
 
 @Component
-public class GroupEnricher {
+public class PersonEnricher {
 	@Autowired
 	private CRMCustomersDelegate crmCustomersDelegate;
 

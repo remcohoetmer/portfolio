@@ -44,9 +44,10 @@ class Converter {
 		}
 		return dto;
 	}
+	
+	
 	Group convertfromDTO(GroupDTO dto) {
 		Group group= new Group();
-
 		group.setId(dto.getId());
 		group.setName(dto.getName());
 		group.setDescription(dto.getDescription());

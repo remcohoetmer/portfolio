@@ -33,7 +33,7 @@ public final class ScopeController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     ScopeDTO create(@RequestBody @Valid ScopeDTO scopeEntry) {
         LOGGER.info("Creating a new scope entry with information: {}", scopeEntry);
 
@@ -44,7 +44,7 @@ public final class ScopeController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     ScopeDTO delete(@PathVariable("id") String id) {
         LOGGER.info("Deleting scope entry with id: {}", id);
 
@@ -66,7 +66,7 @@ public final class ScopeController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     ScopeDTO findById(@PathVariable("id") String id) {
         LOGGER.info("Finding scope entry with id: {}", id);
 
@@ -90,7 +90,7 @@ public final class ScopeController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @CrossOrigin(origins = "http://localhost:63062")
+    @CrossOrigin(origins = "*")
     public void handlescopeNotFound(ScopeNotFoundException ex) {
         LOGGER.error("Handling error with message: {}", ex.getMessage());
     }

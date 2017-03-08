@@ -23,7 +23,10 @@ public class MongoDbGroupService implements GroupService {
 	private final GroupRepository repository;
 
 	@Autowired
-	GroupEnricher enricher;
+	PersonEnricher enricher;
+
+	@Autowired
+	ScopeEnricher scopeEnricher;
 
 	@Autowired
 	Converter converter;
@@ -45,8 +48,10 @@ public class MongoDbGroupService implements GroupService {
 
 					return converter.convertToDTO(persisted);
 				})
-				.thenCompose( enricher::enrichPersons);
+				.thenCompose( enricher::enrichPersons)
+				.thenCompose( scopeEnricher::enrichScopes);
 	}
+	
 
 	@Override
 	public CompletableFuture<GroupDTO> delete(String id) {
@@ -73,11 +78,9 @@ public class MongoDbGroupService implements GroupService {
 		CompletableFuture<List<Group>> groupEntries = repository.findAll();
 
 		return groupEntries
-				.thenApply(entries -> {
-					LOGGER.info("Found {} group entries", entries.size());
-					return convertToDTOs(entries);
-				})
-				.thenCompose( enricher::enrichPersons);
+				.thenApply(this::convertToDTOs)
+				.thenCompose( enricher::enrichPersons)
+				.thenCompose( scopeEnricher::enrichScopes);
 	}
 
 	private List<GroupDTO> convertToDTOs(List<Group> models) {
@@ -121,13 +124,5 @@ public class MongoDbGroupService implements GroupService {
 
 	private CompletableFuture<Group> findGroupById(String id) {
 		return repository.findOne(id);
-				
-		/*
-				gives classcast exception
-		Optional<Group> result= repository
-				.findOne(id).join();
-				
-					return CompletableFuture.supplyAsync(()-> result.orElseThrow(() -> new GroupNotFoundException(id));
-*/
 	}
 }
