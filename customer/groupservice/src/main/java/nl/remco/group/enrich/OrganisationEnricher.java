@@ -1,8 +1,8 @@
 package nl.remco.group.enrich;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +33,7 @@ public class OrganisationEnricher {
 		return CompletableFuture.completedFuture(groupDTO);
 	}
 
-	public CompletableFuture<List<GroupDTO>> enrichOrganisations(final List<GroupDTO> groups) {
-		List<CompletableFuture<GroupDTO>> list= new ArrayList<>();
-		for (GroupDTO group: groups) {
-			list.add( enrichOrganisations(group));
-		}
-		return CompletableFuture.allOf(list.stream().toArray(CompletableFuture[]::new))
-				.thenApply(dummy->{ return groups;});
+	public List<CompletableFuture<GroupDTO>> enrichOrganisations(final List<GroupDTO> groups) {
+		return groups.stream().map( this::enrichOrganisations).collect( Collectors.toList());
 	}
 }

@@ -2,6 +2,7 @@ package nl.remco.group.service;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,7 +27,7 @@ public class MongoDbGroupService implements GroupService {
 
 	@Autowired
 	OrganisationEnricher organisationEnricher;
-	
+
 	@Autowired
 	PersonEnricher personEnricher;
 
@@ -36,11 +37,26 @@ public class MongoDbGroupService implements GroupService {
 	@Autowired
 	Converter converter;
 
+
 	@Autowired
 	MongoDbGroupService(GroupRepository repository) {
 		this.repository = repository;
 	}
 
+	private CompletableFuture<List<GroupDTO>> enrich( CompletableFuture<List<GroupDTO>> groups_cf)
+	{
+		return groups_cf.thenCompose( groups-> {
+			/*		if (selection.isSelectPersons()) {
+			cf=enrichPersons( groups);
+			 */
+			List<CompletableFuture<?>> list= new ArrayList<>();
+			list.addAll( organisationEnricher.enrichOrganisations(groups));
+			list.addAll( personEnricher.enrichPersons(groups));
+			list.addAll( scopeEnricher.enrichScopes(groups));
+			return CompletableFuture.allOf(list.stream().toArray(CompletableFuture[]::new))
+					.thenApply( dummy-> groups);
+		});
+	}
 
 	@Override
 	public CompletableFuture<GroupDTO> create(GroupDTO group) {
@@ -58,7 +74,7 @@ public class MongoDbGroupService implements GroupService {
 				.thenCompose( scopeEnricher::enrichScopes)
 				.thenCompose( organisationEnricher::enrichOrganisations);
 	}
-	
+
 
 	@Override
 	public CompletableFuture<GroupDTO> delete(String id) {
@@ -68,13 +84,9 @@ public class MongoDbGroupService implements GroupService {
 				.thenCompose( group-> {
 					return repository.delete(group)
 							.thenApply( dummy -> {
-
 								LOGGER.info("Deleted group entry with informtation: {}", group);
-
 								return converter.convertToDTO(group);
-							}
-
-									);
+							});
 				});
 	}
 
@@ -82,13 +94,10 @@ public class MongoDbGroupService implements GroupService {
 	public CompletableFuture<List<GroupDTO>> findAll() {
 		LOGGER.info("Finding all group entries.");
 
-		CompletableFuture<List<Group>> groupEntries = repository.findAll();
-
-		return groupEntries
-				.thenApply(this::convertToDTOs)
-				.thenCompose( personEnricher::enrichPersons)
-				.thenCompose( scopeEnricher::enrichScopes)
-				.thenCompose( organisationEnricher::enrichOrganisations);
+		CompletableFuture<List<GroupDTO>> groupEntries =
+				repository.findAll()
+				.thenApply(this::convertToDTOs);
+		return enrich( groupEntries);
 	}
 
 	private List<GroupDTO> convertToDTOs(List<Group> models) {
