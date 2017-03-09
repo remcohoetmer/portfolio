@@ -3,7 +3,6 @@ package nl.remco.group.service;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -11,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import nl.remco.group.enrich.OrganisationEnricher;
+import nl.remco.group.enrich.PersonEnricher;
+import nl.remco.group.enrich.ScopeEnricher;
 import nl.remco.group.service.domain.Group;
 import nl.remco.group.service.dto.GroupDTO;
 
@@ -23,7 +25,10 @@ public class MongoDbGroupService implements GroupService {
 	private final GroupRepository repository;
 
 	@Autowired
-	PersonEnricher enricher;
+	OrganisationEnricher organisationEnricher;
+	
+	@Autowired
+	PersonEnricher personEnricher;
 
 	@Autowired
 	ScopeEnricher scopeEnricher;
@@ -35,6 +40,7 @@ public class MongoDbGroupService implements GroupService {
 	MongoDbGroupService(GroupRepository repository) {
 		this.repository = repository;
 	}
+
 
 	@Override
 	public CompletableFuture<GroupDTO> create(GroupDTO group) {
@@ -48,8 +54,9 @@ public class MongoDbGroupService implements GroupService {
 
 					return converter.convertToDTO(persisted);
 				})
-				.thenCompose( enricher::enrichPersons)
-				.thenCompose( scopeEnricher::enrichScopes);
+				.thenCompose( personEnricher::enrichPersons)
+				.thenCompose( scopeEnricher::enrichScopes)
+				.thenCompose( organisationEnricher::enrichOrganisations);
 	}
 	
 
@@ -79,8 +86,9 @@ public class MongoDbGroupService implements GroupService {
 
 		return groupEntries
 				.thenApply(this::convertToDTOs)
-				.thenCompose( enricher::enrichPersons)
-				.thenCompose( scopeEnricher::enrichScopes);
+				.thenCompose( personEnricher::enrichPersons)
+				.thenCompose( scopeEnricher::enrichScopes)
+				.thenCompose( organisationEnricher::enrichOrganisations);
 	}
 
 	private List<GroupDTO> convertToDTOs(List<Group> models) {
@@ -99,7 +107,9 @@ public class MongoDbGroupService implements GroupService {
 					return converter.convertToDTO(found);
 
 				})
-				.thenCompose( enricher::enrichPersons);
+				.thenCompose( personEnricher::enrichPersons)
+				.thenCompose( scopeEnricher::enrichScopes)
+				.thenCompose( organisationEnricher::enrichOrganisations);
 	}
 
 	@Override
@@ -117,7 +127,9 @@ public class MongoDbGroupService implements GroupService {
 
 					return converter.convertToDTO(updated);
 				})
-				.thenCompose( enricher::enrichPersons);
+				.thenCompose( personEnricher::enrichPersons)
+				.thenCompose( scopeEnricher::enrichScopes)
+				.thenCompose( organisationEnricher::enrichOrganisations);
 	}
 
 

@@ -1,16 +1,22 @@
-package nl.remco.group.service.domain;
+package nl.remco.group.enrich;
 
 
-public class Organisation  {
+public class CRMOrganisation  {
 	private String id;
 	private String name;
 	private String status;
 
-	public Organisation() {
+	public CRMOrganisation() {
 	}
 
-	public Organisation(String id) {
+	public CRMOrganisation(String id) {
 		this.id=id;
+	}
+	
+	public CRMOrganisation(String id, String name, String status) {
+		this.id=id;
+		this.name=name;
+		this.status=status;
 	}
 	
 	public String getId() {

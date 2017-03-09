@@ -1,26 +1,26 @@
-package nl.remco.group.service.dto;
+package nl.remco.group.enrich;
 
 import java.util.Date;
 
-public class PersonDTO {
+public class CRMPerson {
 	private String id;
 	private String name;
 	private String surname;
 	private String email;
 	private Date dateofbirth;
-	private OrganisationDTO organisation;
+	private CRMOrganisation organisation;
 	
-	public PersonDTO() {
+	public CRMPerson() {
 	}
-	public PersonDTO(String name) {
+	public CRMPerson(String name) {
 		this.setId(name);
 		this.setName(name);
 	
 	}
 
-	public PersonDTO(String id, String name, String surname, String email,
+	public CRMPerson(String id, String name, String surname, String email,
 			Date dateofbirth,
-			OrganisationDTO organisation) {
+			CRMOrganisation organisation) {
 		this.id=id;
 		this.name=name;
 		this.surname=surname;
@@ -62,10 +62,10 @@ public class PersonDTO {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public OrganisationDTO getOrganisation() {
+	public CRMOrganisation getOrganisation() {
 		return organisation;
 	}
-	public void setOrganisation(OrganisationDTO organisation) {
+	public void setOrganisation(CRMOrganisation organisation) {
 		this.organisation = organisation;
 	}
 }

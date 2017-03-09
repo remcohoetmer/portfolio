@@ -1,4 +1,4 @@
-package nl.remco.group.service;
+package nl.remco.group.enrich;
 
 import java.util.ArrayList;
 import java.util.List;
