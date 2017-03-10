@@ -55,9 +55,34 @@ public final class GroupController {
     @RequestMapping(method = RequestMethod.GET)
     @CrossOrigin(origins = "*")
     @Async
-    CompletableFuture<List<GroupDTO>> findAll() {
+    CompletableFuture<List<GroupDTO>> findAll(
+    		@PathVariable("name") String name,
+    		@PathVariable("scopeId") String scopeId,
+    		@PathVariable("masterId") String masterId,
+    		@PathVariable("selectMasters") String selectMasters,
+    		@PathVariable("selectPersons") String selectPersons,
+    		@PathVariable("selectScopes") String selectScopes,
+    		@PathVariable("selectOrganisations") String selectOrganisations
+    		) {
+    	GroupFilter groupFilter= new GroupFilter();
+    	GroupSelection groupSelection= new GroupSelection();
+    	if (name!=null)
+    		groupFilter.setName(name);
+    	if (scopeId!=null)
+    		groupFilter.setScopeId(scopeId);
+    	if (masterId!=null)
+    		groupFilter.setMasterId(masterId);
+    	if (selectMasters!=null)
+    		groupSelection.setSelectMasters();
+    	if (selectPersons!=null)
+    		groupSelection.setSelectPersons();
+    	if (selectScopes!=null)
+    		groupSelection.setSelectScopes();
+    	if (selectOrganisations!=null)
+    		groupSelection.setSelectOrganisations();
+    	
         LOGGER.info("Finding all group entries");
-        return groupService.findAll();
+        return groupService.find(groupFilter,groupSelection);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)

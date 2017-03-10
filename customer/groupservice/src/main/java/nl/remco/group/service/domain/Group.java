@@ -13,7 +13,7 @@ public class Group  {
 	private String description;
 	private String code;
 	private Scope scope;
-	private Organisation organisatie;
+	private Organisation organisation;
 	private List<Membership> memberships;
 	private List<String> features;
 	private Group master;
@@ -37,10 +37,10 @@ public class Group  {
 		this.scope = scope;
 	}
 	public Organisation getOrganisation() {
-		return organisatie;
+		return organisation;
 	}
 	public void setOrganisation(Organisation organisation) {
-		this.organisatie = organisation;
+		this.organisation = organisation;
 	}
 
 	public List<String> getFeatures() {

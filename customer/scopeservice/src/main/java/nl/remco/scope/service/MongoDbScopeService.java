@@ -1,15 +1,18 @@
 package nl.remco.scope.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Service;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Service;
 
 @PropertySource("application.properties")
 @Service
@@ -18,7 +21,8 @@ final class MongoDBScopeService implements ScopeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBScopeService.class);
 
     private final ScopeRepository repository;
-
+    @Autowired
+    MongoTemplate mongoTemplate;
     @Autowired
     MongoDBScopeService(ScopeRepository repository) {
         this.repository = repository;
@@ -55,10 +59,17 @@ final class MongoDBScopeService implements ScopeService {
     public List<ScopeDTO> findAll() {
         LOGGER.info("Finding all scope entries.");
 
-        List<Scope> scopeEntries = repository.findAll();
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("status").is("Inactive"));
+        List<Scope> scopeEntries= mongoTemplate.find(query, Scope.class);
+
+        //List<Scope> scopeEntries = repository.findAll();
 
         LOGGER.info("Found {} scope entries", scopeEntries.size());
-
+     
+        
+        
         return convertToDTOs(scopeEntries);
     }
 
