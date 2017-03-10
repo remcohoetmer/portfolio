@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Group  {
+public class RGroup  {
 
 	private String id;
 
@@ -16,10 +16,10 @@ public class Group  {
 	private Organisation organisation;
 	private List<Membership> memberships;
 	private List<String> features;
-	private Group master;
+	private RGroup master;
 	private String createdBy;
 
-    public Group(String id) {
+    public RGroup(String id) {
     	this.id=id;
 	}
 
@@ -69,10 +69,10 @@ public class Group  {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Group getMaster() {
+	public RGroup getMaster() {
 		return master;
 	}
-	public void setMaster(Group master) {
+	public void setMaster(RGroup master) {
 		this.master = master;
 	}
 
@@ -95,9 +95,9 @@ public class Group  {
 				this.getStatus()
 				);
 	}
-    public Group() {}
+    public RGroup() {}
 
-    private Group(Builder builder) {
+    private RGroup(Builder builder) {
         this.name = builder.name;
         this.setStatus(builder.status);
     }
@@ -133,8 +133,8 @@ public class Group  {
 			return this;
 		}
 
-		public Group build() {
-			Group build = new Group(this);
+		public RGroup build() {
+			RGroup build = new RGroup(this);
 
 
 			return build;

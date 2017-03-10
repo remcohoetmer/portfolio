@@ -2,7 +2,7 @@ package nl.remco.group.service;
 
 import org.springframework.stereotype.Component;
 
-import nl.remco.group.service.domain.Group;
+import nl.remco.group.service.domain.RGroup;
 import nl.remco.group.service.domain.Membership;
 import nl.remco.group.service.domain.Organisation;
 import nl.remco.group.service.domain.Person;
@@ -15,8 +15,10 @@ import nl.remco.group.service.dto.ScopeDTO;
 
 @Component
 class Converter {
-	GroupDTO convertToDTO(Group model) {
-
+	GroupDTO convertToDTO(RGroup model) {
+		if (model==null) {
+			return new GroupDTO();
+		}
 		GroupDTO dto = new GroupDTO(model.getId());
 		dto.setStatus(model.getStatus());
 		dto.setName(model.getName());
@@ -44,10 +46,10 @@ class Converter {
 		}
 		return dto;
 	}
-	
-	
-	Group convertfromDTO(GroupDTO dto) {
-		Group group= new Group();
+
+
+	RGroup convertfromDTO(GroupDTO dto) {
+		RGroup group= new RGroup();
 		group.setId(dto.getId());
 		group.setName(dto.getName());
 		group.setDescription(dto.getDescription());
@@ -69,7 +71,7 @@ class Converter {
 			group.getFeatures().add(feature);
 		}
 		if (dto.getMaster()!=null) {
-			group.setMaster( new Group( dto.getMaster().getId()));
+			group.setMaster( new RGroup( dto.getMaster().getId()));
 		}
 		return group;
 	}

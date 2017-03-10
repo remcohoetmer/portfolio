@@ -5,10 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@Scope("request")
 final class CRMOrganisationDelegate {
 	private static final Logger LOG = Logger.getLogger(CRMOrganisationDelegate.class.getName());
 

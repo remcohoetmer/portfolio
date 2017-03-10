@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.bson.BSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 import nl.remco.group.enrich.OrganisationEnricher;
 import nl.remco.group.enrich.PersonEnricher;
 import nl.remco.group.enrich.ScopeEnricher;
-import nl.remco.group.service.domain.Group;
+import nl.remco.group.service.domain.RGroup;
 import nl.remco.group.service.dto.GroupDTO;
 
 
@@ -80,7 +81,7 @@ public class MongoDbGroupService implements GroupService {
 					list.add(
 							findById( groupDTO.getMaster().getId())
 							.thenApply(master -> { groupDTO.setMaster(master); return groupDTO;})
-							.exceptionally( t-> { System.err.println(t); return groupDTO;}));
+							.exceptionally( t-> { t.printStackTrace(); return groupDTO;}));
 					
 			}
 		}
@@ -91,7 +92,7 @@ public class MongoDbGroupService implements GroupService {
 	public CompletableFuture<GroupDTO> create(GroupDTO group) {
 		LOGGER.info("Creating a new group entry with information: {}", group);
 
-		Group groupDTO = converter.convertfromDTO(group);
+		RGroup groupDTO = converter.convertfromDTO(group);
 
 		return repository.save(groupDTO)
 				.thenApply( persisted-> {
@@ -120,47 +121,46 @@ public class MongoDbGroupService implements GroupService {
 	public CompletableFuture<List<GroupDTO>> find(GroupFilter groupFilter, GroupSelection groupSelection) {
 		LOGGER.info("Finding all group entries.");
 
-		//		repository.findAll()
-
 		CompletableFuture<List<GroupDTO>> groupEntries = findGroups( groupFilter)
 				.thenApply(this::convertToDTOs);
 		return enrich( groupEntries, groupFilter, groupSelection);
 	}
 
-	private CompletableFuture<List<Group>> findGroups(GroupFilter groupFilter) {
+	private CompletableFuture<List<RGroup>> findGroups(GroupFilter groupFilter) {
 		Query query = new Query();
-		if (!groupFilter.getName().isEmpty()) {
-			query.addCriteria(Criteria.where("name").regex(groupFilter.getName()));
+		if (groupFilter.getName()!=null) {
+			query.addCriteria(Criteria.where("name").regex(".*" + groupFilter.getName() + ".*"));
 		}
-		if (!groupFilter.getDescription().isEmpty()) {
+		if (groupFilter.getDescription()!=null) {
 			query.addCriteria(Criteria.where("description").regex(groupFilter.getDescription()));
 		}
-		if (!groupFilter.getStatus().isEmpty()) {
-			query.addCriteria(Criteria.where("status").regex(groupFilter.getStatus()));
+		if (groupFilter.getStatus()!=null) {
+			query.addCriteria(Criteria.where("status").is(groupFilter.getStatus()));
 		}
-		if (!groupFilter.getCode().isEmpty()) {
-			query.addCriteria(Criteria.where("code").regex(groupFilter.getCode()));
+		if (groupFilter.getCode()!=null) {
+			query.addCriteria(Criteria.where("code").is(groupFilter.getCode()));
 		}
-		if (!groupFilter.getMasterId().isEmpty()){
-			query.addCriteria(Criteria.where("masterId").is(groupFilter.getMasterId()));
+		if (groupFilter.getMasterId()!=null){
+			query.addCriteria(Criteria.where("master.id").is(groupFilter.getMasterId()));
 		}
-		if (!groupFilter.getScopeId().isEmpty()){
-			query.addCriteria(Criteria.where("scopeId").is(groupFilter.getScopeId()));
+		if (groupFilter.getScopeId()!=null){// doesn't work ????
+			query.addCriteria(Criteria.where("scope.id").is(groupFilter.getScopeId()));
 		}
-		if (!groupFilter.getOrganisationId().isEmpty()){
-			query.addCriteria(Criteria.where("organisationId").is(groupFilter.getOrganisationId()));
+		if (groupFilter.getOrganisationId()!=null){
+			query.addCriteria(Criteria.where("organisation.id").is(groupFilter.getOrganisationId()));
 		}
 		if (groupFilter.getFeatures()!=null && !groupFilter.getFeatures().isEmpty()){
 			query.addCriteria(Criteria.where("features").in(groupFilter.getFeatures()));
 		}
+		LOGGER.info( "Query" + new String(BSON.encode(query.getQueryObject())));
 		//TODO:make async
-		List<Group> scopeEntries= mongoTemplate.find(query, Group.class);
+		List<RGroup> scopeEntries= mongoTemplate.find(query, RGroup.class);
 
 		return CompletableFuture.completedFuture(scopeEntries);
 	}
 
 	
-	private List<GroupDTO> convertToDTOs(List<Group> models) {
+	private List<GroupDTO> convertToDTOs(List<RGroup> models) {
 		return models.stream()
 				.map(converter::convertToDTO)
 				.collect(toList());
@@ -171,7 +171,7 @@ public class MongoDbGroupService implements GroupService {
 		LOGGER.info("Finding group entry with id: {}", id);
 
 		return findGroupById(id)
-				.thenApply( found -> {
+				.thenApply( found -> {// Found can be null!
 					LOGGER.info("Found group entry: {}", found);
 					return converter.convertToDTO(found);
 
@@ -200,7 +200,7 @@ public class MongoDbGroupService implements GroupService {
 
 
 
-	private CompletableFuture<Group> findGroupById(String id) {
+	private CompletableFuture<RGroup> findGroupById(String id) {
 		return repository.findOne(id);
 	}
 }

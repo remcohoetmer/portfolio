@@ -59,12 +59,12 @@ final class MongoDBScopeService implements ScopeService {
     public List<ScopeDTO> findAll() {
         LOGGER.info("Finding all scope entries.");
 
-
+/*
         Query query = new Query();
         query.addCriteria(Criteria.where("status").is("Inactive"));
         List<Scope> scopeEntries= mongoTemplate.find(query, Scope.class);
-
-        //List<Scope> scopeEntries = repository.findAll();
+*/
+        List<Scope> scopeEntries = repository.findAll();
 
         LOGGER.info("Found {} scope entries", scopeEntries.size());
      

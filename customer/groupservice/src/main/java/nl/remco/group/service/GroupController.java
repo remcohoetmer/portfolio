@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,20 +57,26 @@ public final class GroupController {
     @CrossOrigin(origins = "*")
     @Async
     CompletableFuture<List<GroupDTO>> findAll(
-    		@PathVariable("name") String name,
-    		@PathVariable("scopeId") String scopeId,
-    		@PathVariable("masterId") String masterId,
-    		@PathVariable("selectMasters") String selectMasters,
-    		@PathVariable("selectPersons") String selectPersons,
-    		@PathVariable("selectScopes") String selectScopes,
-    		@PathVariable("selectOrganisations") String selectOrganisations
+    		@RequestParam(value="name", required=false) String name,
+    		@RequestParam(value="code", required=false) String code,
+    		@RequestParam(value="scopeId", required=false) String scopeId,
+    		@RequestParam(value="masterId", required=false) String masterId,
+    		@RequestParam(value="organisationId", required=false) String organisationId,
+    		@RequestParam(value="selectMasters", required=false) String selectMasters,
+    		@RequestParam(value="selectPersons", required=false) String selectPersons,
+    		@RequestParam(value="selectScopes", required=false) String selectScopes,
+    		@RequestParam(value="selectOrganisations", required=false) String selectOrganisations
     		) {
     	GroupFilter groupFilter= new GroupFilter();
     	GroupSelection groupSelection= new GroupSelection();
     	if (name!=null)
     		groupFilter.setName(name);
+    	if (code!=null)
+    		groupFilter.setCode(code);
     	if (scopeId!=null)
     		groupFilter.setScopeId(scopeId);
+    	if (organisationId!=null)
+    		groupFilter.setOrganisationId(organisationId);
     	if (masterId!=null)
     		groupFilter.setMasterId(masterId);
     	if (selectMasters!=null)
