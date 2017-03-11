@@ -23,15 +23,7 @@ class Organisations {
         FilterUtil.updateFilterStringWildcard(filter, "organisationSearchNaam", "naam");
         FilterUtil.updateFilterString(filter, "organisationSearchStatus", "status");
         let _this = this;
-        let response: Array<Organisation> = [
-            new Organisation("8000", "University"),
-            new Organisation("8001", "The Floor"),
-            new Organisation("8002", "The Shack")];
-            
-        _this.showSearchResults(response);
 
-        return;
-        /*
         $.ajax({
             url: Configuration.organisation_service + filter.string,
             type: "GET",
@@ -41,7 +33,6 @@ class Organisations {
             cache: false,
             error: FilterUtil.ajaxErrorHandler.bind(FilterUtil)
         });
-        */
     }
 
     showSearchResults(organisations: Array<Organisation>) {
@@ -50,8 +41,8 @@ class Organisations {
             "aaData": organisations,
             "bDestroy": true,
             "aoColumns": [
-                { "mData": "id" },
-                { "mData": "name" }
+                { "mData": "name" },
+                { "mData": "status" }
             ],
             "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 $(nRow).attr("id", "ORG" + aData.id);

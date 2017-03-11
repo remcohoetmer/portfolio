@@ -1,4 +1,4 @@
-package nl.remco.group.enrich;
+package nl.remco.group.organisation.service;
 
 
 public class CRMOrganisation  {

@@ -42,6 +42,9 @@ export class Groups {
         $('#but_saveCreateGroup').click(function () {
             _this.submitGroupCreateRequest();
         });
+
+
+        
         $('#but_delete_lid').click(function () {
             _this.submitUpdatemembershipsRequest(_this.gGroup.id, _this.obj_groupsledenTable, "Verwijderd");
         });
@@ -61,7 +64,10 @@ export class Groups {
             _this.submitUpdatemembershipsRequest(_this.gGroup.id, _this.obj_groupsleidersTable, "Passief");
         });
         $('#but_saveEdit').click(function () {
-            _this.submitUpdategroupAttributesRequest(_this.gGroup.id);
+            _this.submitUpdateGroupAttributesRequest(_this.gGroup.id);
+        });
+        $('#but_deleteGroup').click(function () {
+            _this.submitDeleteGroupRequest(_this.gGroup.id);
         });
         /* Add a click handler to the rows - this could be used as a callback */
         $("#overviewTable tbody").click(function (event) {
@@ -92,12 +98,7 @@ export class Groups {
             cache: false,
             error: FilterUtil.ajaxErrorHandler
         });
-        let response: Array<Organisation> = [
-            new Organisation("8000", "University"),
-            new Organisation("8001", "The Floor"),
-            new Organisation("8002", "The Shack")];
-        this.populateOrganisation(response);
-        /*
+
         $.ajax({
             url: Configuration.organisation_service,
             type: "GET",
@@ -107,7 +108,6 @@ export class Groups {
             cache: false,
             error: FilterUtil.ajaxErrorHandler
         });
-        */
 
         let fun = this.searchGroups.bind(this);
         $('#searchMame').change(fun);
@@ -198,20 +198,15 @@ export class Groups {
             status: $("#statusCreate").val(),
             features: features
         };
-        createRequest.organisation = { id: "8000" };
+
+        if ($("#organisationCreate").val() != "") {
+            createRequest.organisation = { id: $("#organisationCreate").val() };
+        }
         if ($("#scopeCreate").val() != "") {
             createRequest.scope = { id: $("#scopeCreate").val() };
         }
 
-        /*
-            if ($("#organisationCreate").val()!= "") {
-                createRequest.organisation= {id: $("#organisationCreate").val()};
-            }
-        
-            if ($("#geplandePeriodeCreate").val()!= "") {
-                createRequest.geplandePeriode= $("#geplandePeriodeCreate").val();
-            }
-            */
+
         let _this = this;
         $.ajax({
             url: Configuration.group_service,
@@ -339,7 +334,7 @@ export class Groups {
 
     }
 
-    submitUpdategroupAttributesRequest(gebruikersgroupId) {
+    submitUpdateGroupAttributesRequest(groupId) {
         var updateRequest = {
             name: $("#nameEdit").prop("value"),
             description: $("#descriptionEdit").val(),
@@ -347,7 +342,7 @@ export class Groups {
         };
         let _this = this;
         $.ajax({
-            url: Configuration.group_service + "/" + gebruikersgroupId,
+            url: Configuration.group_service + "/" + groupId,
             data: JSON.stringify(updateRequest),
             type: "PUT",
   //          headers: { "If-Unmodified-Since": this.gGroupTimestamp },
@@ -359,8 +354,21 @@ export class Groups {
             error: FilterUtil.ajaxErrorHandler
         });
     }
+    submitDeleteGroupRequest(groupId) {
+        let _this = this;
+        $.ajax({
+            url: Configuration.group_service + "/" + groupId,
+            type: "DELETE",
+            //          headers: { "If-Unmodified-Since": this.gGroupTimestamp },
+            success: function (response, textStatus, jqXHR) {
+                _this.searchGroups();
+                WindowUtil.closeWindow("popupboxEdit");
+            },
+            error: FilterUtil.ajaxErrorHandler
+        });
+    }
 
-    submitUpdatemembershipsRequest(gebruikersgroupId, obj_Table, updStatus) {
+    submitUpdatemembershipsRequest(groupId, obj_Table, updStatus) {
         var anSelected = FilterUtil.fnGetSelected(obj_Table);
         var updateRequest = null;
         if (updStatus === "Verwijderd") {
@@ -396,13 +404,13 @@ export class Groups {
         }
         let _this = this;
         $.ajax({
-            url: Configuration.group_service + "/" + gebruikersgroupId,
+            url: Configuration.group_service + "/" + groupId,
             data: JSON.stringify(updateRequest),
             contentType: "application/json; charset=UTF-8",
             type: "PUT",
             headers: { "If-Unmodified-Since": this.gGroupTimestamp },
             success: function (response, textStatus, jqXHR) {
-                _this.retrieveGroupDetails(gebruikersgroupId);
+                _this.retrieveGroupDetails(groupId);
             },
             error: FilterUtil.ajaxErrorHandler
         });
@@ -418,7 +426,7 @@ export class Groups {
         filter.update("searchOrganisation", "organisationId");
         filter.update("searchScope", "scopeId");
         filter.update("searchStatus", "status");
-        filter.update("searchKenmerk", "feature");
+        filter.update("searchFeatures", "feature");
         let _this = this;
         $.ajax({
             url: Configuration.group_service + filter.string,

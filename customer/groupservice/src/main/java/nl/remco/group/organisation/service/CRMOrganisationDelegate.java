@@ -1,5 +1,6 @@
-package nl.remco.group.enrich;
+package nl.remco.group.organisation.service;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -43,6 +44,9 @@ final class CRMOrganisationDelegate {
 		LOG.info("Get from organisation cache id="+ organisationId );
 		return f;
 	}
-
-
+	
+	public CompletableFuture<List<CRMOrganisation>> getOrganisations( )
+	{
+		return crmOrganisations.retrieveOrganisations();
+	}
 }

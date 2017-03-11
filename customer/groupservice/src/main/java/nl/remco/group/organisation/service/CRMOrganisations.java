@@ -1,8 +1,10 @@
-package nl.remco.group.enrich;
+package nl.remco.group.organisation.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -25,5 +27,9 @@ final class CRMOrganisations {
 
 	private void add(CRMOrganisation org) {
 		organisations.put( org.getId(), org);
+	}
+
+	public CompletableFuture<List<CRMOrganisation>> retrieveOrganisations() {
+		return CompletableFuture.supplyAsync( () ->organisations.values().stream().collect(Collectors.toList()));
 	}
 }

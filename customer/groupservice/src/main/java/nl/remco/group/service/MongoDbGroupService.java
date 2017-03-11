@@ -16,9 +16,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import nl.remco.group.enrich.OrganisationEnricher;
 import nl.remco.group.enrich.PersonEnricher;
 import nl.remco.group.enrich.ScopeEnricher;
+import nl.remco.group.organisation.service.OrganisationEnricher;
 import nl.remco.group.service.domain.RGroup;
 import nl.remco.group.service.dto.GroupDTO;
 

@@ -7,6 +7,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Component;
 
+import nl.remco.group.organisation.service.CRMOrganisation;
+
 @Component
 public class CRMCustomersDelegate {
 	

@@ -1,4 +1,4 @@
-package nl.remco.group.enrich;
+package nl.remco.group.organisation.service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -25,8 +25,7 @@ public class OrganisationEnricher {
 
 			return crmOrganisationDelegate.getOrganisation(orgDTO.getId())
 					.thenApply( crmOrganisation-> {
-						orgDTO.setName( crmOrganisation.getName());
-						orgDTO.setStatus( crmOrganisation.getStatus());
+						convertDTO(orgDTO,  crmOrganisation);
 						return groupDTO;	
 					});
 		}
@@ -35,5 +34,25 @@ public class OrganisationEnricher {
 
 	public List<CompletableFuture<GroupDTO>> enrichOrganisations(final List<GroupDTO> groups) {
 		return groups.stream().map( this::enrichOrganisations).collect( Collectors.toList());
+	}
+	
+	public CompletableFuture<List<OrganisationDTO>> getOrganisations( )
+	{
+		return crmOrganisationDelegate
+				.getOrganisations()
+				.thenApply( list -> list.stream().map( this::convertDTO).collect(Collectors.toList()));
+	}
+	
+	private OrganisationDTO convertDTO( OrganisationDTO organisationDTO, final CRMOrganisation crmOrganisation)
+	{
+		organisationDTO.setId(crmOrganisation.getId());
+		organisationDTO.setName(crmOrganisation.getName());
+		organisationDTO.setStatus(crmOrganisation.getStatus());
+		return organisationDTO;
+	}
+
+	private OrganisationDTO convertDTO( final CRMOrganisation crmOrganisation)
+	{
+		return convertDTO( new OrganisationDTO(), crmOrganisation);
 	}
 }

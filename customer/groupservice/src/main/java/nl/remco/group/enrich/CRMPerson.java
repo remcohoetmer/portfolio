@@ -2,6 +2,8 @@ package nl.remco.group.enrich;
 
 import java.util.Date;
 
+import nl.remco.group.organisation.service.CRMOrganisation;
+
 public class CRMPerson {
 	private String id;
 	private String name;
