@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.bson.BSON;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,8 +144,8 @@ public class MongoDbGroupService implements GroupService {
 		if (groupFilter.getMasterId()!=null){
 			query.addCriteria(Criteria.where("master.id").is(groupFilter.getMasterId()));
 		}
-		if (groupFilter.getScopeId()!=null){// doesn't work ????
-			query.addCriteria(Criteria.where("scope.id").is(groupFilter.getScopeId()));
+		if (groupFilter.getScopeId()!=null){
+			query.addCriteria(Criteria.where("scope.id").is(new ObjectId(groupFilter.getScopeId())));
 		}
 		if (groupFilter.getOrganisationId()!=null){
 			query.addCriteria(Criteria.where("organisation.id").is(groupFilter.getOrganisationId()));
@@ -153,7 +154,6 @@ public class MongoDbGroupService implements GroupService {
 			query.addCriteria(Criteria.where("features").in(groupFilter.getFeatures()));
 		}
 		LOGGER.info( "Query" + new String(BSON.encode(query.getQueryObject())));
-		//TODO:make async
 		List<RGroup> scopeEntries= mongoTemplate.find(query, RGroup.class);
 
 		return CompletableFuture.completedFuture(scopeEntries);

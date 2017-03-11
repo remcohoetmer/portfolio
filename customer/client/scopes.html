@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="shortcut icon" href="favicon.ico" />
 
-    <title>Scope Beheer</title>
+    <title>Scope Admin</title>
     <style type="text/css" title="currentStyle">
         @import "css/demo_page.css";
         @import "css/demo_table.css";
@@ -20,7 +20,7 @@
 <body id="dt_example">
     <a id="closeMain"><img class="close_button" src="images/close_button.png" /></a>
     <div id="container">
-        <h1>Scope Beheer</h1>
+        <h1>Scope Admin</h1>
         <div>
             <div id="scopeFilter">
                 <input type="text" placeholder="Naam" id="scopeNaamFilter"/>
@@ -36,7 +36,7 @@
 
                 <thead>
                     <tr>
-                        <th>Naam</th>
+                        <th>Name</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -49,26 +49,26 @@
             </table>
 
             <br />
-            <button id="but_create">Nieuw</button>
+            <button id="but_create">Create</button>
 
         </div>
     </div>
     <div id="popupboxEdit">
         <a id="closePopupboxEdit"><img class="close_button" src="images/close_button.png" /></a>
-        <h1>Edit Scope</h1>
+        <h1>Modify Scope</h1>
         <div>
             <div id="attributen">
 
                 <div>
-                    <div class="label">Naam</div>
-                    <input type="text" id="naamEdit" />
+                    <div class="label">Name</div>
+                    <input type="text" id="nameEdit" />
                 </div>
                 <div>
                     <div class="label">Status</div>
                     <select id="statusEdit">
-                        <option value="Actief">Actief</option>
-                        <option value="Passief">Passief</option>
-                        <option value="Verwijderd">Verwijderd</option>
+                        <option value="">(status)</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
                     </select>
                 </div>
             </div>
@@ -76,7 +76,7 @@
             <br />
 
             <div id="saveEdit">
-                <button id="but_saveEdit" type="button">Opslaan</button>
+                <button id="but_saveEdit" type="button">Save</button>
             </div>
 
         </div>
@@ -89,21 +89,21 @@
             <div id="CreateGroepsAttributen">
 
                 <div>
-                    <div class="label">Naam</div>
-                    <input type="text" id="naamCreate" />
+                    <div class="label">Name</div>
+                    <input type="text" id="nameCreate" />
                 </div>
                 <div>
                     <div class="label">Status</div>
                     <select id="statusCreate">
-                        <option value="Actief">Actief</option>
-                        <option value="Passief">Passief</option>
-                        <option value="Verwijderd">Verwijderd</option>
+                        <option value="">(status)</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
                     </select>
                 </div>
             </div>
             <br />
             <div id="saveCreate">
-                <button id="but_saveCreate" type="button">Opslaan</button>
+                <button id="but_saveCreate" type="button">Save</button>
             </div>
 
         </div>

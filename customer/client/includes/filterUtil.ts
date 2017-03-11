@@ -1,4 +1,4 @@
-﻿import {Klant, Inschrijving, Organisatie} from "./DataModel"
+﻿
 export class Filter {
     constructor(public string: string = "") { }
     update(tag: string, paramnaam: string) {

@@ -1,24 +1,16 @@
 ﻿
-export class Organisatie {
-    constructor(public id: number, naam: string) {
+export class Organisation {
+    constructor(public id: string, public name: string) {
     }
 }
 
-
-export class Inschrijving {
-    constructor(public id: number, public organisatie: Organisatie) {
-    }
-}
-
-export class Klant {
+export class Person {
     id: number;
-    voornaam: string;
-    achternaam: string;
-    geslacht: string;
-    emailAdres: string;
+    name: string;
+    surname: string;
+    dateofbirth: string;
+    email: string;
     status: string;
-    product: string;
-    geplandePeriode: string;
-    rol: string;
-    inschrijvingen: Array<Inschrijving>;
+    role: string;
+    organisation: Organisation;
 }

@@ -92,13 +92,13 @@ class Scopes {
     }
 
     initialiseCreate() {
-        $("#naamCreate").prop("value", "");
-        $("#statusCreate").prop("value", "Actief");
+        $("#nameCreate").prop("value", "");
+        $("#statusCreate").prop("value", "Active");
     }
 
     submitCreateRequest() {
         var createRequest = {
-            name: $("#naamCreate").val(),
+            name: $("#nameCreate").val(),
             status: $("#statusCreate").val(),
         };
         let _this = this;
@@ -144,13 +144,13 @@ class Scopes {
             return;
         }
 
-        $("#naamEdit").prop("value", scope.name);
+        $("#nameEdit").prop("value", scope.name);
         $("#statusEdit").prop("value", scope.status);
     }
 
     submitUpdateAttributesRequest(scopeId) {
         var updateRequest = {
-            name: $("#naamEdit").val(),
+            name: $("#nameEdit").val(),
             status: $("#statusEdit").val()
         };
         let _this = this;

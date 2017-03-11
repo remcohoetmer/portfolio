@@ -1,0 +1,188 @@
+﻿
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <title>Group Admin</title>
+    <style type="text/css" title="currentStyle">
+        @import "css/demo_page.css";
+        @import "css/demo_table.css";
+    </style>
+    <script type="text/javascript" language="javascript" src="node_modules/jquery-1.8/jquery.min.js"></script>
+    <script type="text/javascript" language="javascript" src="node_modules/datatables.net/js/jquery.dataTables.js"></script>
+
+    <script data-main="includes/Groups" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
+</head>
+<body id="dt_example">
+    <a id="closeGroupAdmin"><img class="close_button" src="images/close_button.png" /></a>
+    <div id="container">
+        <h1>Group Admin</h1>
+        <div>
+            <div>
+                <input type="text" placeholder="name" id="searchName" />
+                <input type="text" placeholder="description" id="searchDescription" />
+                <input type="text" placeholder="code" id="searchCode" />
+                <select id="searchOrganisation">
+                    <option value="">(organisation)</option>
+                </select>
+                <select id="searchScope">
+                    <option value="">(scope)</option>
+                </select>
+
+                <input type="text" placeholder="feature" id="searchFeature" />
+
+                <select id="searchStatus">
+                    <option value="">(status)</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+
+
+            <div id="overzicht">
+
+
+                <table class="display" id="overviewTable">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Code</th>
+                            <th>Organisation</th>
+                            <th>Scope</th>
+                        </tr>
+                    <tbody>
+                        <tr>
+                            <td colspan="9" class="dataTables_empty"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <br />
+            <button id="but_create_group">Create Group</button>
+        </div>
+
+    </div>
+
+    <div id="popupboxEdit">
+        <a id="closePopupboxEdit"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>Modify Group</h1>
+        <div>
+            <div id="editGroupAttributes">
+
+                <div>
+                    <div class="label">Name</div>
+                    <input type="text" id="nameEdit" />
+                </div>
+                <div>
+                    <div class="label">Status</div>
+                    <select id="statusEdit">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <br />
+
+            <div id="saveEdit">
+                <button id="but_saveEdit" type="button">Save</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="popupboxCreate">
+        <a id="closePopupboxCreate"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>New Group</h1>
+        <div>
+            <div id="createGroupAttributes">
+
+                <div>
+                    <div class="label">Name</div>
+                    <input type="text" id="nameCreate" />
+                </div>
+                <div>
+                    <div class="label">Status</div>
+                    <select id="statusCreate">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="label">Scope</div>
+                    <select id="scopeCreate">
+                        <option value="">(none)</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="label">Features</div>
+                    <input type="text" id="featuresCreate" />
+                </div>
+
+            </div>
+            <br />
+            <div id="saveCreate">
+                <button id="but_saveCreateGroup" type="button">Save</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="popupboxAddLeden">
+        <a id="closePopupboxAddLeden"><img class="close_button" src="images/close_button.png" /></a>
+        <h1>Add Group Members</h1>
+        <div>
+            <form id="personFilter" action="">
+                <input type="text" placeholder="Name" id="name" onChange="searchPersons();" />
+                <input type="text" placeholder="Surname" id="surname" onChange="searchPersons();" />
+                <input type="text" placeholder="E-mail" id="email" onChange="searchPersons();" />
+
+                <select id="status" onChange="searchPersons()">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <select id="searchPersonOrganisation" onChange="searchPersons()">
+                    <option value="">(organisation)</option>
+                </select>
+
+
+            </form>
+
+            <div id="dynamic">
+                <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+
+                    <thead>
+                        <tr>
+                            <th>Voornaam</th>
+                            <th>Surname</th>
+                            <th>Email</th>
+                            <th>Date of Birth</th>
+                            <th>Organisation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" class="dataTables_empty"></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <div id="gebruikergroepAddLeden">
+            <div id="saveAddLeden">
+                <button id="but_saveAddLeden">Save</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
