@@ -9,6 +9,7 @@ public class GroupFilter {
 	private String status;// patterns mogelijk: begint met "Groep_"
 	private String description;
 	private String code;
+	private String personId;
 	private String scopeId;
 	private String organisationId;
 	private List<String> features;// lijst met kenmerken die de groep heeft (conjuctive)
@@ -63,6 +64,12 @@ public class GroupFilter {
 	}
 	public void setMasterId(String masterId) {
 		this.masterId = masterId;
+	}
+	public String getPersonId() {
+		return personId;
+	}
+	public void setPersonId(String personId) {
+		this.personId = personId;
 	}
 
 

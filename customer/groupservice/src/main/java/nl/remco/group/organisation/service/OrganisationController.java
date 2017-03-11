@@ -1,4 +1,4 @@
-package nl.remco.group.service;
+package nl.remco.group.organisation.service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import nl.remco.group.organisation.service.OrganisationService;
 import nl.remco.group.service.dto.OrganisationDTO;
 
 

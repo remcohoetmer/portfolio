@@ -27,92 +27,87 @@ import nl.remco.group.service.dto.GroupDTO;
 @RequestMapping("/api/group")
 public final class GroupController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GroupController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GroupController.class);
 
-    private final GroupService groupService;
+	private final GroupService groupService;
 
-    @Autowired
-    GroupController(GroupService service) {
-        this.groupService = service;
-    }
+	@Autowired
+	GroupController(GroupService service) {
+		this.groupService = service;
+	}
 
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    @CrossOrigin(origins = "*")
-    CompletableFuture<GroupDTO> create(@RequestBody @Valid GroupDTO groupEntry) {
-        LOGGER.info("Creating a new group entry with information: {}", groupEntry);
-    
-        return groupService.create(groupEntry);
-    }
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
+	@CrossOrigin(origins = "*")
+	CompletableFuture<GroupDTO> create(@RequestBody @Valid GroupDTO groupEntry) {
+		LOGGER.info("Creating a new group entry with information: {}", groupEntry);
 
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @CrossOrigin(origins = "*")
-    CompletableFuture<GroupDTO> delete(@PathVariable("id") String id) {
-        LOGGER.info("Deleting group entry with id: {}", id);
+		return groupService.create(groupEntry);
+	}
 
-        return groupService.delete(id);
-    }
+	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+	@CrossOrigin(origins = "*")
+	CompletableFuture<GroupDTO> delete(@PathVariable("id") String id) {
+		LOGGER.info("Deleting group entry with id: {}", id);
 
-    @RequestMapping(method = RequestMethod.GET)
-    @CrossOrigin(origins = "*")
-    @Async
-    CompletableFuture<List<GroupDTO>> findAll(
-    		@RequestParam(value="name", required=false) String name,
-    		@RequestParam(value="code", required=false) String code,
-    		@RequestParam(value="scopeId", required=false) String scopeId,
-    		@RequestParam(value="masterId", required=false) String masterId,
-    		@RequestParam(value="organisationId", required=false) String organisationId,
-    		@RequestParam(value="selectMasters", required=false) String selectMasters,
-    		@RequestParam(value="selectPersons", required=false) String selectPersons,
-    		@RequestParam(value="selectScopes", required=false) String selectScopes,
-    		@RequestParam(value="selectOrganisations", required=false) String selectOrganisations
-    		) {
-    	GroupFilter groupFilter= new GroupFilter();
-    	GroupSelection groupSelection= new GroupSelection();
-    	if (name!=null)
-    		groupFilter.setName(name);
-    	if (code!=null)
-    		groupFilter.setCode(code);
-    	if (scopeId!=null)
-    		groupFilter.setScopeId(scopeId);
-    	if (organisationId!=null)
-    		groupFilter.setOrganisationId(organisationId);
-    	if (masterId!=null)
-    		groupFilter.setMasterId(masterId);
-    	if (selectMasters!=null)
-    		groupSelection.setSelectMasters();
-    	if (selectPersons!=null)
-    		groupSelection.setSelectPersons();
-    	if (selectScopes!=null)
-    		groupSelection.setSelectScopes();
-    	if (selectOrganisations!=null)
-    		groupSelection.setSelectOrganisations();
-    	
-        LOGGER.info("Finding all group entries");
-        return groupService.find(groupFilter,groupSelection);
-    }
+		return groupService.delete(id);
+	}
 
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    @CrossOrigin(origins = "*")
-    CompletableFuture<GroupDTO> findById(@PathVariable("id") String id) {
-        LOGGER.info("Finding group entry with id: {}", id);
+	@RequestMapping(method = RequestMethod.GET)
+	@CrossOrigin(origins = "*")
+	@Async
+	CompletableFuture<List<GroupDTO>> findAll(
+			@RequestParam(value="name", required=false) String name,
+			@RequestParam(value="code", required=false) String code,
+			@RequestParam(value="scopeId", required=false) String scopeId,
+			@RequestParam(value="personId", required=false) String personId,
+			@RequestParam(value="masterId", required=false) String masterId,
+			@RequestParam(value="organisationId", required=false) String organisationId,
+			@RequestParam(value="selectMasters", required=false) String selectMasters,
+			@RequestParam(value="selectPersons", required=false) String selectPersons,
+			@RequestParam(value="selectScopes", required=false) String selectScopes,
+			@RequestParam(value="selectOrganisations", required=false) String selectOrganisations
+			)
+	{
+		GroupFilter groupFilter= new GroupFilter();
+		GroupSelection groupSelection= new GroupSelection();
 
-        return groupService.findById(id);
-    }
+		groupFilter.setName(name);
+		groupFilter.setCode(code);
+		groupFilter.setScopeId(scopeId);
+		groupFilter.setPersonId(personId);
+		groupFilter.setOrganisationId(organisationId);
+		groupFilter.setMasterId(masterId);
+		groupSelection.setSelectMasters();
+		groupSelection.setSelectPersons();
+		groupSelection.setSelectScopes();
+		groupSelection.setSelectOrganisations();
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    @CrossOrigin(origins = "*")
-    CompletableFuture<GroupDTO> update(@RequestBody @Valid GroupDTO groupEntry, @PathVariable("id") String id) {
-        LOGGER.info("Updating group entry with information: {}", groupEntry);
-        groupEntry.setId(id);
+		LOGGER.info("Finding all group entries");
+		return groupService.find(groupFilter,groupSelection);
+	}
 
-        return groupService.update(groupEntry);
-    }
+	@RequestMapping(value = "{id}", method = RequestMethod.GET)
+	@CrossOrigin(origins = "*")
+	CompletableFuture<GroupDTO> findById(@PathVariable("id") String id) {
+		LOGGER.info("Finding group entry with id: {}", id);
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @CrossOrigin(origins = "*")
-    public void handlegroupNotFound(GroupNotFoundException ex) {
-        LOGGER.error("Handling error with message: {}", ex.getMessage());
-    }
+		return groupService.findById(id);
+	}
+
+	@RequestMapping(value = "{id}", method = RequestMethod.PUT)
+	@CrossOrigin(origins = "*")
+	CompletableFuture<GroupDTO> update(@RequestBody @Valid GroupDTO groupEntry, @PathVariable("id") String id) {
+		LOGGER.info("Updating group entry with information: {}", groupEntry);
+		groupEntry.setId(id);
+
+		return groupService.update(groupEntry);
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@CrossOrigin(origins = "*")
+	public void handlegroupNotFound(GroupNotFoundException ex) {
+		LOGGER.error("Handling error with message: {}", ex.getMessage());
+	}
 }

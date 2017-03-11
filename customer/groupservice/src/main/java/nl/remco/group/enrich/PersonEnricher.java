@@ -19,11 +19,13 @@ public class PersonEnricher {
 	private CRMCustomersDelegate crmCustomersDelegate;
 
 	private PersonDTO copyFrom(PersonDTO personDTO, CRMPerson crmPerson) {
-		personDTO.setName( crmPerson.getName());
-		personDTO.setSurname( crmPerson.getSurname());
-		personDTO.setEmail( crmPerson.getEmail());
-		personDTO.setDateofbirth( crmPerson.getDateofbirth());
-		personDTO.setOrganisation( new OrganisationDTO( crmPerson.getOrganisation().getId()));
+		if (crmPerson!= null) { 
+			personDTO.setName( crmPerson.getName());
+			personDTO.setSurname( crmPerson.getSurname());
+			personDTO.setEmail( crmPerson.getEmail());
+			personDTO.setDateofbirth( crmPerson.getDateofbirth());
+			personDTO.setOrganisation( new OrganisationDTO( crmPerson.getOrganisation().getId()));
+		}
 		return personDTO;
 	}
 
@@ -45,7 +47,7 @@ public class PersonEnricher {
 	}
 
 	public List<CompletableFuture<PersonDTO>> enrichPersons(final List<GroupDTO> groups) {
-		
+
 		return groups.stream()
 				.flatMap( group->group.getMemberships().stream())
 				.map(membership-> membership.getPerson())

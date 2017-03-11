@@ -92,15 +92,9 @@ public class MongoDbGroupService implements GroupService {
 	@Override
 	public CompletableFuture<GroupDTO> create(GroupDTO group) {
 		LOGGER.info("Creating a new group entry with information: {}", group);
-
 		RGroup groupDTO = converter.convertfromDTO(group);
-
 		return repository.save(groupDTO)
-				.thenApply( persisted-> {
-					LOGGER.info("Created a new group entry with information: {}", persisted);
-
-					return converter.convertToDTO(persisted);
-				});
+				.thenApply( converter::convertToDTO);
 	}
 
 
@@ -140,6 +134,9 @@ public class MongoDbGroupService implements GroupService {
 		}
 		if (groupFilter.getCode()!=null) {
 			query.addCriteria(Criteria.where("code").is(groupFilter.getCode()));
+		}
+		if (groupFilter.getPersonId()!=null) {
+			query.addCriteria(Criteria.where("memberships.person.id").is(groupFilter.getPersonId()));
 		}
 		if (groupFilter.getMasterId()!=null){
 			query.addCriteria(Criteria.where("master.id").is(groupFilter.getMasterId()));

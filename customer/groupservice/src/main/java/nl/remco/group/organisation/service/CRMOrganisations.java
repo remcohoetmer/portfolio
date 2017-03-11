@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-
-
 @Component
 final class CRMOrganisations {
 	private Map<String,CRMOrganisation> organisations= new HashMap<>();
