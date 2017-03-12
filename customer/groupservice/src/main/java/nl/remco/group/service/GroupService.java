@@ -13,5 +13,6 @@ public interface GroupService {
     CompletableFuture<List<GroupDTO>> find(GroupFilter groupFilter, GroupSelection groupSelection);
     CompletableFuture<GroupDTO> findById(String id);
     CompletableFuture<GroupDTO> update(GroupDTO scope);
-	CompletableFuture<GroupDTO> addMembership(String id, MembershipDTO membership);
+	CompletableFuture<Void> addMembership(String id, MembershipDTO membership);
+	CompletableFuture<Void> deleteMembership(String id, String memid);
 }

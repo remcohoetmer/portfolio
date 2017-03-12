@@ -107,11 +107,21 @@ public final class GroupController {
 	
 	@RequestMapping(value = "{id}/membership", method = RequestMethod.POST)
 	@CrossOrigin(origins = "*")
-	CompletableFuture<GroupDTO> addMembership(@RequestBody @Valid MembershipDTO mbsEntry, @PathVariable("id") String id) {
-		LOGGER.info("Updating group entry: {} add member {}", mbsEntry, mbsEntry);
+	CompletableFuture<Void> addMembership(@RequestBody @Valid MembershipDTO mbsEntry, @PathVariable("") String id) {
+		LOGGER.info("Updating group id: {} add member {}", id, mbsEntry);
 
 		return groupService.addMembership(id, mbsEntry);
 	}
+	
+	@RequestMapping(value = "{id}/membership/{memid}", method = RequestMethod.DELETE)
+	@CrossOrigin(origins = "*")
+	CompletableFuture<Void> deleteMembership(@PathVariable("id") String id, @PathVariable("memid") String memid) {
+		LOGGER.info("Updating group id: {} delete member {}", id, memid);
+
+		return groupService.deleteMembership(id, memid);
+	}
+
+	
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@CrossOrigin(origins = "*")

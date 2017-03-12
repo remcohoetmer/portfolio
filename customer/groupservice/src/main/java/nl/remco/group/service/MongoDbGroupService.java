@@ -192,8 +192,8 @@ public class MongoDbGroupService implements GroupService {
 	}
 
 	@Override
-	public CompletableFuture<GroupDTO> addMembership(String id, MembershipDTO membershipDTO) {
-		LOGGER.info("Adding menmber group entry with id: {} membership {}", id, membershipDTO);
+	public CompletableFuture<Void> addMembership(String id, MembershipDTO membershipDTO) {
+		LOGGER.info("Adding member group with id: {} membership {}", id, membershipDTO);
 
 		Membership membership= convertFromDTO( membershipDTO);
 		Query query = new Query(Criteria.where("id").is(id));
@@ -201,11 +201,25 @@ public class MongoDbGroupService implements GroupService {
 		Update update = new Update().push("memberships", membership);
 
 		WriteResult result= mongoTemplate.updateFirst(query, update, RGroup.class);
-		LOGGER.info( "Add member"+ result);
+		LOGGER.info( "Add member "+ result);
 
 		return CompletableFuture.completedFuture(null);
 	}
 
+	
+	@Override
+	public CompletableFuture<Void> deleteMembership(String id, String memid) {
+		LOGGER.info("Deleting member group with id: {} membership {}", id, memid);
+
+
+		WriteResult result= mongoTemplate.updateMulti(
+				new Query(Criteria.where("id").is(id)),
+				new Update().pull("memberships", Query.query(Criteria.where("person.id").is(memid))),RGroup.class);
+		LOGGER.info( "Delete member "+ result);
+
+		return CompletableFuture.completedFuture(null);
+	}
+	
 	@Override
 	public CompletableFuture<GroupDTO> update(GroupDTO group) {
 		LOGGER.info("Updating group entry with information: {}", group);
