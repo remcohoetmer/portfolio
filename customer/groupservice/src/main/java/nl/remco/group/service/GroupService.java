@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import nl.remco.group.service.dto.GroupDTO;
+import nl.remco.group.service.dto.MembershipDTO;
 
 
 public interface GroupService {
@@ -12,4 +13,5 @@ public interface GroupService {
     CompletableFuture<List<GroupDTO>> find(GroupFilter groupFilter, GroupSelection groupSelection);
     CompletableFuture<GroupDTO> findById(String id);
     CompletableFuture<GroupDTO> update(GroupDTO scope);
+	CompletableFuture<GroupDTO> addMembership(String id, MembershipDTO membership);
 }

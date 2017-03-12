@@ -15,7 +15,7 @@ import nl.remco.group.service.dto.ScopeDTO;
 
 @Component
 class Converter {
-	GroupDTO convertToDTO(RGroup model) {
+	GroupDTO convertToDTO(final RGroup model) {
 		if (model==null) {
 			return new GroupDTO();
 		}
@@ -48,7 +48,7 @@ class Converter {
 	}
 
 
-	RGroup convertfromDTO(GroupDTO dto) {
+	RGroup convertfromDTO(final GroupDTO dto) {
 		RGroup group= new RGroup();
 		group.setId(dto.getId());
 		group.setName(dto.getName());

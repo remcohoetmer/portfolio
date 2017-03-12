@@ -68,4 +68,8 @@ public class PersonDTO {
 	public void setOrganisation(OrganisationDTO organisation) {
 		this.organisation = organisation;
 	}
+	@Override
+	public String toString() {
+		return String.format("{PersonDTO id=%s name=%s}", id, name);
+	}
 }

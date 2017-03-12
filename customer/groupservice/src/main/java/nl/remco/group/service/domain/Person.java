@@ -7,8 +7,15 @@ public class Person {
 	public Person(String id, String name) {
 		this.setId(id);
 		this.setName(name);
-	
 	}
+
+	public Person(String id) {
+		this.setId(id);
+	}
+
+	public Person() {
+	}
+
 
 	public String getId() {
 		return id;

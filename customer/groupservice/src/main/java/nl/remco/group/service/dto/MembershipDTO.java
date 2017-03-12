@@ -15,5 +15,9 @@ public class MembershipDTO {
 	public void setPerson(PersonDTO person) {
 		this.person = person;
 	}
+	@Override
+	public String toString() {
+		return String.format("{MembershipDTO person=%s rol=%s}", person, role);
+	}
 
 }

@@ -14,13 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.WriteResult;
 
 import nl.remco.group.enrich.PersonEnricher;
 import nl.remco.group.enrich.ScopeEnricher;
 import nl.remco.group.organisation.service.OrganisationEnricher;
+import nl.remco.group.service.domain.Membership;
+import nl.remco.group.service.domain.Person;
 import nl.remco.group.service.domain.RGroup;
 import nl.remco.group.service.dto.GroupDTO;
+import nl.remco.group.service.dto.MembershipDTO;
 
 
 @Service
@@ -64,7 +70,6 @@ public class MongoDbGroupService implements GroupService {
 				list.addAll( personEnricher.enrichPersons(groups));
 			if (groupSelection.isSelectScopes())
 				list.addAll( scopeEnricher.enrichScopes(groups));
-			
 			if (groupSelection.isSelectMasters()) {
 				list.addAll( enrichMasters(groups, groupFilter));				
 			}
@@ -79,11 +84,11 @@ public class MongoDbGroupService implements GroupService {
 			if ( groupDTO.getMaster()!= null
 					&& groupDTO.getMaster().getId()!=null
 					&& !groupDTO.getMaster().getId().isEmpty()) {
-					list.add(
-							findById( groupDTO.getMaster().getId())
-							.thenApply(master -> { groupDTO.setMaster(master); return groupDTO;})
-							.exceptionally( t-> { t.printStackTrace(); return groupDTO;}));
-					
+				list.add(
+						findById( groupDTO.getMaster().getId())
+						.thenApply(master -> { groupDTO.setMaster(master); return groupDTO;})
+						.exceptionally( t-> { t.printStackTrace(); return groupDTO;}));
+
 			}
 		}
 		return list;
@@ -156,7 +161,7 @@ public class MongoDbGroupService implements GroupService {
 		return CompletableFuture.completedFuture(scopeEntries);
 	}
 
-	
+
 	private List<GroupDTO> convertToDTOs(List<RGroup> models) {
 		return models.stream()
 				.map(converter::convertToDTO)
@@ -178,6 +183,29 @@ public class MongoDbGroupService implements GroupService {
 				.thenCompose( organisationEnricher::enrichOrganisations);
 	}
 
+	private Membership convertFromDTO( MembershipDTO membershipDTO)
+	{
+		Membership membership= new Membership();
+		membership.setPerson(new Person( membershipDTO.getPerson().getId(), membershipDTO.getPerson().getName()));
+		membership.setRole(membershipDTO.getRole());
+		return membership;
+	}
+
+	@Override
+	public CompletableFuture<GroupDTO> addMembership(String id, MembershipDTO membershipDTO) {
+		LOGGER.info("Adding menmber group entry with id: {} membership {}", id, membershipDTO);
+
+		Membership membership= convertFromDTO( membershipDTO);
+		Query query = new Query(Criteria.where("id").is(id));
+
+		Update update = new Update().push("memberships", membership);
+
+		WriteResult result= mongoTemplate.updateFirst(query, update, RGroup.class);
+		LOGGER.info( "Add member"+ result);
+
+		return CompletableFuture.completedFuture(null);
+	}
+
 	@Override
 	public CompletableFuture<GroupDTO> update(GroupDTO group) {
 		LOGGER.info("Updating group entry with information: {}", group);
@@ -194,8 +222,6 @@ public class MongoDbGroupService implements GroupService {
 					return converter.convertToDTO(updated);
 				});
 	}
-
-
 
 	private CompletableFuture<RGroup> findGroupById(String id) {
 		return repository.findOne(id);

@@ -25,6 +25,6 @@ public class Membership  {
 	@Override
 	public String toString()
 	{
-		return "Lidmaatschap van " + person==null?"Onbekende gebruiker":person.toString();
+		return "Membership " + person==null?"(Unknown)":person.toString();
 	}
 }

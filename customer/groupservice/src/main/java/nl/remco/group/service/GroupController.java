@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import nl.remco.group.service.dto.GroupDTO;
+import nl.remco.group.service.dto.MembershipDTO;
 
 
 @RestController
@@ -103,7 +104,14 @@ public final class GroupController {
 
 		return groupService.update(groupEntry);
 	}
+	
+	@RequestMapping(value = "{id}/membership", method = RequestMethod.POST)
+	@CrossOrigin(origins = "*")
+	CompletableFuture<GroupDTO> addMembership(@RequestBody @Valid MembershipDTO mbsEntry, @PathVariable("id") String id) {
+		LOGGER.info("Updating group entry: {} add member {}", mbsEntry, mbsEntry);
 
+		return groupService.addMembership(id, mbsEntry);
+	}
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@CrossOrigin(origins = "*")
