@@ -45,9 +45,11 @@ public class OrganisationEnricher {
 	
 	private OrganisationDTO convertDTO( OrganisationDTO organisationDTO, final CRMOrganisation crmOrganisation)
 	{
-		organisationDTO.setId(crmOrganisation.getId());
-		organisationDTO.setName(crmOrganisation.getName());
-		organisationDTO.setStatus(crmOrganisation.getStatus());
+		if (crmOrganisation!=null ) {
+			organisationDTO.setId(crmOrganisation.getId());
+			organisationDTO.setName(crmOrganisation.getName());
+			organisationDTO.setStatus(crmOrganisation.getStatus());
+		}
 		return organisationDTO;
 	}
 
