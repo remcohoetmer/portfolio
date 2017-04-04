@@ -4,8 +4,8 @@ import {FilterUtil, Filter} from "FilterUtil";
 import {Configuration} from "Configuration";
 import { Person, Organisation } from "DataModel";
 class Organisations {
-    gOrganisationId = null;
-    obj_ScopeTable = null;
+    gOrganisationId:number = null;
+    obj_ScopeTable:any = null;
     initialise() {
         var _this = this;
   

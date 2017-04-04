@@ -2,8 +2,9 @@
 import {FilterUtil,Filter} from "FilterUtil";
 import {Person, Organisation} from "DataModel";
 import {Configuration} from "Configuration";
+
 export class PersonList {
-    obj_PersonTable = null;
+    obj_PersonTable:any = null;
     initialise() {
         /*
         $.ajax({

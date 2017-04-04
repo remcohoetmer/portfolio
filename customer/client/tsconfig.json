@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false
+    },
+    "files": [
+        "includes/Configuration.ts",
+        "includes/DataModel.ts",
+        "includes/FilterUtil.ts",
+        "includes/Groups.ts",
+        "includes/Organisations.ts",
+        "includes/PersonList.ts",
+        "includes/Persons.ts",
+        "includes/Scopes.ts",
+        "includes/Streaming.ts",
+        "includes/WindowUtil.ts",
+        "includes/Websockets.ts"
+    ]
+}

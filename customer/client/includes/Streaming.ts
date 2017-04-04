@@ -1,7 +1,4 @@
-﻿interface fetchInterface {
-    (arg: string): any;
-}
-declare var fetch: fetchInterface;
+﻿
 
 class Streaming {
     handler(response) {

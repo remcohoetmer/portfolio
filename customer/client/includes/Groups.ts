@@ -1,4 +1,5 @@
-﻿import {WindowUtil} from "WindowUtil";
+﻿
+import {WindowUtil} from "WindowUtil";
 import {FilterUtil,Filter} from "FilterUtil";
 import {Person, Organisation} from "DataModel";
 import {PersonList} from "PersonList";
@@ -6,14 +7,14 @@ import {Configuration} from "Configuration";
 
 export class Groups {
 
-    gAddGroup = null;
-    gAdd_Rol = null;
+    gAddGroup:any = null;
+    gAdd_Rol:any = null;
     personList: PersonList;
-    gGroup = null;
-    gGroupTimestamp = null;
+    gGroup:any = null;
+    gGroupTimestamp:any = null;
 
-    obj_groupsleidersTable = null;
-    obj_groupsledenTable = null;
+    obj_groupsleidersTable:any = null;
+    obj_groupsledenTable :any= null;
 
     initialise(personList: PersonList): void {
         this.personList = personList;
@@ -228,7 +229,7 @@ export class Groups {
         this.retrieveGroupDetails(groupId);
     }
 
-    retrieveGroupDetails(groupId) {
+    retrieveGroupDetails(groupId:number) {
         if (groupId == null && this.gGroup != null) {
 
             groupId = this.gGroup.id;
@@ -354,7 +355,7 @@ export class Groups {
             error: FilterUtil.ajaxErrorHandler
         });
     }
-    submitDeleteGroupRequest(groupId) {
+    submitDeleteGroupRequest(groupId:number) {
         let _this = this;
         $.ajax({
             url: Configuration.group_service + "/" + groupId,
