@@ -142,7 +142,7 @@ export class Groups {
         this.personList.searchPersons();
     }
 
-    submitAddLedenRequest(groupId, rol) {
+    submitAddLedenRequest(groupId:number, rol) {
         var anSelected = FilterUtil.fnGetSelected(this.personList.obj_PersonTable);
         var updateRequest = {
             creatememberships: new Array()
@@ -223,7 +223,7 @@ export class Groups {
     }
 
 
-    jump2EditGroup(groupId) {
+    jump2EditGroup(groupId:number) {
 
         WindowUtil.popupWindow("popupboxEdit");
         this.retrieveGroupDetails(groupId);
@@ -313,7 +313,7 @@ export class Groups {
             "aaData": groupsleden,
             "bDestroy": true,
             "aoColumns": aoColumns,
-            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            "fnRowCallback": function (nRow: DataTables.Settings, aData: any, displayIndex: number, displayIndexFull: number) {
                 $(nRow).attr("id", "LID" + aData.id_membership);
   //              $(nRow).attr("laatstgewijzigd", aData.laatstgewijzigd);
                 return nRow;
@@ -335,7 +335,7 @@ export class Groups {
 
     }
 
-    submitUpdateGroupAttributesRequest(groupId) {
+    submitUpdateGroupAttributesRequest(groupId:number) {
         var updateRequest = {
             name: $("#nameEdit").prop("value"),
             description: $("#descriptionEdit").val(),
@@ -369,7 +369,7 @@ export class Groups {
         });
     }
 
-    submitUpdatemembershipsRequest(groupId, obj_Table, updStatus) {
+    submitUpdatemembershipsRequest(groupId:number, obj_Table, updStatus) {
         var anSelected = FilterUtil.fnGetSelected(obj_Table);
         var updateRequest = null;
         if (updStatus === "Verwijderd") {
@@ -440,7 +440,7 @@ export class Groups {
         });
     }
 
-    showGroupSearchResults(response) {
+    showGroupSearchResults(response:any) {
         // pre-processing
         for (let group of response) {
             if (group.organisation == null) {
@@ -462,7 +462,7 @@ export class Groups {
                 { "mData": "scope.name" }
             ],
             //		"iDisplayLength": "20",
-            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            "fnRowCallback": function (nRow: DataTables.Settings, aData:any, iDisplayIndex:number, iDisplayIndexFull:number) {
                 $(nRow).attr("id", "GRP" + aData.id);
                 return nRow;
             }
