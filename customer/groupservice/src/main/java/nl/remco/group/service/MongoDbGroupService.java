@@ -48,35 +48,20 @@ public class MongoDbGroupService implements GroupService {
     this.repository = repository;
   }
 
-  private Mono<GroupDTO> enrich(GroupDTO group,
-                                GroupFilter groupFilter,
+  private Mono<GroupDTO> enrich(GroupDTO group, GroupFilter groupFilter,
                                 GroupSelection groupSelection) {
-    return Mono.just(group)
-      .flatMap(group1 -> {
-        if (groupSelection.isSelectOrganisations())
-          return organisationEnricher.enrichOrganisations(group1);
-        else
-          return Mono.just(group1);
-      })
-      .flatMap(group2 -> {
-        if (groupSelection.isSelectPersons())
-          return personEnricher.enrichPersons(group2);
-        else
-          return Mono.just(group2);
-      })
-      .flatMap(group3 -> {
-
-        if (groupSelection.isSelectScopes())
-          return scopeEnricher.enrichScopes(group3);
-        else return Mono.just(group3);
-      })
-      .flatMap(group4 -> {
-          if (groupSelection.isSelectMasters())
-            return enrichMaster(group4, groupFilter);
-          else
-            return Mono.just(group4);
-        }
-      );
+    Mono<GroupDTO> chain = Mono.just(group);
+    if (groupSelection.isSelectOrganisations())
+      chain = chain.flatMap(organisationEnricher::enrichOrganisations);
+    if (groupSelection.isSelectPersons())
+      chain = chain.flatMap(personEnricher::enrichPersons);
+    if (groupSelection.isSelectPersons())
+      chain = chain.flatMap(personEnricher::enrichPersons);
+    if (groupSelection.isSelectScopes())
+      chain = chain.flatMap(scopeEnricher::enrichScopes);
+    if (groupSelection.isSelectMasters())
+      chain = chain.flatMap(group1 -> enrichMaster(group1, groupFilter));
+    return chain;
   }
 
   private Mono<GroupDTO> enrichMaster(GroupDTO groupDTO, GroupFilter groupFilter) {
