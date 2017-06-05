@@ -1,58 +1,49 @@
 package nl.remco.group.enrich;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import nl.remco.group.service.dto.GroupDTO;
 import nl.remco.group.service.dto.MembershipDTO;
 import nl.remco.group.service.dto.OrganisationDTO;
 import nl.remco.group.service.dto.PersonDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 public class PersonEnricher {
-	@Autowired
-	private CRMCustomersDelegate crmCustomersDelegate;
+  @Autowired
+  private CRMCustomersDelegate crmCustomersDelegate;
 
-	private PersonDTO copyFrom(PersonDTO personDTO, CRMPerson crmPerson) {
-		if (crmPerson!= null) { 
-			personDTO.setName( crmPerson.getName());
-			personDTO.setSurname( crmPerson.getSurname());
-			personDTO.setEmail( crmPerson.getEmail());
-			personDTO.setDateofbirth( crmPerson.getDateofbirth());
-			personDTO.setOrganisation( new OrganisationDTO( crmPerson.getOrganisation().getId()));
-		}
-		return personDTO;
-	}
+  private PersonDTO copyFrom(PersonDTO personDTO, CRMPerson crmPerson) {
+    if (crmPerson != null) {
+      personDTO.setName(crmPerson.getName());
+      personDTO.setSurname(crmPerson.getSurname());
+      personDTO.setEmail(crmPerson.getEmail());
+      personDTO.setDateofbirth(crmPerson.getDateofbirth());
+      personDTO.setOrganisation(new OrganisationDTO(crmPerson.getOrganisation().getId()));
+    }
+    return personDTO;
+  }
 
-	private CompletableFuture<PersonDTO> enrichPersons( PersonDTO personDTO)
-	{
-		return crmCustomersDelegate
-				.findPerson( personDTO.getId())
-				.thenApply( crmPerson -> copyFrom( personDTO, crmPerson));
-	}
+  private Mono<PersonDTO> enrichPersons(PersonDTO personDTO) {
+    return crmCustomersDelegate
+      .findPerson(personDTO.getId())
+      .map(crmPerson -> copyFrom(personDTO, crmPerson));
+  }
 
-	public CompletableFuture<GroupDTO> enrichPersons(final GroupDTO group) {
-		List<CompletableFuture<PersonDTO>> list= new ArrayList<>();
-		for (MembershipDTO membership: group.getMemberships()) {
-			list.add( enrichPersons( membership.getPerson()));
+  public Mono<GroupDTO> enrichPersons(final GroupDTO group) {
+    Mono<PersonDTO> chain = null;
 
-		}
-		return CompletableFuture.allOf(list.stream().toArray(CompletableFuture[]::new))
-				.thenApply(dummy->{ return group;});
-	}
+    for (MembershipDTO membership : group.getMemberships()) {
+      Mono<PersonDTO> enrichedPerson = enrichPersons(membership.getPerson());
+      if (chain == null) {
+        chain = enrichedPerson;
+      } else {
+        chain = chain.then(enrichedPerson);
+      }
+    }
+    Mono<GroupDTO> result = Mono.just(group);
+    return (chain == null) ? result : chain.then(result);
 
-	public List<CompletableFuture<PersonDTO>> enrichPersons(final List<GroupDTO> groups) {
+  }
 
-		return groups.stream()
-				.flatMap( group->group.getMemberships().stream())
-				.map(membership-> membership.getPerson())
-				.map(this::enrichPersons)
-				.collect( Collectors.toList());
-
-	}
 }

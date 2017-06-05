@@ -19,13 +19,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
-import static java.util.stream.Collectors.toList;
-
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class MongoDbGroupService implements GroupService {
@@ -53,83 +48,86 @@ public class MongoDbGroupService implements GroupService {
     this.repository = repository;
   }
 
-  // enrich the groups, controlled by the selection parameters
-  // implementation: all enrichments are translated to asynchronous tasks.
-  // these tasks are collected at the end, resulting in maximal parallelism
-  private CompletableFuture<List<GroupDTO>> enrich(CompletableFuture<List<GroupDTO>> groups_cf,
-                                                   GroupFilter groupFilter,
-                                                   GroupSelection groupSelection) {
-    return groups_cf.thenCompose(groups -> {
-      List<CompletableFuture<?>> list = new ArrayList<>();
-      if (groupSelection.isSelectOrganisations())
-        list.addAll(organisationEnricher.enrichOrganisations(groups));
-      if (groupSelection.isSelectPersons())
-        list.addAll(personEnricher.enrichPersons(groups));
-      if (groupSelection.isSelectScopes())
-        list.addAll(scopeEnricher.enrichScopes(groups));
-      if (groupSelection.isSelectMasters()) {
-        list.addAll(enrichMasters(groups, groupFilter));
-      }
-      return CompletableFuture.allOf(list.stream().toArray(CompletableFuture[]::new))
-        .thenApply(dummy -> groups);
-    });
+  private Mono<GroupDTO> enrich(GroupDTO group,
+                                GroupFilter groupFilter,
+                                GroupSelection groupSelection) {
+    return Mono.just(group)
+      .flatMap(group1 -> {
+        if (groupSelection.isSelectOrganisations())
+          return organisationEnricher.enrichOrganisations(group1);
+        else
+          return Mono.just(group1);
+      })
+      .flatMap(group2 -> {
+        if (groupSelection.isSelectPersons())
+          return personEnricher.enrichPersons(group2);
+        else
+          return Mono.just(group2);
+      })
+      .flatMap(group3 -> {
+
+        if (groupSelection.isSelectScopes())
+          return scopeEnricher.enrichScopes(group3);
+        else return Mono.just(group3);
+      })
+      .flatMap(group4 -> {
+          if (groupSelection.isSelectMasters())
+            return enrichMaster(group4, groupFilter);
+          else
+            return Mono.just(group4);
+        }
+      );
   }
 
-  private List<CompletableFuture<?>> enrichMasters(List<GroupDTO> groups, GroupFilter groupFilter) {
-    List<CompletableFuture<?>> list = new ArrayList<>();
-    for (GroupDTO groupDTO : groups) {
-      if (groupDTO.getMaster() != null
-        && groupDTO.getMaster().getId() != null
-        && !groupDTO.getMaster().getId().isEmpty()) {
-        list.add(
-          findById(groupDTO.getMaster().getId())
-            .thenApply(master -> {
-              groupDTO.setMaster(master);
-              return groupDTO;
-            })
-            .exceptionally(t -> {
-              t.printStackTrace();
-              return groupDTO;
-            }));
+  private Mono<GroupDTO> enrichMaster(GroupDTO groupDTO, GroupFilter groupFilter) {
+    if (groupDTO.getMaster() != null
+      && groupDTO.getMaster().getId() != null
+      && !groupDTO.getMaster().getId().isEmpty()) {
 
-      }
+      return findById(groupDTO.getMaster().getId())
+        .map(master -> {
+          groupDTO.setMaster(master);
+          return groupDTO;
+        });
+
     }
-    return list;
+    return Mono.just(groupDTO);
   }
 
   @Override
-  public CompletableFuture<GroupDTO> create(GroupDTO group) {
+  public Mono<GroupDTO> create(GroupDTO group) {
     LOGGER.info("Creating a new group entry with information: {}", group);
     RGroup groupDTO = converter.convertfromDTO(group);
     return repository.save(groupDTO)
-      .thenApply(converter::convertToDTO);
+      .map(converter::convertToDTO);
   }
 
 
   @Override
-  public CompletableFuture<GroupDTO> delete(String id) {
+  public Mono<GroupDTO> delete(String id) {
     LOGGER.info("Deleting a group entry with id: {}", id);
 
     return findGroupById(id)
-      .thenCompose(group -> {
-        return repository.delete(group)
-          .thenApply(dummy -> {
-            LOGGER.info("Deleted group entry with informtation: {}", group);
+      .flatMap(group -> {
+        return repository.deleteById(id)
+          .map(dummy -> {
+            LOGGER.info("Deleted group entry with information: {}" + group);
             return converter.convertToDTO(group);
           });
       });
   }
 
   @Override
-  public CompletableFuture<List<GroupDTO>> find(GroupFilter groupFilter, GroupSelection groupSelection) {
+  public Flux<GroupDTO> find(GroupFilter groupFilter, GroupSelection groupSelection) {
     LOGGER.info("Finding all group entries.");
 
-    CompletableFuture<List<GroupDTO>> groupEntries = findGroups(groupFilter)
-      .thenApply(this::convertToDTOs);
-    return enrich(groupEntries, groupFilter, groupSelection);
+    Flux<GroupDTO> groupEntries = findGroups(groupFilter)
+      .map(converter::convertToDTO)
+      .flatMap(group -> enrich(group, groupFilter, groupSelection));
+    return groupEntries;
   }
 
-  private CompletableFuture<List<RGroup>> findGroups(GroupFilter groupFilter) {
+  private Flux<RGroup> findGroups(GroupFilter groupFilter) {
     Query query = new Query();
     if (groupFilter.getName() != null) {
       query.addCriteria(Criteria.where("name").regex(".*" + groupFilter.getName() + ".*"));
@@ -161,31 +159,25 @@ public class MongoDbGroupService implements GroupService {
 
 //		LOGGER.info( "Query" + new String(BSON.encode(query.getQueryObject())));
     LOGGER.info("Query" + query.getQueryObject().toJson(new JsonWriterSettings()));
-    List<RGroup> scopeEntries = mongoTemplate.find(query, RGroup.class);
+    // TODO: the mongo reactive has to interface to do a query
+    //   return template.find(query, RGroup.class);
+    return repository.findAll();
 
-    return CompletableFuture.completedFuture(scopeEntries);
-  }
-
-
-  private List<GroupDTO> convertToDTOs(List<RGroup> models) {
-    return models.stream()
-      .map(converter::convertToDTO)
-      .collect(toList());
   }
 
   @Override
-  public CompletableFuture<GroupDTO> findById(String id) {
+  public Mono<GroupDTO> findById(String id) {
     LOGGER.info("Finding group entry with id: {}", id);
 
     return findGroupById(id)
-      .thenApply(found -> {// Found can be null!
+      .map(found -> {// Found can be null!
         LOGGER.info("Found group entry: {}", found);
         return converter.convertToDTO(found);
 
       })
-      .thenCompose(personEnricher::enrichPersons)
-      .thenCompose(scopeEnricher::enrichScopes)
-      .thenCompose(organisationEnricher::enrichOrganisations);
+      .flatMap(personEnricher::enrichPersons)
+      .flatMap(scopeEnricher::enrichScopes)
+      .flatMap(organisationEnricher::enrichOrganisations);
   }
 
   private Membership convertFromDTO(MembershipDTO membershipDTO) {
@@ -196,7 +188,7 @@ public class MongoDbGroupService implements GroupService {
   }
 
   @Override
-  public CompletableFuture<Void> addMembership(String id, MembershipDTO membershipDTO) {
+  public Mono<Void> addMembership(String id, MembershipDTO membershipDTO) {
     LOGGER.info("Adding member group with id: {} membership {}", id, membershipDTO);
 
     Membership membership = convertFromDTO(membershipDTO);
@@ -207,12 +199,12 @@ public class MongoDbGroupService implements GroupService {
     UpdateResult result = mongoTemplate.updateFirst(query, update, RGroup.class);
     LOGGER.info("Add member " + result);
 
-    return CompletableFuture.completedFuture(null);
+    return Mono.empty();
   }
 
 
   @Override
-  public CompletableFuture<Void> deleteMembership(String id, String memid) {
+  public Mono<Void> deleteMembership(String id, String memid) {
     LOGGER.info("Deleting member group with id: {} membership {}", id, memid);
 
 
@@ -221,27 +213,27 @@ public class MongoDbGroupService implements GroupService {
       new Update().pull("memberships", Query.query(Criteria.where("person.id").is(memid))), RGroup.class);
     LOGGER.info("Delete member " + result);
 
-    return CompletableFuture.completedFuture(null);
+    return Mono.empty();
   }
 
   @Override
-  public CompletableFuture<GroupDTO> update(GroupDTO group) {
+  public Mono<GroupDTO> update(GroupDTO group) {
     LOGGER.info("Updating group entry with information: {}", group);
 
     return findGroupById(group.getId())
-      .thenApply(updated -> {
+      .map(updated -> {
         updated.update(group.getStatus(), group.getName());
         return updated;
       })
-      .thenCompose(repository::save)
-      .thenApply(updated -> {
+      .flatMap(repository::save)
+      .map(updated -> {
         LOGGER.info("Updated group entry with information: {}", updated);
 
         return converter.convertToDTO(updated);
       });
   }
 
-  private CompletableFuture<RGroup> findGroupById(String id) {
+  private Mono<RGroup> findGroupById(String id) {
     return repository.findById(id);
   }
 }

@@ -1,8 +1,5 @@
 package nl.remco.group.organisation.service;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import nl.remco.group.service.dto.OrganisationDTO;
+import reactor.core.publisher.Flux;
 
 
 @RestController
@@ -29,7 +27,7 @@ public final class OrganisationController {
     
     @RequestMapping(method = RequestMethod.GET)
     @CrossOrigin(origins = "*")
-    CompletableFuture<List<OrganisationDTO>> findAll() {
+    Flux<OrganisationDTO> findAll() {
         LOGGER.info("Finding all organisation entries");
         return organisationService.find();
     }

@@ -1,8 +1,8 @@
 package nl.remco.group.organisation.service;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import nl.remco.group.service.dto.OrganisationDTO;
+import reactor.core.publisher.Flux;
+
 public interface OrganisationService {
-    CompletableFuture<List<OrganisationDTO>> find( );
+    Flux<OrganisationDTO> find( );
 }

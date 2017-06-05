@@ -1,19 +1,18 @@
 package nl.remco.group.organisation.service;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
+import nl.remco.group.service.dto.OrganisationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
-import nl.remco.group.service.dto.OrganisationDTO;
 @Service
 public class OrganisationServiceImpl implements OrganisationService {
-	@Autowired
-	OrganisationEnricher organisationEnricher;
-	@Override
-	public CompletableFuture<List<OrganisationDTO>> find() {
-		return organisationEnricher.getOrganisations();
-	}
+  @Autowired
+  OrganisationEnricher organisationEnricher;
+
+  @Override
+  public Flux<OrganisationDTO> find() {
+    return organisationEnricher.getOrganisations();
+  }
 
 }
