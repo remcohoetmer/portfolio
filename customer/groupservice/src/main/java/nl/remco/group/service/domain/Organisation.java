@@ -1,41 +1,41 @@
 package nl.remco.group.service.domain;
 
 
-public class Organisation  {
-	private String id;
-	private String name;
-	private String status;
+public class Organisation {
+  private String id;
+  private String name;
+  private String status;
 
-	public Organisation() {
-	}
+  public Organisation() {
+  }
 
-	public Organisation(String id) {
-		this.id=id;
-	}
-	
-	public String getId() {
-		return id;
-	}
+  public Organisation(String id) {
+    this.id = id;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
 
-	
 }

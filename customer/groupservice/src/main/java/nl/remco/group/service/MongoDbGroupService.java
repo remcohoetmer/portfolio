@@ -14,7 +14,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -26,10 +26,10 @@ import reactor.core.publisher.Mono;
 public class MongoDbGroupService implements GroupService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbGroupService.class);
-
   private final GroupRepository repository;
+
   @Autowired
-  MongoTemplate mongoTemplate;
+  ReactiveMongoTemplate mongoTemplate;
 
   @Autowired
   OrganisationEnricher organisationEnricher;
@@ -144,9 +144,7 @@ public class MongoDbGroupService implements GroupService {
 
 //		LOGGER.info( "Query" + new String(BSON.encode(query.getQueryObject())));
     LOGGER.info("Query" + query.getQueryObject().toJson(new JsonWriterSettings()));
-    // TODO: the mongo reactive has to interface to do a query
-    //   return template.find(query, RGroup.class);
-    return repository.findAll();
+    return mongoTemplate.find(query, RGroup.class);
 
   }
 
@@ -181,7 +179,7 @@ public class MongoDbGroupService implements GroupService {
 
     Update update = new Update().push("memberships", membership);
 
-    UpdateResult result = mongoTemplate.updateFirst(query, update, RGroup.class);
+    Mono<UpdateResult> result = mongoTemplate.updateFirst(query, update, RGroup.class);
     LOGGER.info("Add member " + result);
 
     return Mono.empty();
@@ -193,7 +191,7 @@ public class MongoDbGroupService implements GroupService {
     LOGGER.info("Deleting member group with id: {} membership {}", id, memid);
 
 
-    UpdateResult result = mongoTemplate.updateMulti(
+    Mono<UpdateResult> result = mongoTemplate.updateMulti(
       new Query(Criteria.where("id").is(id)),
       new Update().pull("memberships", Query.query(Criteria.where("person.id").is(memid))), RGroup.class);
     LOGGER.info("Delete member " + result);

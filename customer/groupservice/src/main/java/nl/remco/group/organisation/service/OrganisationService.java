@@ -4,5 +4,5 @@ import nl.remco.group.service.dto.OrganisationDTO;
 import reactor.core.publisher.Flux;
 
 public interface OrganisationService {
-    Flux<OrganisationDTO> find( );
+  Flux<OrganisationDTO> find();
 }
