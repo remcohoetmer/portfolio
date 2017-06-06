@@ -8,12 +8,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import nl.remco.scope.service.MongoDBScopeService;
-import nl.remco.scope.service.Scope;
-import nl.remco.scope.service.ScopeDTO;
-import nl.remco.scope.service.ScopeNotFoundException;
-import nl.remco.scope.service.ScopeRepository;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +16,7 @@ import static nl.remco.scope.service.ScopeAssert.assertThatScope;
 import static nl.remco.scope.service.ScopeDTOAssert.assertThatTodoDTO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MongoDbScopeServiceTest {
@@ -89,7 +80,7 @@ public class MongoDbScopeServiceTest {
 
     @Test(expected = ScopeNotFoundException.class)
     public void delete_TodoEntryNotFound_ShouldThrowException() {
-        when(repository.findOne(ID)).thenReturn(Optional.empty());
+        when(repository.findById(ID)).thenReturn(Optional.empty());
 
         service.findById(ID);
     }
@@ -100,7 +91,7 @@ public class MongoDbScopeServiceTest {
                 .id(ID)
                 .build();
 
-        when(repository.findOne(ID)).thenReturn(Optional.of(deleted));
+        when(repository.findById(ID)).thenReturn(Optional.of(deleted));
 
         service.delete(ID);
 
@@ -115,7 +106,7 @@ public class MongoDbScopeServiceTest {
                 .name(NAME)
                 .build();
 
-        when(repository.findOne(ID)).thenReturn(Optional.of(deleted));
+        when(repository.findById(ID)).thenReturn(Optional.of(deleted));
 
         ScopeDTO returned = service.delete(ID);
 
@@ -147,7 +138,7 @@ public class MongoDbScopeServiceTest {
 
     @Test(expected = ScopeNotFoundException.class)
     public void findById_TodoEntryNotFound_ShouldThrowException() {
-        when(repository.findOne(ID)).thenReturn(Optional.empty());
+        when(repository.findById(ID)).thenReturn(Optional.empty());
 
         service.findById(ID);
     }
@@ -160,7 +151,7 @@ public class MongoDbScopeServiceTest {
                 .name(NAME)
                 .build();
 
-        when(repository.findOne(ID)).thenReturn(Optional.of(found));
+        when(repository.findById(ID)).thenReturn(Optional.of(found));
 
         ScopeDTO returned = service.findById(ID);
 
@@ -172,7 +163,7 @@ public class MongoDbScopeServiceTest {
 
     @Test(expected = ScopeNotFoundException.class)
     public void update_UpdatedTodoEntryNotFound_ShouldThrowException() {
-        when(repository.findOne(ID)).thenReturn(Optional.empty());
+        when(repository.findById(ID)).thenReturn(Optional.empty());
 
         ScopeDTO updated = new ScopeDTOBuilder()
                 .id(ID)
@@ -187,7 +178,7 @@ public class MongoDbScopeServiceTest {
                 .id(ID)
                 .build();
 
-        when(repository.findOne(ID)).thenReturn(Optional.of(existing));
+        when(repository.findById(ID)).thenReturn(Optional.of(existing));
         when(repository.save(existing)).thenReturn(existing);
 
         ScopeDTO updated = new ScopeDTOBuilder()
@@ -211,7 +202,7 @@ public class MongoDbScopeServiceTest {
                 .id(ID)
                 .build();
 
-        when(repository.findOne(ID)).thenReturn(Optional.of(existing));
+        when(repository.findById(ID)).thenReturn(Optional.of(existing));
         when(repository.save(existing)).thenReturn(existing);
 
         ScopeDTO updated = new ScopeDTOBuilder()

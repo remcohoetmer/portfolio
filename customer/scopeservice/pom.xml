@@ -6,21 +6,16 @@
     <groupId>nl.remco</groupId>
     <artifactId>scopeservice</artifactId>
     <version>0.1</version>
+    <parent>
+        <groupId>nl.remco</groupId>
+        <artifactId>group-parent</artifactId>
+        <version>0.1</version>
+    </parent>
 
     <properties>
-        <!-- Enable Java 8 -->
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Configure the main class of our Spring Boot application -->
         <start-class>nl.remco.scope.config.ScopeAppConfig</start-class>
     </properties>
 
-    <!-- Inherit defaults from Spring Boot -->
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.2.RELEASE</version>
-    </parent>
 
     <dependencies>
         <!-- Get the dependencies of a web application -->

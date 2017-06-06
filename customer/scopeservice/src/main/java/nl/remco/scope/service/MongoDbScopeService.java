@@ -1,18 +1,16 @@
 package nl.remco.scope.service;
 
-import static java.util.stream.Collectors.toList;
-
-import java.util.List;
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @PropertySource("application.properties")
 @Service
@@ -104,7 +102,7 @@ final class MongoDBScopeService implements ScopeService {
     }
 
     private Scope findScopeById(String id) {
-        Optional<Scope> result = repository.findOne(id);
+        Optional<Scope> result = repository.findById(id);
         return result.orElseThrow(() -> new ScopeNotFoundException(id));
 
     }

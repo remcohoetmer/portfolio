@@ -12,7 +12,7 @@ interface ScopeRepository extends Repository<Scope, String> {
 
     List<Scope> findAll();
 
-    Optional<Scope> findOne(String id);
+    Optional<Scope> findById(String id);
 
     Scope save(Scope saved);
 }

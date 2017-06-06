@@ -6,11 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.time.Duration;
 
 
 @RestController
@@ -43,7 +45,7 @@ public final class GroupController {
     return groupService.delete(id);
   }
 
-  @RequestMapping(method = RequestMethod.GET)
+  @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   @CrossOrigin(origins = "*")
   Flux<GroupDTO> findAll(
     @RequestParam(value = "name", required = false) String name,
@@ -72,7 +74,10 @@ public final class GroupController {
     groupSelection.setSelectOrganisations();
 
     LOGGER.info("Finding all group entries");
-    return groupService.find(groupFilter, groupSelection);
+    Flux<GroupDTO> groups= groupService.find(groupFilter, groupSelection);
+    Flux<Long> d = Flux.interval(Duration.ofSeconds(1L), Duration.ofSeconds(1L));
+
+    return Flux.zip(d, groups).map(g -> g.getT2());
   }
 
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
