@@ -35,6 +35,13 @@ public class OrganisationDTO {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
 
+	@Override
+	public String toString() {
+		return "OrganisationDTO{" +
+			"id='" + id + '\'' +
+			", name='" + name + '\'' +
+			", status='" + status + '\'' +
+			'}';
+	}
 }

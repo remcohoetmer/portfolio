@@ -31,3 +31,14 @@ localhost:8082/api/group/5937a8624ba8d02ae3de3efc
 "memberships":[],
 "features":["Wiskunde"]
 }
+
+{
+"name": "Facebook",
+"scope":{
+"id": "593792db4ba8d01cb01df37f"
+},
+"organisation":{
+"id": "8003"
+},
+"features":["Dance"]
+}

@@ -6,9 +6,12 @@ import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Component
 final class CRMOrganisations {
+  private static final Logger log = Logger.getLogger(CRMOrganisations.class.getName());
+
   private Map<String, CRMOrganisation> organisations = new HashMap<>();
 
   public Mono<CRMOrganisation> retrieveOrganisation(final String organisationId) {
@@ -33,4 +36,7 @@ final class CRMOrganisations {
   public Flux<CRMOrganisation> retrieveOrganisations() {
     return Flux.fromIterable(organisations.values());
   }
+
+
 }
+

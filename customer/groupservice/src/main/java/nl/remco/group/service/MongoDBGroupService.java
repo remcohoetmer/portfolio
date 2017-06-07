@@ -52,14 +52,14 @@ public class MongoDBGroupService implements GroupService {
     Mono<GroupDTO> chain = Mono.just(group);
     if (groupSelection.isSelectOrganisations())
       chain = chain.flatMap(organisationEnricher::enrichOrganisations);
-    if (groupSelection.isSelectPersons())
-      chain = chain.flatMap(personEnricher::enrichPersons);
+    /*
     if (groupSelection.isSelectPersons())
       chain = chain.flatMap(personEnricher::enrichPersons);
     if (groupSelection.isSelectScopes())
       chain = chain.flatMap(scopeEnricher::enrichScopes);
     if (groupSelection.isSelectMasters())
       chain = chain.flatMap(group1 -> enrichMaster(group1, groupFilter));
+      */
     return chain;
   }
 
@@ -157,7 +157,8 @@ public class MongoDBGroupService implements GroupService {
       })
       .flatMap(personEnricher::enrichPersons)
       .flatMap(scopeEnricher::enrichScopes)
-      .flatMap(organisationEnricher::enrichOrganisations);
+      .flatMap(organisationEnricher::enrichOrganisations)
+      .switchIfEmpty(Mono.just(new GroupDTO()));
   }
 
   private Membership convertFromDTO(MembershipDTO membershipDTO) {

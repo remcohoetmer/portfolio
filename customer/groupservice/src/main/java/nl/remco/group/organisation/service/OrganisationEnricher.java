@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class OrganisationEnricher {
+
   private static final Logger log = LoggerFactory.getLogger(OrganisationEnricher.class);
   @Autowired
   CRMOrganisationDelegate crmOrganisationDelegate;
@@ -18,13 +19,15 @@ public class OrganisationEnricher {
   public Mono<GroupDTO> enrichOrganisations(GroupDTO groupDTO) {
 
     OrganisationDTO orgDTO = groupDTO.getOrganisation();
+    log.info("enrichOrganisations: " + orgDTO);
     if (orgDTO != null && orgDTO.getId() != null && !orgDTO.getId().isEmpty()) {
 
       return crmOrganisationDelegate.getOrganisation(orgDTO.getId())
         .map(crmOrganisation -> {
           convertDTO(orgDTO, crmOrganisation);
           return groupDTO;
-        });
+        })
+        .switchIfEmpty( Mono.just( groupDTO));
     }
     return Mono.just(groupDTO);
   }
@@ -42,6 +45,7 @@ public class OrganisationEnricher {
       organisationDTO.setName(crmOrganisation.getName());
       organisationDTO.setStatus(crmOrganisation.getStatus());
     }
+    log.info("organisation: " + organisationDTO);
     return organisationDTO;
   }
 

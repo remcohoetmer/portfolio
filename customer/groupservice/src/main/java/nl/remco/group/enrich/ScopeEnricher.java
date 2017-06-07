@@ -18,7 +18,7 @@ public class ScopeEnricher {
     ScopeDTO scopeDTO = groupDTO.getScope();
 
     if (scopeDTO != null && scopeDTO.getId() != null && !scopeDTO.getId().isEmpty()) {
-      return chain = chain
+      chain = chain
         .then(new ScopeClient().getScopeById(scopeDTO.getId()))
         .map(scope -> {
           scopeDTO.setName(scope.getName());

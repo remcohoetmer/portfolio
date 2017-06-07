@@ -1,6 +1,9 @@
 package nl.remco.group.organisation.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.remco.group.service.dto.GroupDTO;
+import nl.remco.group.service.dto.OrganisationDTO;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,10 +14,10 @@ import java.util.logging.Logger;
 
 @Component
 final class CRMOrganisationDelegate {
-  private static final Logger LOG = Logger.getLogger(CRMOrganisationDelegate.class.getName());
+  private static final Logger log = Logger.getLogger(CRMOrganisationDelegate.class.getName());
 
-  @Autowired
-  CRMOrganisations crmOrganisations;
+//  @Autowired
+  CRMOrganisations crmOrganisations= new CRMOrganisations();
   private ConcurrentHashMap<String, Mono<CRMOrganisation>> cache =
     new ConcurrentHashMap<>();
 
@@ -32,11 +35,46 @@ final class CRMOrganisationDelegate {
         return futuretaskWinner;
       }
     }
-    LOG.info("Get from organisation cache id=" + organisationId);
+    log.info("Get from organisation cache id=" + organisationId);
     return f;
   }
 
   public Flux<CRMOrganisation> getOrganisations() {
     return crmOrganisations.retrieveOrganisations();
+  }
+
+  public static void main(String[] args) {
+    Mono.just(10).subscribe(System.out::println);
+    Subscriber<Object> subscriber = new Subscriber<Object>() {
+      @Override
+      public void onSubscribe(Subscription s) {
+        s.request(100000L);
+      }
+
+      @Override
+      public void onNext(Object o) {
+        log.info("onNext" + o);
+      }
+
+      @Override
+      public void onError(Throwable t) {
+        log.info("onNext" + t);
+      }
+
+      @Override
+      public void onComplete() {
+        log.info("onComplete");
+
+      }
+    };
+    OrganisationDTO orgDTO = new OrganisationDTO();
+    GroupDTO groupDTO= new GroupDTO();
+    CRMOrganisationDelegate delegate= new CRMOrganisationDelegate();
+    delegate.getOrganisation("8001").subscribe(subscriber);
+    delegate.getOrganisation("8003").subscribe(subscriber);
+    delegate.getOrganisation("8003").map(crmOrganisation -> {
+      return groupDTO;
+    }).subscribe(subscriber);
+
   }
 }
