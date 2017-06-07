@@ -17,19 +17,15 @@ public class OrganisationEnricher {
   CRMOrganisationDelegate crmOrganisationDelegate;
 
   public Mono<GroupDTO> enrichOrganisations(GroupDTO groupDTO) {
-
+    Mono chain = Mono.empty();
     OrganisationDTO orgDTO = groupDTO.getOrganisation();
     log.info("enrichOrganisations: " + orgDTO);
     if (orgDTO != null && orgDTO.getId() != null && !orgDTO.getId().isEmpty()) {
 
-      return crmOrganisationDelegate.getOrganisation(orgDTO.getId())
-        .map(crmOrganisation -> {
-          convertDTO(orgDTO, crmOrganisation);
-          return groupDTO;
-        })
-        .switchIfEmpty( Mono.just( groupDTO));
+      chain = chain.then(crmOrganisationDelegate.getOrganisation(orgDTO.getId())
+        .map(crmOrganisation -> convertDTO(orgDTO, crmOrganisation)));
     }
-    return Mono.just(groupDTO);
+    return chain.then(Mono.just(groupDTO)).onErrorResume(e->Mono.just(groupDTO));
   }
 
 

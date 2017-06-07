@@ -17,9 +17,10 @@ final class CRMOrganisations {
   public Mono<CRMOrganisation> retrieveOrganisation(final String organisationId) {
     CRMOrganisation org = organisations.get(organisationId);
     if (org == null) {
-      return Mono.empty();
-    }
 
+      return Mono.error( new Exception("Organisation does  not exist: " + organisationId));
+//      return Mono.empty();
+    }
     return Mono.just(org);
   }
 
