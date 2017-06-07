@@ -14,3 +14,20 @@ localhost:8082/api/group/5936e0354ba8d0163f5c9289/membership
 }
 
 localhost:8082/api/group/5936e0354ba8d0163f5c9289/membership
+
+
+localhost:8082/api/group/5937a8624ba8d02ae3de3efc
+{
+"name": "Klas",
+"status": "Actief",
+"description": "Groep 8",
+"code": "1223",
+"scope":{
+"id": "593783304ba8d0152504af36"
+},
+"organisation":{
+"id": "8002"
+},
+"memberships":[],
+"features":["Wiskunde"]
+}
