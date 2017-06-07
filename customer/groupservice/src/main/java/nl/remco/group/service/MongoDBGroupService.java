@@ -6,10 +6,9 @@ import nl.remco.group.enrich.ScopeEnricher;
 import nl.remco.group.organisation.service.OrganisationEnricher;
 import nl.remco.group.service.domain.Membership;
 import nl.remco.group.service.domain.Person;
-import nl.remco.group.service.domain.RGroup;
+import nl.remco.group.service.domain.Group;
 import nl.remco.group.service.dto.GroupDTO;
 import nl.remco.group.service.dto.MembershipDTO;
-import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,28 +22,28 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class MongoDbGroupService implements GroupService {
+public class MongoDBGroupService implements GroupService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbGroupService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBGroupService.class);
   private final GroupRepository repository;
 
   @Autowired
-  ReactiveMongoTemplate mongoTemplate;
+  private ReactiveMongoTemplate mongoTemplate;
 
   @Autowired
-  OrganisationEnricher organisationEnricher;
+  private OrganisationEnricher organisationEnricher;
 
   @Autowired
-  PersonEnricher personEnricher;
+  private PersonEnricher personEnricher;
 
   @Autowired
-  ScopeEnricher scopeEnricher;
+  private ScopeEnricher scopeEnricher;
 
   @Autowired
-  Converter converter;
+  private Converter converter;
 
   @Autowired
-  MongoDbGroupService(GroupRepository repository) {
+  private MongoDBGroupService(GroupRepository repository) {
     this.repository = repository;
   }
 
@@ -82,11 +81,10 @@ public class MongoDbGroupService implements GroupService {
   @Override
   public Mono<GroupDTO> create(GroupDTO group) {
     LOGGER.info("Creating a new group entry with information: {}", group);
-    RGroup groupDTO = converter.convertfromDTO(group);
+    Group groupDTO = converter.convertfromDTO(group);
     return repository.save(groupDTO)
       .map(converter::convertToDTO);
   }
-
 
   @Override
   public Mono<GroupDTO> delete(String id) {
@@ -112,7 +110,7 @@ public class MongoDbGroupService implements GroupService {
     return groupEntries;
   }
 
-  private Flux<RGroup> findGroups(GroupFilter groupFilter) {
+  private Flux<Group> findGroups(GroupFilter groupFilter) {
     Query query = new Query();
     if (groupFilter.getName() != null) {
       query.addCriteria(Criteria.where("name").regex(".*" + groupFilter.getName() + ".*"));
@@ -142,9 +140,8 @@ public class MongoDbGroupService implements GroupService {
       query.addCriteria(Criteria.where("features").in(groupFilter.getFeatures()));
     }
 
-//		LOGGER.info( "Query" + new String(BSON.encode(query.getQueryObject())));
-    LOGGER.info("Query" + query.getQueryObject().toJson(new JsonWriterSettings()));
-    return mongoTemplate.find(query, RGroup.class);
+    LOGGER.info("Query" + query.getQueryObject().toJson());
+    return mongoTemplate.find(query, Group.class);
 
   }
 
@@ -179,10 +176,11 @@ public class MongoDbGroupService implements GroupService {
 
     Update update = new Update().push("memberships", membership);
 
-    Mono<UpdateResult> result = mongoTemplate.updateFirst(query, update, RGroup.class);
-    LOGGER.info("Add member " + result);
-
-    return Mono.empty();
+    return mongoTemplate.updateFirst(query, update, Group.class)
+      .map(result -> {
+        LOGGER.info("Add member " + result);
+        return new Object();
+      }).then(Mono.empty());
   }
 
 
@@ -193,7 +191,7 @@ public class MongoDbGroupService implements GroupService {
 
     Mono<UpdateResult> result = mongoTemplate.updateMulti(
       new Query(Criteria.where("id").is(id)),
-      new Update().pull("memberships", Query.query(Criteria.where("person.id").is(memid))), RGroup.class);
+      new Update().pull("memberships", Query.query(Criteria.where("person.id").is(memid))), Group.class);
     LOGGER.info("Delete member " + result);
 
     return Mono.empty();
@@ -216,7 +214,7 @@ public class MongoDbGroupService implements GroupService {
       });
   }
 
-  private Mono<RGroup> findGroupById(String id) {
+  private Mono<Group> findGroupById(String id) {
     return repository.findById(id);
   }
 }

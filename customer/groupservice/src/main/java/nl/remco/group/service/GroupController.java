@@ -45,6 +45,14 @@ public final class GroupController {
     return groupService.delete(id);
   }
 
+  @RequestMapping(value = "/delay", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  Flux<GroupDTO> findWithDelay() {
+    LOGGER.info("Finding all group entries with delay");
+    Flux<GroupDTO> groups = groupService.find(new GroupFilter(), new GroupSelection());
+    Flux<Long> d = Flux.interval(Duration.ofSeconds(1L), Duration.ofSeconds(1L));
+    return Flux.zip(d, groups).map(g -> g.getT2());
+  }
+
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   @CrossOrigin(origins = "*")
   Flux<GroupDTO> findAll(
@@ -74,10 +82,7 @@ public final class GroupController {
     groupSelection.setSelectOrganisations();
 
     LOGGER.info("Finding all group entries");
-    Flux<GroupDTO> groups= groupService.find(groupFilter, groupSelection);
-    Flux<Long> d = Flux.interval(Duration.ofSeconds(1L), Duration.ofSeconds(1L));
-
-    return Flux.zip(d, groups).map(g -> g.getT2());
+    return groupService.find(groupFilter, groupSelection);
   }
 
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
@@ -99,7 +104,7 @@ public final class GroupController {
 
   @RequestMapping(value = "{id}/membership", method = RequestMethod.POST)
   @CrossOrigin(origins = "*")
-  Mono<Void> addMembership(@RequestBody @Valid MembershipDTO mbsEntry, @PathVariable("") String id) {
+  Mono<Void> addMembership(@RequestBody @Valid MembershipDTO mbsEntry, @PathVariable("id") String id) {
     LOGGER.info("Updating group id: {} add member {}", id, mbsEntry);
 
     return groupService.addMembership(id, mbsEntry);

@@ -14,9 +14,12 @@ public class CRMCustomersDelegate {
   Map<String, CRMPerson> persons = new HashMap<>();
 
   public Mono<CRMPerson> findPerson(String id) {
-
-
-    return Mono.just(persons.get(id));
+    CRMPerson person= persons.get(id);
+    if (person==null) {
+      person= new CRMPerson(id);
+      person.setName("--Unknown--");
+    }
+    return Mono.just(person);
   }
 
   public CRMCustomersDelegate() {

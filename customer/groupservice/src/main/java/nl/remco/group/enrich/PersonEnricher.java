@@ -19,7 +19,10 @@ public class PersonEnricher {
       personDTO.setSurname(crmPerson.getSurname());
       personDTO.setEmail(crmPerson.getEmail());
       personDTO.setDateofbirth(crmPerson.getDateofbirth());
-      personDTO.setOrganisation(new OrganisationDTO(crmPerson.getOrganisation().getId()));
+      if (crmPerson.getOrganisation() != null) {
+        personDTO.setOrganisation(new OrganisationDTO(crmPerson.getOrganisation().getId()));
+
+      }
     }
     return personDTO;
   }

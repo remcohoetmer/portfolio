@@ -1,6 +1,6 @@
 package nl.remco.scope.service;
 
-public class ScopeNotFoundException extends RuntimeException {
+public class ScopeNotFoundException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 

@@ -1,12 +1,17 @@
 package nl.remco.scope.service;
 
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 interface ScopeService {
-	ScopeDTO create(ScopeDTO scope);
-    ScopeDTO delete(String id);
-    List<ScopeDTO> findAll();
-    ScopeDTO findById(String id);
-    ScopeDTO update(ScopeDTO scope);
+  Mono<ScopeDTO> create(ScopeDTO scope);
+
+  Mono<ScopeDTO> delete(String id);
+
+  Flux<ScopeDTO> findAll();
+
+  Mono<ScopeDTO> findById(String id);
+
+  Mono<ScopeDTO> update(ScopeDTO scope);
 }

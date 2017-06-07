@@ -14,7 +14,6 @@
         <version>0.1</version>
     </parent>
     <dependencies>
-        <!-- Get the dependencies of a web application -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -94,6 +93,11 @@
             <artifactId>json-path-assert</artifactId>
 
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>nl.remco</groupId>
+            <artifactId>scopeservice</artifactId>
+            <version>0.1</version>
         </dependency>
     </dependencies>
 
