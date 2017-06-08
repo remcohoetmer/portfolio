@@ -112,11 +112,18 @@ public final class GroupDTO {
 
   @Override
   public String toString() {
-    return String.format(
-      "GroupDTO[id=%s, name=%s, status=%s]",
-      this.id,
-      this.name,
-      this.status
-    );
+    return "GroupDTO{" +
+      "id='" + id + '\'' +
+      ", name='" + name + '\'' +
+      ", status='" + status + '\'' +
+      ", description='" + description + '\'' +
+      ", code='" + code + '\'' +
+      ", scope=" + scope +
+      ", organisation=" + organisation +
+      ", memberships=" + memberships +
+      ", features=" + features +
+      ", master=" + master +
+      ", createdBy='" + createdBy + '\'' +
+      '}';
   }
 }

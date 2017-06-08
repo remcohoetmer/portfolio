@@ -24,7 +24,7 @@
     <modules>
         <module>groupservice</module>
         <module>scopeservice</module>
-       <!-- <module>rsclient</module>-->
+        <module>serviceclient</module>
     </modules>
 
     <repositories>

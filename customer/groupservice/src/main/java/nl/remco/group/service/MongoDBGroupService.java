@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class MongoDBGroupService implements GroupService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBGroupService.class);
+  private static final Logger logger = LoggerFactory.getLogger(MongoDBGroupService.class);
   private final GroupRepository repository;
 
   @Autowired
@@ -52,14 +52,13 @@ public class MongoDBGroupService implements GroupService {
     Mono<GroupDTO> chain = Mono.just(group);
     if (groupSelection.isSelectOrganisations())
       chain = chain.flatMap(organisationEnricher::enrichOrganisations);
-    /*
+
     if (groupSelection.isSelectPersons())
       chain = chain.flatMap(personEnricher::enrichPersons);
     if (groupSelection.isSelectScopes())
       chain = chain.flatMap(scopeEnricher::enrichScopes);
     if (groupSelection.isSelectMasters())
       chain = chain.flatMap(group1 -> enrichMaster(group1, groupFilter));
-      */
     return chain;
   }
 
@@ -80,7 +79,7 @@ public class MongoDBGroupService implements GroupService {
 
   @Override
   public Mono<GroupDTO> create(GroupDTO group) {
-    LOGGER.info("Creating a new group entry with information: {}", group);
+    logger.info("Creating a new group entry with information: {}", group);
     Group groupDTO = converter.convertfromDTO(group);
     return repository.save(groupDTO)
       .map(converter::convertToDTO);
@@ -88,13 +87,13 @@ public class MongoDBGroupService implements GroupService {
 
   @Override
   public Mono<GroupDTO> delete(String id) {
-    LOGGER.info("Deleting a group entry with id: {}", id);
+    logger.info("Deleting a group entry with id: {}", id);
 
     return findGroupById(id)
       .flatMap(group -> {
         return repository.deleteById(id)
           .map(dummy -> {
-            LOGGER.info("Deleted group entry with information: {}" + group);
+            logger.info("Deleted group entry with information: {}" + group);
             return converter.convertToDTO(group);
           });
       });
@@ -102,7 +101,7 @@ public class MongoDBGroupService implements GroupService {
 
   @Override
   public Flux<GroupDTO> find(GroupFilter groupFilter, GroupSelection groupSelection) {
-    LOGGER.info("Finding all group entries.");
+    logger.info("Finding all group entries.");
 
     Flux<GroupDTO> groupEntries = findGroups(groupFilter)
       .map(converter::convertToDTO)
@@ -140,18 +139,18 @@ public class MongoDBGroupService implements GroupService {
       query.addCriteria(Criteria.where("features").in(groupFilter.getFeatures()));
     }
 
-    LOGGER.info("Query" + query.getQueryObject().toJson());
+    logger.info("Query" + query.getQueryObject().toJson());
     return mongoTemplate.find(query, Group.class);
 
   }
 
   @Override
   public Mono<GroupDTO> findById(String id) {
-    LOGGER.info("Finding group entry with id: {}", id);
+    logger.info("Finding group entry with id: {}", id);
 
     return findGroupById(id)
       .map(found -> {// Found can be null!
-        LOGGER.info("Found group entry: {}", found);
+        logger.info("Found group entry: {}", found);
         return converter.convertToDTO(found);
 
       })
@@ -170,7 +169,7 @@ public class MongoDBGroupService implements GroupService {
 
   @Override
   public Mono<Void> addMembership(String id, MembershipDTO membershipDTO) {
-    LOGGER.info("Adding member group with id: {} membership {}", id, membershipDTO);
+    logger.info("Adding member group with id: {} membership {}", id, membershipDTO);
 
     Membership membership = convertFromDTO(membershipDTO);
     Query query = new Query(Criteria.where("id").is(id));
@@ -179,7 +178,7 @@ public class MongoDBGroupService implements GroupService {
 
     return mongoTemplate.updateFirst(query, update, Group.class)
       .map(result -> {
-        LOGGER.info("Add member " + result);
+        logger.info("Add member " + result);
         return new Object();
       }).then(Mono.empty());
   }
@@ -187,20 +186,20 @@ public class MongoDBGroupService implements GroupService {
 
   @Override
   public Mono<Void> deleteMembership(String id, String memid) {
-    LOGGER.info("Deleting member group with id: {} membership {}", id, memid);
+    logger.info("Deleting member group with id: {} membership {}", id, memid);
 
 
     Mono<UpdateResult> result = mongoTemplate.updateMulti(
       new Query(Criteria.where("id").is(id)),
       new Update().pull("memberships", Query.query(Criteria.where("person.id").is(memid))), Group.class);
-    LOGGER.info("Delete member " + result);
+    logger.info("Delete member " + result);
 
     return Mono.empty();
   }
 
   @Override
   public Mono<GroupDTO> update(GroupDTO group) {
-    LOGGER.info("Updating group entry with information: {}", group);
+    logger.info("Updating group entry with information: {}", group);
 
     return findGroupById(group.getId())
       .map(updated -> {
@@ -209,7 +208,7 @@ public class MongoDBGroupService implements GroupService {
       })
       .flatMap(repository::save)
       .map(updated -> {
-        LOGGER.info("Updated group entry with information: {}", updated);
+        logger.info("Updated group entry with information: {}", updated);
 
         return converter.convertToDTO(updated);
       });
