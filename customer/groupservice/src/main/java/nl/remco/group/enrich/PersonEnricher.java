@@ -19,7 +19,7 @@ public class PersonEnricher {
       personDTO.setSurname(crmPerson.getSurname());
       personDTO.setEmail(crmPerson.getEmail());
       personDTO.setDateofbirth(crmPerson.getDateofbirth());
-      if (crmPerson.getOrganisation()!=null) {
+      if (crmPerson.getOrganisation() != null) {
         personDTO.setOrganisation(new OrganisationDTO(crmPerson.getOrganisation().getId()));
 
       }
@@ -34,19 +34,14 @@ public class PersonEnricher {
   }
 
   public Mono<GroupDTO> enrichPersons(final GroupDTO group) {
-    Mono<PersonDTO> chain = null;
+    Mono<PersonDTO> chain = Mono.empty();
 
     for (MembershipDTO membership : group.getMemberships()) {
       Mono<PersonDTO> enrichedPerson = enrichPersons(membership.getPerson());
-      if (chain == null) {
-        chain = enrichedPerson;
-      } else {
-        chain = chain.then(enrichedPerson);
-      }
+      chain = chain.then(enrichedPerson);
     }
     Mono<GroupDTO> result = Mono.just(group);
-    return (chain == null) ? result : chain.then(result);
-
+    return chain.then(result).onErrorResume(e -> result);
   }
 
 }
