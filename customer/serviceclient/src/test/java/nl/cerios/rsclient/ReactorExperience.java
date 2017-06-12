@@ -48,8 +48,8 @@ public class ReactorExperience {
 
   @Test
   public void testJava8TypeInferenceHulpNodig() {
-    Mono<GroupDTO> gm0 = getMono().flatMap(dummy -> getGroup()); // nu kan Java het type bepalen (van flatMap return)
-    Mono<GroupDTO> gm = ((Mono<Object>) getMono()).flatMap(dummy -> getGroup()).flatMap(this::test2); //nu niet meer, cast is nodig
+    Mono<GroupDTO> gm0 = getMono().then(getGroup()); // nu kan Java het type zelf casten
+    Mono<GroupDTO> gm = ((Mono<Object>) getMono()).then(getGroup()).flatMap(this::test2); //nu niet meer, hulp is nodig
   }
 
   public Mono getMono() {

@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class RsclientApplicationTests {
-  private static final Logger log = LoggerFactory.getLogger(RsclientApplication.class);
+  private static final Logger log = LoggerFactory.getLogger(GroupIT.class);
 
   @Bean
   WebClient client() {
