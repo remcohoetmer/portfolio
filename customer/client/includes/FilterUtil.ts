@@ -3,7 +3,7 @@ export class Filter {
     constructor(public string: string = "") { }
     update(tag: string, paramnaam: string) {
         var value = $("#" + tag).val();
-        if (value != "") {
+        if (value != undefined && value != "") {
             if (this.string == "") {
                 this.string = "?";
             } else {
@@ -63,8 +63,8 @@ export class FilterUtil {
         alert(propList);
     }
 
-    static getIdFromEvent(event: Event) {
-        return FilterUtil.getIdFromRow(<string><any>$((<Node>event.target).parentNode));
+    static getIdFromEvent(event: Event) :number {
+        return Number(FilterUtil.getIdFromRow(<string><any>$((<Node>event.target).parentNode)));
     }
 
     static getIdFromRow(row:string) {

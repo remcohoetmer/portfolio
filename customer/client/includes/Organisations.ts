@@ -1,4 +1,6 @@
 ﻿/// <reference path="./jquery.d.ts" />
+/// <reference path="./sse.d.ts" />
+
 import {WindowUtil} from "WindowUtil";
 import {FilterUtil, Filter} from "FilterUtil";
 import {Configuration} from "Configuration";

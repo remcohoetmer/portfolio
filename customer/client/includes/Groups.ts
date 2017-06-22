@@ -1,22 +1,23 @@
 ﻿
-import {WindowUtil} from "WindowUtil";
-import {FilterUtil,Filter} from "FilterUtil";
-import {Person, Organisation} from "DataModel";
-import {PersonList} from "PersonList";
-import {Configuration} from "Configuration";
+import { WindowUtil } from "WindowUtil";
+import { FilterUtil, Filter } from "FilterUtil";
+import { Person, Organisation } from "DataModel";
+import { PersonList } from "PersonList";
+import { Configuration } from "Configuration";
 
 export class Groups {
 
-    gAddGroup:any = null;
-    gAdd_Rol:any = null;
+    gAddGroup: any = null;
+    gAdd_Rol: any = null;
     personList: PersonList;
-    gGroup:any = null;
-    gGroupTimestamp:any = null;
+    gGroup: any = null;
+    gGroupTimestamp: any = null;
 
-    obj_groupsleidersTable:any = null;
-    obj_groupsledenTable :any= null;
+    obj_groupsleidersTable: any = null;
+    obj_groupsledenTable: any = null;
 
     initialise(personList: PersonList): void {
+        Configuration.check_config();
         this.personList = personList;
         let _this = this;
         $('#but_saveAddLeden').click(function () {
@@ -45,7 +46,7 @@ export class Groups {
         });
 
 
-        
+
         $('#but_delete_lid').click(function () {
             _this.submitUpdatemembershipsRequest(_this.gGroup.id, _this.obj_groupsledenTable, "Verwijderd");
         });
@@ -100,15 +101,14 @@ export class Groups {
             error: FilterUtil.ajaxErrorHandler
         });
 
-        $.ajax({
-            url: Configuration.organisation_service,
-            type: "GET",
-            success: function (response, textStatus, jqXHR) {
-                _this.populateOrganisation(response);
-            },
-            cache: false,
-            error: FilterUtil.ajaxErrorHandler
-        });
+        var source = new EventSource(Configuration.organisation_service);
+        /*(<any>source).addEventListener('message', function (e) {
+            var data = JSON.parse(e.data);
+            console.log("SSE: " + data);
+            _this.populateOrganisation(data);
+        }, true);*/
+        source.onmessage= this.sourceCallback.bind(this);
+        source.onerror= function (e) { console.log( e); source.close();};
 
         let fun = this.searchGroups.bind(this);
         $('#searchMame').change(fun);
@@ -120,18 +120,18 @@ export class Groups {
         $('#searchStatus').change(fun);
         this.searchGroups();
     }
-    
-    populateOrganisation(organisations: Array<Organisation>)
-    {
+    sourceCallback(e: any): void {
+        var organisation: Organisation = <Organisation>JSON.parse(e.data);
+        console.log("SSE: " + e.data);
+        this.populateOrganisation(organisation);
+    }
+    populateOrganisation(organisation: Organisation) {
         var searchorganisation = $("#searchOrganisation");
         var organisationCreate = $("#organisationCreate");
-        for (let org of organisations) {
-            let option = `<option value="${org.id}">${org.name}</option>`;
-            searchorganisation.append(option);
-            organisationCreate.append(option);
-        }
+        let option = `<option value="${organisation.id}">${organisation.name}</option>`;
+        searchorganisation.append(option);
+        organisationCreate.append(option);
     }
-
     jump2AddLeden(data) {
         this.gAddGroup = data.group;
         this.gAdd_Rol = data.rol;
@@ -142,7 +142,7 @@ export class Groups {
         this.personList.searchPersons();
     }
 
-    submitAddLedenRequest(groupId:number, rol) {
+    submitAddLedenRequest(groupId: number, rol) {
         var anSelected = FilterUtil.fnGetSelected(this.personList.obj_PersonTable);
         var updateRequest = {
             creatememberships: new Array()
@@ -158,11 +158,11 @@ export class Groups {
         }
         let _this = this;
         $.ajax({
-            url: Configuration.group_service+ "/" + groupId,
+            url: Configuration.group_service + "/" + groupId,
             data: JSON.stringify(updateRequest),
             contentType: "application/json; charset=UTF-8",
             type: "PUT",
-//            headers: { "If-Unmodified-Since": this.gGroupTimestamp },
+            //            headers: { "If-Unmodified-Since": this.gGroupTimestamp },
             success: function (response, textStatus, jqXHR) {
                 // refresh
                 _this.jump2EditGroup(null);
@@ -184,14 +184,14 @@ export class Groups {
         $("#organisationCreate").prop("value", "");
         $("#scopeCreate").prop("value", "");
         $("#featuresCreate").prop("value", []);
-     }
+    }
 
     submitGroupCreateRequest() {
         var features = null;
-        
-        var featuresString= $("#featuresCreate").val();
-        if (featuresString!= "") {
-            features= featuresString.split(" ");
+
+        var featuresString = $("#featuresCreate").val();
+        if (featuresString != "") {
+            features = featuresString.split(" ");
         }
         var createRequest: any = {
             name: $("#nameCreate").val(),
@@ -223,13 +223,13 @@ export class Groups {
     }
 
 
-    jump2EditGroup(groupId:number) {
+    jump2EditGroup(groupId: number) {
 
         WindowUtil.popupWindow("popupboxEdit");
         this.retrieveGroupDetails(groupId);
     }
 
-    retrieveGroupDetails(groupId:number) {
+    retrieveGroupDetails(groupId: number) {
         if (groupId == null && this.gGroup != null) {
 
             groupId = this.gGroup.id;
@@ -303,11 +303,11 @@ export class Groups {
         }
 
         var aoColumns = [{ "mData": "status_membership" },
-            { "mData": "status" },
-            { "mData": "name" },
-            { "mData": "surname" },
-            { "mData": "emailAdres" },
-            { "mData": "dateofbirth" }
+        { "mData": "status" },
+        { "mData": "name" },
+        { "mData": "surname" },
+        { "mData": "emailAdres" },
+        { "mData": "dateofbirth" }
         ];
         this.obj_groupsledenTable = (<any>$('#groupsledenTable')).dataTable({
             "aaData": groupsleden,
@@ -315,7 +315,7 @@ export class Groups {
             "aoColumns": aoColumns,
             "fnRowCallback": function (nRow: DataTables.Settings, aData: any, displayIndex: number, displayIndexFull: number) {
                 $(nRow).attr("id", "LID" + aData.id_membership);
-  //              $(nRow).attr("laatstgewijzigd", aData.laatstgewijzigd);
+                //              $(nRow).attr("laatstgewijzigd", aData.laatstgewijzigd);
                 return nRow;
             }
         });
@@ -327,7 +327,7 @@ export class Groups {
             "aoColumns": aoColumns,
             "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 $(nRow).attr("id", "LDR" + aData.id_membership);
- //               $(nRow).attr("laatstgewijzigd", aData.laatstgewijzigd);
+                //               $(nRow).attr("laatstgewijzigd", aData.laatstgewijzigd);
                 return nRow;
             }
         });
@@ -335,7 +335,7 @@ export class Groups {
 
     }
 
-    submitUpdateGroupAttributesRequest(groupId:number) {
+    submitUpdateGroupAttributesRequest(groupId: number) {
         var updateRequest = {
             name: $("#nameEdit").prop("value"),
             description: $("#descriptionEdit").val(),
@@ -346,7 +346,7 @@ export class Groups {
             url: Configuration.group_service + "/" + groupId,
             data: JSON.stringify(updateRequest),
             type: "PUT",
-  //          headers: { "If-Unmodified-Since": this.gGroupTimestamp },
+            //          headers: { "If-Unmodified-Since": this.gGroupTimestamp },
             contentType: "application/json; charset=UTF-8",
             success: function (response, textStatus, jqXHR) {
                 _this.searchGroups();
@@ -355,7 +355,7 @@ export class Groups {
             error: FilterUtil.ajaxErrorHandler
         });
     }
-    submitDeleteGroupRequest(groupId:number) {
+    submitDeleteGroupRequest(groupId: number) {
         let _this = this;
         $.ajax({
             url: Configuration.group_service + "/" + groupId,
@@ -369,7 +369,7 @@ export class Groups {
         });
     }
 
-    submitUpdatemembershipsRequest(groupId:number, obj_Table, updStatus) {
+    submitUpdatemembershipsRequest(groupId: number, obj_Table, updStatus) {
         var anSelected = FilterUtil.fnGetSelected(obj_Table);
         var updateRequest = null;
         if (updStatus === "Verwijderd") {
@@ -419,7 +419,7 @@ export class Groups {
 
 
     searchGroups() {
-        let filter = new Filter ("?selectOrganisations&selectScopes" );
+        let filter = new Filter("?selectOrganisations&selectScopes");
 
         filter.updateWildcard("searchName", "name");
         filter.updateWildcard("searchDescription", "description");
@@ -429,6 +429,7 @@ export class Groups {
         filter.update("searchStatus", "status");
         filter.update("searchFeatures", "feature");
         let _this = this;
+
         $.ajax({
             url: Configuration.group_service + filter.string,
             type: "GET",
@@ -440,7 +441,7 @@ export class Groups {
         });
     }
 
-    showGroupSearchResults(response:any) {
+    showGroupSearchResults(response: any) {
         // pre-processing
         for (let group of response) {
             if (group.organisation == null) {
@@ -462,7 +463,7 @@ export class Groups {
                 { "mData": "scope.name" }
             ],
             //		"iDisplayLength": "20",
-            "fnRowCallback": function (nRow: DataTables.Settings, aData:any, iDisplayIndex:number, iDisplayIndexFull:number) {
+            "fnRowCallback": function (nRow: DataTables.Settings, aData: any, iDisplayIndex: number, iDisplayIndexFull: number) {
                 $(nRow).attr("id", "GRP" + aData.id);
                 return nRow;
             }

@@ -5,4 +5,10 @@ export class Configuration {
     static organisation_service = Configuration.service_url + "organisation";
     static person_service = Configuration.service_url + "person";
     static scope_service = "http://localhost:8081/api/" + "scope";
+    static check_config ():void
+    {
+        if (!(<any>window).EventSource) {
+            alert( "Browser does not support EventSource. Applications fails.")
+        }
+    }
 }
