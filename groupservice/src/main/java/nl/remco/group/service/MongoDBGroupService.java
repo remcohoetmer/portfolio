@@ -13,7 +13,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -222,12 +221,13 @@ public class MongoDBGroupService implements GroupService {
       });
   }
 
+
   @Override
   public Mono<Void> initialise() {
     final Mono<Void> initializeCollections =
       mongoTemplate.dropCollection(Group.class)
-        .then(mongoTemplate.createCollection(
-          Group.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
+        .then(mongoTemplate.createCollection(Group.class))
+//      .then(mongoTemplate.createCollection(Group.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
         .then();
     return initializeCollections;
   }

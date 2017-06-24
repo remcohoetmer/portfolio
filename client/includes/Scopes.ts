@@ -1,9 +1,9 @@
 ﻿/// <reference path="./jquery.d.ts" />
 
-/// <reference path="./jquery.dataTables.d.ts" />
-import {WindowUtil} from "WindowUtil";
-import {FilterUtil, Filter} from "FilterUtil";
-import {Configuration} from "Configuration";
+import { Scope } from "DataModel";
+import { WindowUtil } from "WindowUtil";
+import { FilterUtil, Filter } from "FilterUtil";
+import { Configuration } from "Configuration";
 
 class Scopes {
 
@@ -55,38 +55,27 @@ class Scopes {
         let filter = new Filter();
         filter.updateWildcard("scopeNaamFilter", "name");
         filter.update("scopeStatusFilter", "status");
-        $.ajax({
-            url: Configuration.scope_service + filter.string,
-            type: "GET",
-            success: function (response, textStatus, jqXHR) {
-                _this.showSearchResults(response);
-            },
-            cache: false,
-            error: FilterUtil.ajaxErrorHandler
+
+        $('#scopetable tbody').empty();
+        var source = new EventSource(Configuration.scope_service + filter.string);
+        source.addEventListener('message', function (e) {
+            console.log(e.data);
+            var organisation: Scope = JSON.parse(e.data);
+            _this.showScope(organisation);
         });
+        source.onerror = function (e) { source.close(); };
+
+        $('#scopetable tr').click(FilterUtil.selectionHandler);
     }
 
-    showSearchResults(response) {
+    showScope(scope: Scope) {
 
-
-        $(document).ready(function () {
-            this.obj_ScopeTable = (<any>$('#scopetable')).dataTable({
-                "aaData": response,
-                "bDestroy": true,
-                "aoColumns": [
-                    { "mData": "name" },
-                    { "mData": "status" }
-                ],
-                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    $(nRow).attr("id", "LEE" + aData.id);
-                    return nRow;
-                }
-            });
-            //$('#scopetable tr').click( selectionHandler);
-        });
+        $('#scopetable tbody').append(
+            `<tr id="org${scope.id}">
+            <td>${scope.name}</td>
+            <td>${scope.status}</td>
+            </tr>`);
     }
-
-
 
     jump2Create() {
         WindowUtil.popupWindow("popupboxCreate");
@@ -156,10 +145,10 @@ class Scopes {
             status: $("#statusEdit").val()
         };
         let _this = this;
-           // headers: { "If-Unmodified-Since": _this.gScopeTimestamp },
+        // headers: { "If-Unmodified-Since": _this.gScopeTimestamp },
         $.ajax({
             url: Configuration.scope_service + "/" + scopeId,
-            data: JSON.stringify(updateRequest)  ,
+            data: JSON.stringify(updateRequest),
             type: "PUT",
             contentType: "application/json; charset=UTF-8",
             success: function (response, textStatus, jqXHR) {

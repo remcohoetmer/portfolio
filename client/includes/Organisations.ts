@@ -1,58 +1,54 @@
 ﻿/// <reference path="./jquery.d.ts" />
 /// <reference path="./sse.d.ts" />
 
-import {WindowUtil} from "WindowUtil";
-import {FilterUtil, Filter} from "FilterUtil";
-import {Configuration} from "Configuration";
+import { WindowUtil } from "WindowUtil";
+import { FilterUtil, Filter } from "FilterUtil";
+import { Configuration } from "Configuration";
 import { Person, Organisation } from "DataModel";
 class Organisations {
-    gOrganisationId:number = null;
-    obj_ScopeTable:any = null;
+    gOrganisationId: number = null;
+    obj_ScopeTable: any = null;
     initialise() {
         var _this = this;
-  
+
         $('#closeMain').click(function () {
             window.location.href = "index.html";
         });
 
         this.searchOrganisations();
+        console.log( $('#organisationSearchName'));
+        (<any>$('#organisationSearchName')).change( function () {_this.searchOrganisations()});
+        (<any>$('#organisationSearchStatus')).on( "change", this.searchOrganisations.bind(this));
 
     }
 
 
     searchOrganisations(): void {
-        let filter: Filter= new Filter();
-        FilterUtil.updateFilterStringWildcard(filter, "organisationSearchNaam", "naam");
+        let filter: Filter = new Filter();
+        FilterUtil.updateFilterStringWildcard(filter, "organisationSearchName", "name");
         FilterUtil.updateFilterString(filter, "organisationSearchStatus", "status");
         let _this = this;
 
-        $.ajax({
-            url: Configuration.organisation_service + filter.string,
-            type: "GET",
-            success: function (response, textStatus, jqXHR) {
-                _this.showSearchResults(response);
-            },
-            cache: false,
-            error: FilterUtil.ajaxErrorHandler.bind(FilterUtil)
+
+        $('#organisationtable tbody').empty();
+        var source = new EventSource(Configuration.organisation_service + filter.string);
+        source.addEventListener('message', function (e) {
+            console.log(e.data);
+            var organisation: Organisation = JSON.parse(e.data);
+            _this.showOrganisation(organisation);
         });
+        source.onerror = function (e) { source.close(); };
+
+        $('#organisationtable tr').click(FilterUtil.selectionHandler);
     }
 
-    showSearchResults(organisations: Array<Organisation>) {
-        var table: any = $('#organisationtable');
-        this.obj_ScopeTable = table.dataTable({
-            "aaData": organisations,
-            "bDestroy": true,
-            "aoColumns": [
-                { "mData": "name" },
-                { "mData": "status" }
-            ],
-            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                $(nRow).attr("id", "ORG" + aData.id);
-                return nRow;
-            }
-        });
-        $('#organisationtable tr').click( FilterUtil.selectionHandler);
+    showOrganisation(organisation: Organisation) {
 
+        $('#organisationtable tbody').append(
+            `<tr id="org${organisation.id}">
+            <td>${organisation.name}</td>
+            <td>${organisation.status}</td>
+            </tr>`);
     }
 
 

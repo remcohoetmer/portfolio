@@ -70,8 +70,6 @@ public class GroupIT {
   }
 
 
-
-
   private Mono<ClientResponse> print(final ClientResponse clientResponse) {
     return Mono.fromCompletionStage(CompletableFuture.supplyAsync(() -> {
       logger.info("Status " + clientResponse.statusCode());

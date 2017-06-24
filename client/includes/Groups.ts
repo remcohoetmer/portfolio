@@ -1,7 +1,8 @@
 ﻿
+/// <reference path="./sse.d.ts" />
 import { WindowUtil } from "WindowUtil";
 import { FilterUtil, Filter } from "FilterUtil";
-import { Person, Organisation } from "DataModel";
+import { Person, Organisation, Group, Scope } from "DataModel";
 import { PersonList } from "PersonList";
 import { Configuration } from "Configuration";
 
@@ -86,29 +87,26 @@ export class Groups {
             _this.jump2CreateGroup();
         });
 
-        $.ajax({
-            url: Configuration.scope_service,
-            type: "GET",
-            success: function (response, textStatus, jqXHR) {
-                var searchScope = $("#searchScope");
-                var scopeCreate = $("#scopeCreate");
-                $.each(response, function () {
-                    searchScope.append($("<option />").val(this.id).text(this.name));
-                    scopeCreate.append($("<option />").val(this.id).text(this.name));
-                });
-            },
-            cache: false,
-            error: FilterUtil.ajaxErrorHandler
-        });
 
-        var source = new EventSource(Configuration.organisation_service);
-        /*(<any>source).addEventListener('message', function (e) {
-            var data = JSON.parse(e.data);
-            console.log("SSE: " + data);
-            _this.populateOrganisation(data);
-        }, true);*/
-        source.onmessage= this.sourceCallback.bind(this);
-        source.onerror= function (e) { console.log( e); source.close();};
+        var source = new EventSource(Configuration.scope_service);
+        source.addEventListener('message', function (e) {
+            var scope = JSON.parse(e.data);
+            console.log("SSE: " + e.data);
+            var searchScope = $("#searchScope");
+            var scopeCreate = $("#scopeCreate");
+
+            searchScope.append($("<option />").val(scope.id).text(scope.name));
+            scopeCreate.append($("<option />").val(scope.id).text(scope.name));
+        });
+        source.onerror = function (e) { source.close(); };
+
+        source = new EventSource(Configuration.organisation_service);
+        source.addEventListener('message', function (e) {
+            var org = JSON.parse(e.data);
+            //console.log("SSE: " + e.data);
+            _this.populateOrganisation(org);
+        });
+        source.onerror = function (e) { source.close(); };
 
         let fun = this.searchGroups.bind(this);
         $('#searchMame').change(fun);
@@ -119,11 +117,6 @@ export class Groups {
         $('#searchFeature').change(fun);
         $('#searchStatus').change(fun);
         this.searchGroups();
-    }
-    sourceCallback(e: any): void {
-        var organisation: Organisation = <Organisation>JSON.parse(e.data);
-        console.log("SSE: " + e.data);
-        this.populateOrganisation(organisation);
     }
     populateOrganisation(organisation: Organisation) {
         var searchorganisation = $("#searchOrganisation");
@@ -309,30 +302,6 @@ export class Groups {
         { "mData": "emailAdres" },
         { "mData": "dateofbirth" }
         ];
-        this.obj_groupsledenTable = (<any>$('#groupsledenTable')).dataTable({
-            "aaData": groupsleden,
-            "bDestroy": true,
-            "aoColumns": aoColumns,
-            "fnRowCallback": function (nRow: DataTables.Settings, aData: any, displayIndex: number, displayIndexFull: number) {
-                $(nRow).attr("id", "LID" + aData.id_membership);
-                //              $(nRow).attr("laatstgewijzigd", aData.laatstgewijzigd);
-                return nRow;
-            }
-        });
-        $('#groupsledenTable tr').click(FilterUtil.selectionHandler);
-
-        this.obj_groupsleidersTable = (<any>$('#groupsleidersTable')).dataTable({
-            "aaData": groupsleiders,
-            "bDestroy": true,
-            "aoColumns": aoColumns,
-            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                $(nRow).attr("id", "LDR" + aData.id_membership);
-                //               $(nRow).attr("laatstgewijzigd", aData.laatstgewijzigd);
-                return nRow;
-            }
-        });
-        $('#groupsleidersTable tr').click(FilterUtil.selectionHandler);
-
     }
 
     submitUpdateGroupAttributesRequest(groupId: number) {
@@ -429,47 +398,34 @@ export class Groups {
         filter.update("searchStatus", "status");
         filter.update("searchFeatures", "feature");
         let _this = this;
-
-        $.ajax({
-            url: Configuration.group_service + filter.string,
-            type: "GET",
-            success: function (response, textStatus, jqXHR) {
-                _this.showGroupSearchResults(response);
-            },
-            cache: false,
-            error: FilterUtil.ajaxErrorHandler
+        $('#overviewTable tbody').empty();
+        var source = new EventSource(Configuration.group_service + filter.string);
+        source.addEventListener('message', function (e) {
+            var group: Group = JSON.parse(e.data);
+            console.log("JSON: " + e.data);
+            console.log("Group: " + group);
+            _this.showGroup(group);
         });
+        source.onerror = function (e) { source.close(); };
     }
 
-    showGroupSearchResults(response: any) {
-        // pre-processing
-        for (let group of response) {
-            if (group.organisation == null) {
-                group.organisation = { "name": "" };
-            }
-            if (group.scope == null) {
-                group.scope = { "name": "" };
-            }
+    showGroup(group: Group) {
+                    console.log("Group: " + group);
+        if (group.organisation == null) {
+            group.organisation = new Organisation();
         }
-        var obj_groupsTable = (<any>$('#overviewTable')).dataTable({
-            "aaData": response,
-            "bDestroy": true,
-            "aoColumns": [
-                { "mData": "status" },
-                { "mData": "name" },
-                { "mData": "description" },
-                { "mData": "code" },
-                { "mData": "organisation.name" },
-                { "mData": "scope.name" }
-            ],
-            //		"iDisplayLength": "20",
-            "fnRowCallback": function (nRow: DataTables.Settings, aData: any, iDisplayIndex: number, iDisplayIndexFull: number) {
-                $(nRow).attr("id", "GRP" + aData.id);
-                return nRow;
-            }
-        });
+        if (group.scope == null) {
+            group.scope = new Scope();
+        }
+        $('#overviewTable tbody').append(
+            `<tr id="grp${group.id}" onclick='alert("Group id="+ this.id)'>
+            <td>${group.name}</td>
+            <td>${group.description}</td>
+            <td>${group.organisation.name}</td>
+            <td>${group.scope.name}</td>
+            <td>${group.status}</td>
+            </tr>`);
     }
-
 }
 
 $(document).ready(function () {

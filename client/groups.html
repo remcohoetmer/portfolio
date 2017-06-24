@@ -15,7 +15,7 @@
     <script type="text/javascript" language="javascript" src="node_modules/jquery-1.8/jquery.min.js"></script>
     <script type="text/javascript" language="javascript" src="node_modules/datatables.net/js/jquery.dataTables.js"></script>
 
-    <script data-main="includes/Groups" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
+    <script data-main="target/Groups" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
 </head>
 <body id="dt_example">
     <a id="closeGroupAdmin"><img class="close_button" src="images/close_button.png" /></a>
@@ -45,16 +45,15 @@
              <table class="display" id="overviewTable">
                     <thead>
                         <tr>
-                            <th>Status</th>
                             <th>Name</th>
                             <th>Description</th>
-                            <th>Code</th>
                             <th>Organisation</th>
                             <th>Scope</th>
+                            <th>Status</th>
                         </tr>
                     <tbody>
                         <tr>
-                            <td colspan="9" class="dataTables_empty"></td>
+                            <td colspan="5" class="dataTables_empty"></td>
                         </tr>
                     </tbody>
                 </table>

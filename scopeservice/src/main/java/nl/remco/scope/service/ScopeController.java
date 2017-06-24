@@ -65,6 +65,15 @@ public final class ScopeController {
     return scopeEntry;
   }
 
+  @RequestMapping(value = "/initialise")
+  String initialise() {
+    LOGGER.info("initialise");
+
+    service.initialise();
+
+    return "";
+  }
+
   @RequestMapping(value = "{id}", method = RequestMethod.PUT)
   @CrossOrigin(origins = "*")
   Mono<ScopeDTO> update(@RequestBody @Valid ScopeDTO scopeEntry, @PathVariable("id") String id) {

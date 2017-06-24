@@ -14,4 +14,6 @@ interface ScopeService {
   Mono<ScopeDTO> findById(String id);
 
   Mono<ScopeDTO> update(ScopeDTO scope);
+
+  void initialise();
 }

@@ -4,12 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import static java.util.stream.Collectors.toList;
 
@@ -21,7 +23,7 @@ final class MongoDBScopeService implements ScopeService {
 
   private final ScopeRepository repository;
   @Autowired
-  MongoTemplate mongoTemplate;
+  ReactiveMongoTemplate mongoTemplate;
 
   @Autowired
   MongoDBScopeService(ScopeRepository repository) {
@@ -88,6 +90,7 @@ final class MongoDBScopeService implements ScopeService {
       });
   }
 
+
   private Mono<Scope> findScopeById(String id) {
     Mono<Scope> result = repository.findById(id);
 
@@ -102,4 +105,30 @@ final class MongoDBScopeService implements ScopeService {
     dto.setName(model.getName());
     return dto;
   }
+
+  @Override
+  public void initialise() {
+    final List<Scope> SCOPES =
+      Arrays.asList(
+        Scope.getBuilder().name("Wijk").status("Active").build(),
+        Scope.getBuilder().name("School").status("Active").build(),
+        Scope.getBuilder().name("Sport").status("Inactive").build(),
+        Scope.getBuilder().name("Politiek").status("Active").build());
+
+    final Mono<Void> initializeCollections =
+      mongoTemplate
+        .dropCollection(Scope.class)
+        .then(mongoTemplate.createCollection(Scope.class))
+        .then();
+
+    final Mono<Void> initializeData =
+      mongoTemplate
+        .insert(SCOPES, Scope.class)
+        .log(Scope.class.getName(), Level.INFO)
+        .then();
+
+    initializeCollections.then(initializeData).block();
+
+  }
+
 }
