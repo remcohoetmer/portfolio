@@ -1,17 +1,9 @@
 package nl.remco.group.service;
 
+import nl.remco.group.service.domain.*;
+import nl.remco.group.service.dto.*;
 import org.springframework.stereotype.Component;
-
-import nl.remco.group.service.domain.Group;
-import nl.remco.group.service.domain.Membership;
-import nl.remco.group.service.domain.Organisation;
-import nl.remco.group.service.domain.Person;
-import nl.remco.group.service.domain.Scope;
-import nl.remco.group.service.dto.GroupDTO;
-import nl.remco.group.service.dto.MembershipDTO;
-import nl.remco.group.service.dto.OrganisationDTO;
-import nl.remco.group.service.dto.PersonDTO;
-import nl.remco.group.service.dto.ScopeDTO;
+import reactor.core.publisher.Mono;
 
 @Component
 class Converter {
@@ -47,6 +39,9 @@ class Converter {
     return dto;
   }
 
+  Mono<GroupDTO> convertToDTO_RS(final Group group) {
+    return Mono.just(convertToDTO(group));
+  }
 
   Group convertfromDTO(final GroupDTO dto) {
     Group group = new Group();

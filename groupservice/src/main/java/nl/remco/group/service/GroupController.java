@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.time.Duration;
+import java.util.logging.Level;
 
 
 @RestController
@@ -53,6 +54,7 @@ public final class GroupController {
     return Flux.zip(d, groups).map(g -> g.getT2());
   }
 
+
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   @CrossOrigin(origins = "*")
   Flux<GroupDTO> findAll(
@@ -83,6 +85,21 @@ public final class GroupController {
 
     LOGGER.info("Finding all group entries");
     return groupService.find(groupFilter, groupSelection);
+  }
+
+  @RequestMapping(value = "/name/{name}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  @CrossOrigin(origins = "*")
+  Flux<GroupDTO> tail(@PathVariable("name") String name) {
+    LOGGER.info("Finding group entries with name: {}", name);
+
+    return groupService.tail(name).log("tail", Level.INFO);//.collectList().block();
+  }
+
+  @RequestMapping(value = "/initialise")
+  @CrossOrigin(origins = "*")
+  void initialise() {
+
+    groupService.initialise().log("init", Level.INFO).block();
   }
 
   @RequestMapping(value = "{id}", method = RequestMethod.GET)

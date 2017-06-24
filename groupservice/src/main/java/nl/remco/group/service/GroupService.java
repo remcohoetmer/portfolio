@@ -13,6 +13,8 @@ public interface GroupService {
 
   Flux<GroupDTO> find(GroupFilter groupFilter, GroupSelection groupSelection);
 
+  Flux<GroupDTO> tail(String name);
+
   Mono<GroupDTO> findById(String id);
 
   Mono<GroupDTO> update(GroupDTO scope);
@@ -20,4 +22,6 @@ public interface GroupService {
   Mono<Void> addMembership(String id, MembershipDTO membership);
 
   Mono<Void> deleteMembership(String id, String memid);
+
+  Mono<Void> initialise();
 }

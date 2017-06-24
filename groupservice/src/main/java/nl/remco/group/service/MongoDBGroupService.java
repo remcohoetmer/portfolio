@@ -4,15 +4,16 @@ import com.mongodb.client.result.UpdateResult;
 import nl.remco.group.enrich.PersonEnricher;
 import nl.remco.group.enrich.ScopeEnricher;
 import nl.remco.group.organisation.service.OrganisationEnricher;
+import nl.remco.group.service.domain.Group;
 import nl.remco.group.service.domain.Membership;
 import nl.remco.group.service.domain.Person;
-import nl.remco.group.service.domain.Group;
 import nl.remco.group.service.dto.GroupDTO;
 import nl.remco.group.service.dto.MembershipDTO;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -107,6 +108,13 @@ public class MongoDBGroupService implements GroupService {
       .map(converter::convertToDTO)
       .flatMap(group -> enrich(group, groupFilter, groupSelection));
     return groupEntries;
+  }
+
+  @Override
+  public Flux<GroupDTO> tail(final String name) {
+    // todo: blokkeert bij 2 gelijktijdige requests
+    //return this.mongoTemplate.tail(Query.query(Criteria.where("name").is(name)), Group.class).concatMap(converter::convertToDTO_RS);
+    return this.mongoTemplate.tail(Query.query(Criteria.where("name").is(name)), Group.class).map(converter::convertToDTO);
   }
 
   private Flux<Group> findGroups(GroupFilter groupFilter) {
@@ -212,6 +220,16 @@ public class MongoDBGroupService implements GroupService {
 
         return converter.convertToDTO(updated);
       });
+  }
+
+  @Override
+  public Mono<Void> initialise() {
+    final Mono<Void> initializeCollections =
+      mongoTemplate.dropCollection(Group.class)
+        .then(mongoTemplate.createCollection(
+          Group.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
+        .then();
+    return initializeCollections;
   }
 
   private Mono<Group> findGroupById(String id) {
