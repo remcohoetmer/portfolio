@@ -88,25 +88,22 @@ export class Groups {
         });
 
 
-        var source = new EventSource(Configuration.scope_service);
-        source.addEventListener('message', function (e) {
-            var scope = JSON.parse(e.data);
-            console.log("SSE: " + e.data);
-            var searchScope = $("#searchScope");
-            var scopeCreate = $("#scopeCreate");
-
-            searchScope.append($("<option />").val(scope.id).text(scope.name));
-            scopeCreate.append($("<option />").val(scope.id).text(scope.name));
-        });
-        source.onerror = function (e) { source.close(); };
-
-        source = new EventSource(Configuration.organisation_service);
+        var source = new EventSource(Configuration.organisation_service);
         source.addEventListener('message', function (e) {
             var org = JSON.parse(e.data);
             //console.log("SSE: " + e.data);
             _this.populateOrganisation(org);
         });
         source.onerror = function (e) { source.close(); };
+
+        let src = new EventSource(Configuration.scope_service);
+        src.addEventListener('message', function (e) {
+            var scope = JSON.parse(e.data);
+            console.log("SSE: " + e.data);
+            _this.populateScope(scope);
+        });
+        src.onerror = function (e) { src.close(); };
+
 
         let fun = this.searchGroups.bind(this);
         $('#searchMame').change(fun);
@@ -124,6 +121,13 @@ export class Groups {
         let option = `<option value="${organisation.id}">${organisation.name}</option>`;
         searchorganisation.append(option);
         organisationCreate.append(option);
+    }
+    populateScope(scope: Scope) {
+        var searchScope = $("#searchScope");
+        var scopeCreate = $("#scopeCreate");
+        let option = `<option value="${scope.id}">${scope.name}</option>`;
+        searchScope.append(option);
+        scopeCreate.append(option);
     }
     jump2AddLeden(data) {
         this.gAddGroup = data.group;
@@ -410,7 +414,7 @@ export class Groups {
     }
 
     showGroup(group: Group) {
-                    console.log("Group: " + group);
+        console.log("Group: " + group);
         if (group.organisation == null) {
             group.organisation = new Organisation();
         }

@@ -46,7 +46,7 @@ public final class ScopeDTO {
   @Override
   public String toString() {
     return String.format(
-      "ScopeDTO[id=%s, name=%s, status=%s]",
+      "ScopeDTO[id=%s, withName=%s, status=%s]",
       this.id,
       this.name,
       this.status

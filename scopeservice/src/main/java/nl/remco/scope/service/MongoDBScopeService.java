@@ -35,8 +35,8 @@ final class MongoDBScopeService implements ScopeService {
     LOGGER.info("Creating a new scope entry with information: {}", scope);
 
     Scope persisted = Scope.getBuilder()
-      .status(scope.getStatus())
-      .name(scope.getName())
+      .withStatus(scope.getStatus())
+      .withName(scope.getName())
       .build();
 
     return repository.save(persisted).map(savedScope -> convertToDTO(savedScope));
@@ -110,10 +110,10 @@ final class MongoDBScopeService implements ScopeService {
   public void initialise() {
     final List<Scope> SCOPES =
       Arrays.asList(
-        Scope.getBuilder().name("Wijk").status("Active").build(),
-        Scope.getBuilder().name("School").status("Active").build(),
-        Scope.getBuilder().name("Sport").status("Inactive").build(),
-        Scope.getBuilder().name("Politiek").status("Active").build());
+        Scope.getBuilder().withName("Wijk").withStatus("Active").build(),
+        Scope.getBuilder().withName("School").withStatus("Active").build(),
+        Scope.getBuilder().withName("Sport").withStatus("Inactive").build(),
+        Scope.getBuilder().withName("Politiek").withStatus("Active").build());
 
     final Mono<Void> initializeCollections =
       mongoTemplate

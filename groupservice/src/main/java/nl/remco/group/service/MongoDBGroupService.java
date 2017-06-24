@@ -4,11 +4,10 @@ import com.mongodb.client.result.UpdateResult;
 import nl.remco.group.enrich.PersonEnricher;
 import nl.remco.group.enrich.ScopeEnricher;
 import nl.remco.group.organisation.service.OrganisationEnricher;
-import nl.remco.group.service.domain.Group;
-import nl.remco.group.service.domain.Membership;
-import nl.remco.group.service.domain.Person;
+import nl.remco.group.service.domain.*;
 import nl.remco.group.service.dto.GroupDTO;
 import nl.remco.group.service.dto.MembershipDTO;
+import nl.remco.group.service.serviceclients.ScopeClient;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +19,10 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
 
 @Service
 public class MongoDBGroupService implements GroupService {
@@ -221,6 +224,23 @@ public class MongoDBGroupService implements GroupService {
       });
   }
 
+  private Mono<List<Group>> getInitalGroups() {
+    Flux<Scope> scopes = new ScopeClient().getScopes();
+    return scopes.collectList().map(
+      list -> {
+        Scope scope0 = (list != null && list.size() > 0) ? list.get(0) : null;
+        Scope scope1 = (list != null && list.size() > 1) ? list.get(1) : null;
+        Scope scope2 = (list != null && list.size() > 2) ? list.get(2) : null;
+        Scope scope3 = (list != null && list.size() > 3) ? list.get(3) : null;
+
+        return Arrays.asList(
+          Group.getBuilder().name("filosofie").withDescription("Descartes").status("Active").withOrganisation(new Organisation("8000")).withScope(scope0).build(),
+          Group.getBuilder().name("geo").withDescription("Leonardo da Vinci").status("Active").withOrganisation(new Organisation("8000")).withScope(scope1).build(),
+          Group.getBuilder().name("natuurkunde").withDescription("Gay-Lussac").status("Active").withOrganisation(new Organisation("8001")).withScope(scope2).build(),
+          Group.getBuilder().name("wiskunde").withDescription("Pythogoras").status("Active").withOrganisation(new Organisation("8002")).withScope(scope3).build()
+        );
+      });
+  }
 
   @Override
   public Mono<Void> initialise() {
@@ -229,7 +249,14 @@ public class MongoDBGroupService implements GroupService {
         .then(mongoTemplate.createCollection(Group.class))
 //      .then(mongoTemplate.createCollection(Group.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
         .then();
-    return initializeCollections;
+
+    final Mono<Void> initializeData =
+      mongoTemplate
+        .insertAll(getInitalGroups(), Group.class)
+        .log(Group.class.getName(), Level.INFO)
+        .then();
+
+    return initializeCollections.then(initializeData);
   }
 
   private Mono<Group> findGroupById(String id) {

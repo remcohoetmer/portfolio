@@ -106,11 +106,6 @@ public class Group {
   public Group() {
   }
 
-  private Group(Builder builder) {
-    this.name = builder.name;
-    this.setStatus(builder.status);
-  }
-
   public static Builder getBuilder() {
     return new Builder();
   }
@@ -131,10 +126,19 @@ public class Group {
     this.status = status;
   }
 
+  public void update(String status2, String name2) {
+    status = status2;
+    name = name2;
+
+  }
+
   public static class Builder {
 
     private String name;
+    private String description;
     private String status;
+    private Organisation organisation;
+    private Scope scope;
 
     private Builder() {
     }
@@ -150,15 +154,30 @@ public class Group {
     }
 
     public Group build() {
-      Group build = new Group(this);
-      return build;
+      Group group = new Group();
+      group.setName(name);
+      group.setDescription(description);
+      group.setStatus(status);
+      group.setOrganisation(organisation);
+      group.setScope(scope);
+      return group;
+    }
+
+    public Builder withOrganisation(Organisation organisation) {
+      this.organisation = organisation;
+      return this;
+    }
+
+    public Builder withScope(Scope scope) {
+      this.scope = scope;
+      return this;
+    }
+
+    public Builder withDescription(String description) {
+      this.description = description;
+      return this;
     }
   }
 
-  public void update(String status2, String name2) {
-    status = status2;
-    name = name2;
-
-  }
 
 }

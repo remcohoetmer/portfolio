@@ -65,12 +65,12 @@ final class Scope {
     private Builder() {
     }
 
-    Builder name(String name) {
+    Builder withName(String name) {
       this.name = name;
       return this;
     }
 
-    Builder status(String status) {
+    Builder withStatus(String status) {
       this.status = status;
       return this;
     }
