@@ -1,4 +1,6 @@
-﻿
+﻿export class Remco {
+    status: string = "";
+}
 export class Organisation {
     status: string = "";
     constructor(public id: string = "", public name: string = "") {

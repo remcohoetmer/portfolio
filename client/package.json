@@ -3,13 +3,16 @@
   "name": "rwui",
   "private": true,
   "dependencies": {
+    "@types/core-js": "0.9.35", 
+    "@reactivex/rxjs": "^5.4.1",
     "jquery-1.8": "^1.8.3",
     "datatables.net": "^1.8.3",
-      "require": "^2.1.1"
+    "require": "^2.1.1"
   },
   "devDependencies": {
   },
   "scripts": {
-    "prestart": "npm install"
+    "prestart": "npm install",
+     "tsc_amd": "tsc --module amd Game.ts"
   }
 }

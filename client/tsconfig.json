@@ -4,7 +4,8 @@
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": false
+        "sourceMap": true,
+        "allowJs": true
     },
     "files": [
         "includes/Configuration.ts",
@@ -14,9 +15,6 @@
         "includes/Organisations.ts",
         "includes/PersonList.ts",
         "includes/Persons.ts",
-        "includes/Scopes.ts",
-        "includes/Streaming.ts",
-        "includes/WindowUtil.ts",
-        "includes/Websockets.ts"
+        "includes/Scopes.ts"
     ]
 }

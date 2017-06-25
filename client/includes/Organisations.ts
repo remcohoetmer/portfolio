@@ -1,26 +1,34 @@
-﻿/// <reference path="./jquery.d.ts" />
-/// <reference path="./sse.d.ts" />
+﻿/// <reference path="lib/jquery.d.ts" />
+/// <reference path="lib/sse.d.ts" />
 
 import { WindowUtil } from "WindowUtil";
 import { FilterUtil, Filter } from "FilterUtil";
 import { Configuration } from "Configuration";
 import { Person, Organisation } from "DataModel";
+
+
+import * as Rx from 'rxjs/Rx';
+
+
 class Organisations {
     gOrganisationId: number = null;
     obj_ScopeTable: any = null;
     initialise() {
         var _this = this;
-
         $('#closeMain').click(function () {
             window.location.href = "index.html";
         });
 
-        this.searchOrganisations();
-        console.log( $('#organisationSearchName'));
-        (<any>$('#organisationSearchName')).change( function () {_this.searchOrganisations()});
-        (<any>$('#organisationSearchStatus')).on( "change", this.searchOrganisations.bind(this));
+          this.searchOrganisations();
+        (<any>$('#organisationSearchName')).change(function () { _this.searchOrganisations() });
+        (<any>$('#organisationSearchStatus')).on("change", this.searchOrganisations.bind(this));
+
+        var myObservable = new Rx.Subject();
+        myObservable.subscribe(value => console.log(value));
+        myObservable.next('foo');
 
     }
+
 
 
     searchOrganisations(): void {
@@ -28,7 +36,6 @@ class Organisations {
         FilterUtil.updateFilterStringWildcard(filter, "organisationSearchName", "name");
         FilterUtil.updateFilterString(filter, "organisationSearchStatus", "status");
         let _this = this;
-
 
         $('#organisationtable tbody').empty();
         var source = new EventSource(Configuration.organisation_service + filter.string);
@@ -50,8 +57,6 @@ class Organisations {
             <td>${organisation.status}</td>
             </tr>`);
     }
-
-
 
 }
 let org = new Organisations();

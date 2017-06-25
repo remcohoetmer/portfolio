@@ -24,7 +24,7 @@ export class Filter {
             this.string += paramnaam + "=\*" + value + "\*";
         }
     }
-    toString():string  {
+    toString(): string {
         return this.string;
     }
 }
@@ -40,7 +40,7 @@ export class FilterUtil {
             filter.string += paramnaam + '=' + value;
         }
     }
-    static updateFilterStringWildcard(filter: Filter, tag:string, paramnaam:string) {
+    static updateFilterStringWildcard(filter: Filter, tag: string, paramnaam: string) {
         var value = $("#" + tag).val();
         if (value != "") {
             if (filter.string == "") {
@@ -53,7 +53,7 @@ export class FilterUtil {
         }
     }
 
-    static listProperties(obj:any) {
+    static listProperties(obj: any) {
         var propList = "";
         for (var propName in obj) {
             if (typeof (obj[propName]) != "undefined") {
@@ -63,17 +63,17 @@ export class FilterUtil {
         alert(propList);
     }
 
-    static getIdFromEvent(event: Event) :number {
-        return Number(FilterUtil.getIdFromRow(<string><any>$((<Node>event.target).parentNode)));
+    static getIdFromEvent(event: Event): string {
+        return FilterUtil.getIdFromRow(<string><any>$((<Node>event.target).parentNode));
     }
 
-    static getIdFromRow(row:string) {
+    static getIdFromRow(row: string) {
         return $(row).attr("id").substr(3);
     }
 
 
     /* Get the rows which are currently selected */
-    static fnGetSelected(tableLocal:any) {
+    static fnGetSelected(tableLocal: any) {
         var aReturn = new Array();
         var aTrs = tableLocal.fnGetNodes();
         for (var i = 0; i < aTrs.length; i++) {
@@ -84,14 +84,14 @@ export class FilterUtil {
         return aReturn;
     }
 
-    static selectionHandler () {
+    static selectionHandler() {
         if ($(this).hasClass('row_selected'))
             $(this).removeClass('row_selected');
         else
             $(this).addClass('row_selected');
     };
 
-    static ajaxErrorHandler(response:any, textStatus:string, jqXHR:any) {
+    static ajaxErrorHandler(response: any, textStatus: string, jqXHR: any) {
         if (response.status == 0) {
             // geen verbinding -> hier kan de klant niets mee
             return;

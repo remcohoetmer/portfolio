@@ -1,5 +1,5 @@
 ﻿
-/// <reference path="./sse.d.ts" />
+/// <reference path="lib/sse.d.ts" />
 import { WindowUtil } from "WindowUtil";
 import { FilterUtil, Filter } from "FilterUtil";
 import { Person, Organisation, Group, Scope } from "DataModel";
@@ -91,7 +91,6 @@ export class Groups {
         var source = new EventSource(Configuration.organisation_service);
         source.addEventListener('message', function (e) {
             var org = JSON.parse(e.data);
-            //console.log("SSE: " + e.data);
             _this.populateOrganisation(org);
         });
         source.onerror = function (e) { source.close(); };
@@ -99,7 +98,6 @@ export class Groups {
         let src = new EventSource(Configuration.scope_service);
         src.addEventListener('message', function (e) {
             var scope = JSON.parse(e.data);
-            console.log("SSE: " + e.data);
             _this.populateScope(scope);
         });
         src.onerror = function (e) { src.close(); };
@@ -220,13 +218,13 @@ export class Groups {
     }
 
 
-    jump2EditGroup(groupId: number) {
-
+    jump2EditGroup(groupId: string) {
+        console.log("jump2EditGroup" + groupId);
         WindowUtil.popupWindow("popupboxEdit");
         this.retrieveGroupDetails(groupId);
     }
 
-    retrieveGroupDetails(groupId: number) {
+    retrieveGroupDetails(groupId: string) {
         if (groupId == null && this.gGroup != null) {
 
             groupId = this.gGroup.id;
@@ -238,7 +236,7 @@ export class Groups {
             type: "GET",
             success: function (response, textStatus, jqXHR) {
                 if (response == null) {
-                    //alert( "geen groupsdata");
+                    alert("geen groupsdata voor " + groupId);
                     return;
                 }
                 _this.gGroup = response;
@@ -342,7 +340,7 @@ export class Groups {
         });
     }
 
-    submitUpdatemembershipsRequest(groupId: number, obj_Table, updStatus) {
+    submitUpdatemembershipsRequest(groupId: string, obj_Table, updStatus) {
         var anSelected = FilterUtil.fnGetSelected(obj_Table);
         var updateRequest = null;
         if (updStatus === "Verwijderd") {
@@ -406,28 +404,24 @@ export class Groups {
         var source = new EventSource(Configuration.group_service + filter.string);
         source.addEventListener('message', function (e) {
             var group: Group = JSON.parse(e.data);
-            console.log("JSON: " + e.data);
-            console.log("Group: " + group);
             _this.showGroup(group);
         });
         source.onerror = function (e) { source.close(); };
     }
 
     showGroup(group: Group) {
-        console.log("Group: " + group);
-        if (group.organisation == null) {
-            group.organisation = new Organisation();
-        }
-        if (group.scope == null) {
-            group.scope = new Scope();
-        }
+        let organisation_s = (group.organisation != null && group.organisation.name != null) ? group.organisation.name : "";
+        let scope_s = (group.scope != null && group.scope.name != null) ? group.scope.name : "";
+        let description_s = (group.description != null) ? group.description : "";
+        let status_s = (group.status != null) ? group.status : "";
+
         $('#overviewTable tbody').append(
-            `<tr id="grp${group.id}" onclick='alert("Group id="+ this.id)'>
+            `<tr id="grp${group.id}">
             <td>${group.name}</td>
-            <td>${group.description}</td>
-            <td>${group.organisation.name}</td>
-            <td>${group.scope.name}</td>
-            <td>${group.status}</td>
+            <td>${description_s}</td>
+            <td>${organisation_s}</td>
+            <td>${scope_s}</td>
+            <td>${status_s}</td>
             </tr>`);
     }
 }
