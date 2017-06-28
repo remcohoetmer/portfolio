@@ -1,9 +1,9 @@
 ﻿/// <reference path="lib/jquery.d.ts" />
 
-import { Scope } from "DataModel";
-import { WindowUtil } from "WindowUtil";
-import { FilterUtil, Filter } from "FilterUtil";
-import { Configuration } from "Configuration";
+import { Scope } from "./DataModel";
+import { WindowUtil } from "./WindowUtil";
+import { FilterUtil, Filter } from "./FilterUtil";
+import { Configuration } from "./Configuration";
 
 class Scopes {
 

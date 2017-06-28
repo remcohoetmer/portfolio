@@ -1,25 +1,24 @@
 ﻿
 /// <reference path="lib/sse.d.ts" />
-import { WindowUtil } from "WindowUtil";
-import { FilterUtil, Filter } from "FilterUtil";
-import { Person, Organisation, Group, Scope } from "DataModel";
-import { PersonList } from "PersonList";
-import { Configuration } from "Configuration";
+import { WindowUtil } from "./WindowUtil";
+import { FilterUtil, Filter } from "./FilterUtil";
+import { Person, Organisation, Group, Scope } from "./DataModel";
+import { Configuration } from "./Configuration";
 
 export class Groups {
 
     gAddGroup: any = null;
     gAdd_Rol: any = null;
-    personList: PersonList;
     gGroup: any = null;
     gGroupTimestamp: any = null;
 
     obj_groupsleidersTable: any = null;
     obj_groupsledenTable: any = null;
 
-    initialise(personList: PersonList): void {
+    initialise(): void {
+
         Configuration.check_config();
-        this.personList = personList;
+
         let _this = this;
         $('#but_saveAddLeden').click(function () {
             _this.submitAddLedenRequest(_this.gAddGroup.id, _this.gAdd_Rol);
@@ -134,11 +133,11 @@ export class Groups {
         if (data.group.organisation != null) {
             $('#searchpersonorganisation').val(data.group.organisation.id);
         }
-        this.personList.searchPersons();
+        //searchPersons();
     }
 
     submitAddLedenRequest(groupId: number, rol) {
-        var anSelected = FilterUtil.fnGetSelected(this.personList.obj_PersonTable);
+        var anSelected = [];//FilterUtil.fnGetSelected(this.personList.obj_PersonTable);
         var updateRequest = {
             creatememberships: new Array()
         };
@@ -284,7 +283,7 @@ export class Groups {
             for (var membership of group.memberships) {
                 var membership_person = membership.person;
                 // indien niet gedefinieerd: definieer leeg
-                this.personList.prepareOrganisation(membership_person);
+                // this.personList.prepareOrganisation(membership_person);
                 // voeg de status & id van het membership toe aan de persongegevens
                 membership_person.status_membership = membership.status;
                 membership_person.id_membership = membership.id;
@@ -399,14 +398,20 @@ export class Groups {
         filter.update("searchScope", "scopeId");
         filter.update("searchStatus", "status");
         filter.update("searchFeatures", "feature");
-        let _this = this;
+        const url = Configuration.group_service + filter.string;
+        Rx.DOM.fromEventSource(url,
+            Rx.Observer.create<string>(this.clearGroups, this.errorHandler("Open")))
+            .map(json => JSON.parse(json))
+            .subscribe(this.showGroup, this.errorHandler("Data"));
+    }
+    errorHandler(eventName: string) {
+        return function (e: any) {
+            console.log(eventName + " Error: ", e);
+        }
+    }
+
+    clearGroups() {
         $('#overviewTable tbody').empty();
-        var source = new EventSource(Configuration.group_service + filter.string);
-        source.addEventListener('message', function (e) {
-            var group: Group = JSON.parse(e.data);
-            _this.showGroup(group);
-        });
-        source.onerror = function (e) { source.close(); };
     }
 
     showGroup(group: Group) {
@@ -427,10 +432,8 @@ export class Groups {
 }
 
 $(document).ready(function () {
-    let groups = new Groups();
-    let personList = new PersonList();
-    personList.initialise();
-    groups.initialise(personList);
+    const groups = new Groups();
+    groups.initialise();
 
 });
 

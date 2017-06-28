@@ -5,6 +5,9 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
+        "rootDir": "includes",
+        "outDir": "target",
+        "target": "es5",
         "allowJs": true
     },
     "files": [
@@ -13,7 +16,6 @@
         "includes/FilterUtil.ts",
         "includes/Groups.ts",
         "includes/Organisations.ts",
-        "includes/PersonList.ts",
         "includes/Persons.ts",
         "includes/Scopes.ts"
     ]
