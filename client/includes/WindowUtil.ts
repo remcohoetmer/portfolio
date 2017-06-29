@@ -1,6 +1,11 @@
 ﻿/// <reference path="lib/jquery.d.ts" />
 
 export class WindowUtil {
+    static errorHandler(eventName: string) {
+        return function (e: any) {
+            console.log(eventName + " Error: ", e);
+        }
+    }
 
     static popupWindow(popupid:string) {
         $('#' + popupid).fadeIn();
@@ -35,4 +40,5 @@ export class WindowUtil {
     }
 }
 export var windowUtil = new WindowUtil();
+export var Util = WindowUtil;
 //windowUtil.initialise();

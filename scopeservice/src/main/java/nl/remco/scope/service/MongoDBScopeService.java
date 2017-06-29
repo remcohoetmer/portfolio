@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -52,16 +54,13 @@ final class MongoDBScopeService implements ScopeService {
   }
 
   @Override
-  public Flux<ScopeDTO> findAll() {
+  public Flux<ScopeDTO> findAll(String status) {
     LOGGER.info("Finding all scope entries.");
-
-/*
-        Query query = new Query();
-        query.addCriteria(Criteria.where("status").is("Inactive"));
-        List<Scope> scopeEntries= mongoTemplate.find(query, Scope.class);
-*/
-    Flux<Scope> scopeEntries = repository.findAll();
-
+    Query query = new Query();
+    if (status != null && !status.isEmpty()) {
+      query.addCriteria(Criteria.where("status").is(status));
+    }
+    Flux<Scope> scopeEntries = mongoTemplate.find(query, Scope.class);
 
     return scopeEntries.map(this::convertToDTO);
   }

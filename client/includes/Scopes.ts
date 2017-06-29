@@ -1,7 +1,7 @@
 ﻿/// <reference path="lib/jquery.d.ts" />
 
 import { Scope } from "./DataModel";
-import { WindowUtil } from "./WindowUtil";
+import { Util, WindowUtil } from "./WindowUtil";
 import { FilterUtil, Filter } from "./FilterUtil";
 import { Configuration } from "./Configuration";
 
@@ -55,26 +55,26 @@ class Scopes {
         let filter = new Filter();
         filter.updateWildcard("scopeNaamFilter", "name");
         filter.update("scopeStatusFilter", "status");
-
-        $('#scopetable tbody').empty();
-        var source = new EventSource(Configuration.scope_service + filter.string);
-        source.addEventListener('message', function (e) {
-            console.log(e.data);
-            var organisation: Scope = JSON.parse(e.data);
-            _this.showScope(organisation);
-        });
-        source.onerror = function (e) { source.close(); };
-
         $('#scopetable tr').click(FilterUtil.selectionHandler);
-    }
 
+
+        Rx.DOM.fromEventSource<string>(Configuration.scope_service + filter.string,
+            Rx.Observer.create(this.clearScopes))
+            .map(json => JSON.parse(json))
+            .subscribe(this.showScope, Util.errorHandler("Scope Data"));
+
+    }
+    clearScopes() {
+        $('#scopetable tbody').empty();
+    }
     showScope(scope: Scope) {
 
         $('#scopetable tbody').append(
             `<tr id="org${scope.id}">
             <td>${scope.name}</td>
             <td>${scope.status}</td>
-            </tr>`);
+            </tr>
+            `);
     }
 
     jump2Create() {
@@ -159,7 +159,9 @@ class Scopes {
         });
     }
 }
+
+var scopes = new Scopes();
 $(document).ready(function () {
-    var scopes = new Scopes();
+
     scopes.initialise();
 });

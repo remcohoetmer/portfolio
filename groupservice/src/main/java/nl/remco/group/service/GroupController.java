@@ -60,6 +60,7 @@ public final class GroupController {
   Flux<GroupDTO> findAll(
     @RequestParam(value = "name", required = false) String name,
     @RequestParam(value = "code", required = false) String code,
+    @RequestParam(value = "status", required = false) String status,
     @RequestParam(value = "scopeId", required = false) String scopeId,
     @RequestParam(value = "personId", required = false) String personId,
     @RequestParam(value = "masterId", required = false) String masterId,
@@ -74,6 +75,7 @@ public final class GroupController {
 
     groupFilter.setName(name);
     groupFilter.setCode(code);
+    groupFilter.setStatus(status);
     groupFilter.setScopeId(scopeId);
     groupFilter.setPersonId(personId);
     groupFilter.setOrganisationId(organisationId);

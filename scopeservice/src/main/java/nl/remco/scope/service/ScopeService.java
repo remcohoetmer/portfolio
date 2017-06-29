@@ -9,7 +9,7 @@ interface ScopeService {
 
   Mono<ScopeDTO> delete(String id);
 
-  Flux<ScopeDTO> findAll();
+  Flux<ScopeDTO> findAll(String status);
 
   Mono<ScopeDTO> findById(String id);
 

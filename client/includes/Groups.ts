@@ -1,6 +1,6 @@
 ﻿
 /// <reference path="lib/sse.d.ts" />
-import { WindowUtil } from "./WindowUtil";
+import { WindowUtil, Util } from "./WindowUtil";
 import { FilterUtil, Filter } from "./FilterUtil";
 import { Person, Organisation, Group, Scope } from "./DataModel";
 import { Configuration } from "./Configuration";
@@ -87,19 +87,13 @@ export class Groups {
         });
 
 
-        var source = new EventSource(Configuration.organisation_service);
-        source.addEventListener('message', function (e) {
-            var org = JSON.parse(e.data);
-            _this.populateOrganisation(org);
-        });
-        source.onerror = function (e) { source.close(); };
+        Rx.DOM.fromEventSource<string>(Configuration.organisation_service)
+            .map(json => JSON.parse(json))
+            .subscribe(this.populateOrganisation, Util.errorHandler("Organisation Data"));
 
-        let src = new EventSource(Configuration.scope_service);
-        src.addEventListener('message', function (e) {
-            var scope = JSON.parse(e.data);
-            _this.populateScope(scope);
-        });
-        src.onerror = function (e) { src.close(); };
+        Rx.DOM.fromEventSource<string>(Configuration.scope_service)
+            .map(json => JSON.parse(json))
+            .subscribe(this.populateScope, Util.errorHandler("Scope Data"));
 
 
         let fun = this.searchGroups.bind(this);
@@ -256,10 +250,7 @@ export class Groups {
             $("#organisationEdit").prop("value", group.organisation.name);
         else
             $("#organisationEdit").prop("value", "");
-        if (group.scope)
-            $("#scopeEdit").prop("value", group.scope.name);
-        else
-            $("#scopeEdit").prop("value", "");
+        $("#scopeEdit").prop("value", (group.scope != null) ? group.scope.name : "");
         if (group.features)
             $("#featuresEdit").prop("value", group.features.join(" "));
         else
@@ -399,15 +390,10 @@ export class Groups {
         filter.update("searchStatus", "status");
         filter.update("searchFeatures", "feature");
         const url = Configuration.group_service + filter.string;
-        Rx.DOM.fromEventSource(url,
-            Rx.Observer.create<string>(this.clearGroups, this.errorHandler("Open")))
+        Rx.DOM.fromEventSource<string>(url,
+            Rx.Observer.create(this.clearGroups, Util.errorHandler("Open")))
             .map(json => JSON.parse(json))
-            .subscribe(this.showGroup, this.errorHandler("Data"));
-    }
-    errorHandler(eventName: string) {
-        return function (e: any) {
-            console.log(eventName + " Error: ", e);
-        }
+            .subscribe(this.showGroup, Util.errorHandler("Data"));
     }
 
     clearGroups() {

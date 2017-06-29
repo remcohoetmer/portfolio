@@ -47,10 +47,12 @@ public final class ScopeController {
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   @CrossOrigin(origins = "*")
-  Flux<ScopeDTO> findAll() {
+  Flux<ScopeDTO> findAll(
+    @RequestParam(value = "status", required = false) String status
+  ) {
     LOGGER.info("Finding all scope entries");
 
-    Flux<ScopeDTO> scopeEntries = service.findAll();
+    Flux<ScopeDTO> scopeEntries = service.findAll(status);
 
     return scopeEntries;
   }
