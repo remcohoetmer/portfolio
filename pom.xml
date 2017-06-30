@@ -23,6 +23,7 @@
 
     <modules>
         <module>groupservice</module>
+        <module>empservice</module>
         <module>scopeservice</module>
         <module>serviceclient</module>
     </modules>
