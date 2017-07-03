@@ -1,7 +1,7 @@
-import Employee from './Employee';
+import Group from './Group';
 interface DialogProps {
   attributes: string[];
-  onCreate(emp: Employee): void;
+  onCreate(group: Group): void;
 }
 
 export default DialogProps;
