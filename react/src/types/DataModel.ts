@@ -1,4 +1,4 @@
-﻿export class Remco {
+﻿export default class Remco {
     status: string = "";
 }
 

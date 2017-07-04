@@ -1,18 +1,17 @@
 'use strict';
-import Employee from './types/Employee';
+import Group from './types/Group';
 import DialogProps from './types/DialogProps';
-import EmployeeState from './types/EmployeeState';
-import GroupsState from './types/GroupsState';
-import EmployeeListProps from './types/EmployeeListProps';
+import GroupCompProps from './types/GroupCompProps';
+import GroupsAppState from './types/GroupsAppState';
+import GroupListProps from './types/GroupListProps';
 
 // tag::vars[]
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Rx from 'rx-dom';
 
-
 // end::vars[]
-const url = 'http://localhost:8082/api/employee';
+const url = 'http://localhost:8082/api/group';
 class Util {
 	postRequest(url: string, body: string): Promise<any> {
 		return new Promise<any>(
@@ -37,50 +36,47 @@ class Util {
 	}
 };
 // tag::app[]
-export class GroupsApp extends React.Component<{}, GroupsState> {
+export class GroupsApp extends React.Component<{}, GroupsAppState> {
 	constructor(props: any) {
 		super(props);
-		this.state = new GroupsState([]);
+		this.state = new GroupsAppState([]);
 		this.onCreate = this.onCreate.bind(this);
-		this.loadEmployees = this.loadEmployees.bind(this);
+		this.loadGroups = this.loadGroups.bind(this);
 		this.setState = this.setState.bind(this);
+		this.addGroup = this.addGroup.bind(this);
 	}
 
 
-	loadEmployees() {
+	loadGroups() {
 		Rx.DOM.fromEventSource(url)
-			.map((json: string) => JSON.parse(json) as Employee)
-			.subscribe((emp: Employee) => {
-				return this.setState((prevState: GroupsState) => {
-					prevState.employees.push(emp);
-					return prevState;
-				})
-			});
-
+			.map((json: string) => JSON.parse(json) as Group)
+			.subscribe(this.addGroup);
 	}
 
-	loadEmployees2() {
-		console.log(this);
-		this.setState(new GroupsState([]), null);
+	addGroup(group: Group) {
+		this.setState(prevState => {
+			prevState.groups.push(group);
+			return prevState;
+		});
 	}
 
 	componentDidMount() {
-		this.loadEmployees();
+		this.loadGroups();
 	}
 
 	render() {
 		return (
 			<div>
 				<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate} />
-				<EmployeeListComp employees={this.state.employees} />
+				<GroupListComp groups={this.state.groups} />
 			</div>
 		)
 	}
 	// tag::create[]
-	onCreate(newEmployee: Employee) {
+	onCreate(newGroup: Group) {
 		let self = this;
-		new Util().postRequest(url, JSON.stringify(newEmployee))
-			.then(() => { self.loadEmployees(); });
+		new Util().postRequest(url, JSON.stringify(newGroup))
+			.then((json:string) => { self.addGroup(JSON.parse(json) as Group); });
 	}
 	// end::create[]
 }
@@ -95,12 +91,12 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 	handleSubmit(e: any) {
 		e.preventDefault();
-		var newEmployee: any = {};
+		var newGroup: any = {};
 		this.props.attributes.forEach(attribute => {
-			newEmployee[attribute] = (ReactDOM.findDOMNode(this.refs[attribute]) as HTMLInputElement).value.trim();
+			newGroup[attribute] = (ReactDOM.findDOMNode(this.refs[attribute]) as HTMLInputElement).value.trim();
 		});
 
-		this.props.onCreate(newEmployee);
+		this.props.onCreate(newGroup);
 
 		// clear out the dialog's inputs
 		this.props.attributes.forEach(attribute => {
@@ -121,13 +117,13 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 		return (
 			<div>
-				<a href="#createEmployee">Create</a>
+				<a href="#createGroup">Create</a>
 
-				<div id="createEmployee" className="modalDialog">
+				<div id="createGroup" className="modalDialog">
 					<div>
 						<a href="#" title="Close" className="close">X</a>
 
-						<h2>Create new employee</h2>
+						<h2>Create new Group</h2>
 
 						<form>
 							{inputs}
@@ -141,48 +137,59 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 }
 // end::create-dialog[]
-// tag::employee-list[]
-class EmployeeListComp extends React.Component<EmployeeListProps, {}> {
+// tag::Group-list[]
+class GroupListComp extends React.Component<GroupListProps, {}> {
 	render() {
-		var employees = this.props.employees.map(employee =>
-			<EmployeeComp key={employee.id} employee={employee} />
+		var groups = this.props.groups.map(group =>
+			<GroupComp key={group.id} group={group} />
 		);
 		return (
 			<table>
 				<tbody>
 					<tr>
-						<th>First Name</th>
-						<th>Last Name</th>
+						<th>Name</th>
 						<th>Description</th>
+						<th>Organisation</th>
+						<th>Scope</th>
+						<th>Status</th>
 					</tr>
-					{employees}
+					{groups}
 				</tbody>
 			</table>
 		)
 	}
 }
-// end::employee-list[]
+// end::Group-list[]
 
-// tag::employee[]
-class EmployeeComp extends React.Component<EmployeeState, {}>{
+// tag::Group[]
+class GroupComp extends React.Component<GroupCompProps, {}>{
 	render() {
+		var org = "";
+		if (this.props.group.organisation != undefined) {
+			org = this.props.group.organisation.name;
+		}
+		var scope = "";
+		if (this.props.group.scope != undefined) {
+			scope = this.props.group.scope.name;
+		}
 		return (
 			<tr>
-				<td>{this.props.employee.firstName}</td>
-				<td>{this.props.employee.lastName}</td>
-				<td>{this.props.employee.description}</td>
+				<td>{this.props.group.name}</td>
+				<td>{this.props.group.description}</td>
+				<td>{org}</td>
+				<td>{scope}</td>
+				<td>{this.props.group.status}</td>
 			</tr>
 		)
 	}
 }
-// end::employee[]
-
+// end::Group[]
+export default GroupsApp;
 // tag::render[]
 /*
 ReactDOM.render(
-	<App />,
-	document.getElementById('react')
+	<GroupsApp />,
+	document.getElementById('groupContent')
 )
 */
 // end::render[]
-export default GroupsApp;

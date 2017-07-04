@@ -84,7 +84,6 @@ public final class GroupController {
     groupSelection.setSelectPersons();
     groupSelection.setSelectScopes();
     groupSelection.setSelectOrganisations();
-
     LOGGER.info("Finding all group entries");
     return groupService.find(groupFilter, groupSelection);
   }
