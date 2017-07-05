@@ -21,8 +21,7 @@ export class OrganisationSelectionComp extends React.Component<OrganisationListP
 			organisations.push(<option key={organisation.id} value={organisation.id}>{organisation.name}</option>);
 		});
 		return (
-			//e as HTMLSelectElement
-			<select value={this.props.selectedID} onChange={(e)=>this.props.selectOrganisation((e as any).target.value)}>
+			<select value={this.props.selectedID} onChange={(e)=>this.props.selectOrganisation((e.target as any).value)}>
 				<option value="">(organisation)</option>
 				{organisations}
 			</select>

@@ -1,4 +1,5 @@
 
+
 export class RestClient {
     postRequest(url: string, body: string): Promise<any> {
 
@@ -44,3 +45,4 @@ export class RestClient {
     }
 };
 
+export var restclient= new RestClient();

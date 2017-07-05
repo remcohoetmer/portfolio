@@ -1,4 +1,4 @@
-import Scope from "./Scope"
+import { Scope } from "./Scope"
 import { Person } from "./Person"
 import { Organisation } from "./Organisation"
 

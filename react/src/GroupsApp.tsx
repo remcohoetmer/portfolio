@@ -1,10 +1,9 @@
 'use strict';
-import Scope from './types/Scope';
+import { Scope, ScopeSelectionComp } from './types/Scope';
 import { Group } from './types/Group';
 import { Organisation, OrganisationSelectionComp } from './types/Organisation';
 
-import ScopeListProps from './types/ScopeListProps';
-import { RestClient } from "./communication/restclient";
+import { restclient } from "./communication/restclient";
 
 // tag::vars[]
 import React from 'react';
@@ -134,7 +133,9 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 						<OrganisationSelectionComp organisations={this.state.organisations}
 							selectedID={this.state.groupSelection.organisationID}
 							selectOrganisation={this.selectOrganisation} />
-						<ScopeSelectionComp scopes={this.state.scopes} />
+						<ScopeSelectionComp scopes={this.state.scopes}
+							selectedID={this.state.groupSelection.scopeID}
+							selectScope={this.selectScope} />
 
 						<input type="text" placeholder="feature" id="searchFeature" />
 
@@ -146,6 +147,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 					</div>
 					<div>
 						<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}
+							scopes={this.state.scopes}
 							organisations={this.state.organisations}
 							groupSelection={this.state.groupSelection}
 							groupSelector={this} />
@@ -159,7 +161,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 	// tag::create[]
 	onCreate(newGroup: Group) {
 		let self = this;
-		new RestClient().postRequest(url, JSON.stringify(newGroup))
+		restclient.postRequest(url, JSON.stringify(newGroup))
 			.then(() => { self.loadGroups(); });
 		//(json: string) => self.addGroup(JSON.parse(json) as Group);
 	}
@@ -170,6 +172,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 interface DialogProps {
 	attributes: string[];
 	groupSelection: GroupSelection;
+	scopes: Scope[];
 	organisations: Organisation[];
 	groupSelector: GroupSelector;
 	onCreate(group: Group): void;
@@ -188,6 +191,7 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 			(newGroup as any)[attribute] = (ReactDOM.findDOMNode(this.refs[attribute]) as HTMLInputElement).value.trim();
 		});
 		newGroup.organisation = new Organisation(this.props.groupSelection.organisationID);
+		newGroup.scope = new Scope(this.props.groupSelection.scopeID);
 		this.props.onCreate(newGroup);
 
 		// clear out the dialog's inputs
@@ -219,6 +223,9 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 						<form>
 							{inputs}
+							<ScopeSelectionComp scopes={this.props.scopes}
+								selectedID={this.props.groupSelection.scopeID}
+								selectScope={this.props.groupSelector.selectScope} />
 							<OrganisationSelectionComp organisations={this.props.organisations}
 								selectedID={this.props.groupSelection.organisationID}
 								selectOrganisation={this.props.groupSelector.selectOrganisation} />
@@ -235,22 +242,6 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 
 // tag::Group-list[]
-
-
-class ScopeSelectionComp extends React.Component<ScopeListProps, {}> {
-	render() {
-		var scopes = this.props.scopes.map(scope =>
-			<option key={scope.id} value={scope.id}>{scope.name}</option>
-		);
-		return (
-			<select id="searchScope">
-				<option value="">(scope)</option>
-				{scopes}
-			</select>
-
-		)
-	}
-}
 
 interface GroupListProps {
 	groups: Group[];
