@@ -1,9 +1,10 @@
 'use strict';
-import Group from './types/Group';
-import DialogProps from './types/DialogProps';
-import GroupCompProps from './types/GroupCompProps';
-import GroupsAppState from './types/GroupsAppState';
-import GroupListProps from './types/GroupListProps';
+import Scope from './types/Scope';
+import { Group } from './types/Group';
+import { Organisation, OrganisationSelectionComp } from './types/Organisation';
+
+import ScopeListProps from './types/ScopeListProps';
+import { RestClient } from "./communication/restclient";
 
 // tag::vars[]
 import React from 'react';
@@ -12,42 +13,80 @@ import Rx from 'rx-dom';
 
 // end::vars[]
 const url = 'http://localhost:8082/api/group';
-class Util {
-	postRequest(url: string, body: string): Promise<any> {
-		return new Promise<any>(
-			function (resolve, reject) {
-				const request = new XMLHttpRequest();
-				request.onload = function () {
-					let self = this as XMLHttpRequest;
-					if (self.status === 201) {
-						resolve(self.response);
-					} else {
-						reject(new Error(self.statusText));
-					}
-				};
-				request.onerror = function () {
-					let self = this as XMLHttpRequest;
-					reject(new Error('XMLHttpRequest Error: ' + self.statusText));
-				};
-				request.open('POST', url);
-				request.setRequestHeader('Content-Type', 'application/json')
-				request.send(body);
-			});
-	}
-};
+const org_url = 'http://localhost:8082/api/organisation';
+const scope_url = 'http://localhost:8082/api/scope';
+
 // tag::app[]
-export class GroupsApp extends React.Component<{}, GroupsAppState> {
+export class GroupSelection {
+	name: string;
+	description: string;
+	status: string;
+	code: string;
+	scopeID: string;
+	organisationID: string;
+	constructor() {
+		this.name = "";
+		this.description = "";
+		this.status = "";
+		this.code = "";
+		this.scopeID = "";
+		this.organisationID = "";
+	}
+}
+class GroupsAppState {
+	attributes: string[];
+	public organisations: Organisation[];
+	public scopes: Scope[];
+	groupSelection: GroupSelection;
+	constructor(public groups: Group[] = []) {
+
+		this.attributes = ["name", "code", "description", "status"];
+		this.emptyGroups = this.emptyGroups.bind(this);
+		this.organisations = [];
+		this.scopes = [];
+		this.groupSelection = new GroupSelection();
+	}
+
+	emptyGroups(): GroupsAppState {
+		this.groups = [];
+		return this;
+	}
+}
+interface GroupSelector {
+	selectOrganisation(id: string): void;
+	selectScope(id: string): void;
+	selectStatus(status: string): void;
+}
+
+export class GroupsApp extends React.Component<{}, GroupsAppState> implements GroupSelector {
 	constructor(props: any) {
 		super(props);
-		this.state = new GroupsAppState([]);
+		this.state = new GroupsAppState();
+
 		this.onCreate = this.onCreate.bind(this);
 		this.loadGroups = this.loadGroups.bind(this);
 		this.setState = this.setState.bind(this);
 		this.addGroup = this.addGroup.bind(this);
+		this.addOrganisation = this.addOrganisation.bind(this);
+		this.selectOrganisation = this.selectOrganisation.bind(this);
+		this.selectScope = this.selectScope.bind(this);
+		this.selectStatus = this.selectStatus.bind(this);
+		this.addScope = this.addScope.bind(this);
 	}
 
+	selectOrganisation(id: string) {
+		this.setState(prevState => { prevState.groupSelection.organisationID = id; return prevState; });
+	}
+	selectScope(id: string) {
+		this.setState(prevState => { prevState.groupSelection.scopeID = id; return prevState; });
+	}
+	selectStatus(status: string) {
+		this.setState(prevState => { prevState.groupSelection.status = status; return prevState; });
+	}
 
 	loadGroups() {
+		this.setState(this.state.emptyGroups());
+
 		Rx.DOM.fromEventSource(url)
 			.map((json: string) => JSON.parse(json) as Group)
 			.subscribe(this.addGroup);
@@ -59,29 +98,82 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> {
 			return prevState;
 		});
 	}
+	addOrganisation(organisation: Organisation) {
+		this.setState(prevState => {
+			prevState.organisations.push(organisation);
+			return prevState;
+		});
+	}
+	addScope(scope: Scope) {
+		this.setState(prevState => {
+			prevState.scopes.push(scope);
+			return prevState;
+		});
+	}
 
 	componentDidMount() {
 		this.loadGroups();
+		Rx.DOM.fromEventSource(org_url)
+			.map((json: string) => JSON.parse(json) as Organisation)
+			.subscribe(this.addOrganisation);
+		Rx.DOM.fromEventSource(scope_url)
+			.map((json: string) => JSON.parse(json) as Scope)
+			.subscribe(this.addScope);
 	}
 
 	render() {
 		return (
-			<div>
-				<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate} />
-				<GroupListComp groups={this.state.groups} />
+			<div id="container">
+				<h1>Group Admin</h1>
+				<div>
+					<div>
+						<input type="text" placeholder="name" id="searchName" />
+						<input type="text" placeholder="description" id="searchDescription" />
+						<input type="text" placeholder="code" id="searchCode" />
+
+						<OrganisationSelectionComp organisations={this.state.organisations}
+							selectedID={this.state.groupSelection.organisationID}
+							selectOrganisation={this.selectOrganisation} />
+						<ScopeSelectionComp scopes={this.state.scopes} />
+
+						<input type="text" placeholder="feature" id="searchFeature" />
+
+						<select id="searchStatus">
+							<option value="">(status)</option>
+							<option value="Active">Active</option>
+							<option value="Inactive">Inactive</option>
+						</select>
+					</div>
+					<div>
+						<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}
+							organisations={this.state.organisations}
+							groupSelection={this.state.groupSelection}
+							groupSelector={this} />
+						<GroupListComp groups={this.state.groups} />
+					</div>
+				</div>
 			</div>
+
 		)
 	}
 	// tag::create[]
 	onCreate(newGroup: Group) {
 		let self = this;
-		new Util().postRequest(url, JSON.stringify(newGroup))
-			.then((json:string) => { self.addGroup(JSON.parse(json) as Group); });
+		new RestClient().postRequest(url, JSON.stringify(newGroup))
+			.then(() => { self.loadGroups(); });
+		//(json: string) => self.addGroup(JSON.parse(json) as Group);
 	}
 	// end::create[]
 }
 // end::app[]
 // tag::create-dialog[]
+interface DialogProps {
+	attributes: string[];
+	groupSelection: GroupSelection;
+	organisations: Organisation[];
+	groupSelector: GroupSelector;
+	onCreate(group: Group): void;
+}
 class CreateDialog extends React.Component<DialogProps, {}> {
 
 	constructor(props: DialogProps) {
@@ -91,11 +183,11 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 	handleSubmit(e: any) {
 		e.preventDefault();
-		var newGroup: any = {};
+		var newGroup: Group = new Group();
 		this.props.attributes.forEach(attribute => {
-			newGroup[attribute] = (ReactDOM.findDOMNode(this.refs[attribute]) as HTMLInputElement).value.trim();
+			(newGroup as any)[attribute] = (ReactDOM.findDOMNode(this.refs[attribute]) as HTMLInputElement).value.trim();
 		});
-
+		newGroup.organisation = new Organisation(this.props.groupSelection.organisationID);
 		this.props.onCreate(newGroup);
 
 		// clear out the dialog's inputs
@@ -127,6 +219,9 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 						<form>
 							{inputs}
+							<OrganisationSelectionComp organisations={this.props.organisations}
+								selectedID={this.props.groupSelection.organisationID}
+								selectOrganisation={this.props.groupSelector.selectOrganisation} />
 							<button onClick={this.handleSubmit}>Create</button>
 						</form>
 					</div>
@@ -137,7 +232,29 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 }
 // end::create-dialog[]
+
+
 // tag::Group-list[]
+
+
+class ScopeSelectionComp extends React.Component<ScopeListProps, {}> {
+	render() {
+		var scopes = this.props.scopes.map(scope =>
+			<option key={scope.id} value={scope.id}>{scope.name}</option>
+		);
+		return (
+			<select id="searchScope">
+				<option value="">(scope)</option>
+				{scopes}
+			</select>
+
+		)
+	}
+}
+
+interface GroupListProps {
+	groups: Group[];
+}
 class GroupListComp extends React.Component<GroupListProps, {}> {
 	render() {
 		var groups = this.props.groups.map(group =>
@@ -159,9 +276,11 @@ class GroupListComp extends React.Component<GroupListProps, {}> {
 		)
 	}
 }
-// end::Group-list[]
 
-// tag::Group[]
+interface GroupCompProps {
+	group: Group;
+}
+
 class GroupComp extends React.Component<GroupCompProps, {}>{
 	render() {
 		var org = "";
@@ -183,13 +302,4 @@ class GroupComp extends React.Component<GroupCompProps, {}>{
 		)
 	}
 }
-// end::Group[]
 export default GroupsApp;
-// tag::render[]
-/*
-ReactDOM.render(
-	<GroupsApp />,
-	document.getElementById('groupContent')
-)
-*/
-// end::render[]

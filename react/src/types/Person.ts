@@ -1,6 +1,6 @@
-import Organisation from './Organisation';
+import {Organisation} from './Organisation';
 
-export default class Person {
+export class Person {
     id: number;
     name: string;
     surname: string;
