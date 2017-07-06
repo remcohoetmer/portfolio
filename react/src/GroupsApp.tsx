@@ -1,21 +1,18 @@
 'use strict';
 import { Scope, ScopeSelectionComp } from './types/Scope';
-import { Group } from './types/Group';
+import { Group, Member } from './types/Group';
 import { Organisation, OrganisationSelectionComp } from './types/Organisation';
-
+import { StatusSelectionComp } from './types/Status';
 import { restclient } from "./communication/restclient";
-
-// tag::vars[]
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Rx from 'rx-dom';
 
-// end::vars[]
-const url = 'http://localhost:8082/api/group';
+declare function escape(s: string): string;
+
+const group_url = 'http://localhost:8082/api/group';
 const org_url = 'http://localhost:8082/api/organisation';
 const scope_url = 'http://localhost:8082/api/scope';
 
-// tag::app[]
 export class GroupSelection {
 	name: string;
 	description: string;
@@ -26,7 +23,7 @@ export class GroupSelection {
 	constructor() {
 		this.name = "";
 		this.description = "";
-		this.status = "";
+		this.status = "Active";
 		this.code = "";
 		this.scopeID = "";
 		this.organisationID = "";
@@ -39,7 +36,6 @@ class GroupsAppState {
 	groupSelection: GroupSelection;
 	constructor(public groups: Group[] = []) {
 
-		this.attributes = ["name", "code", "description", "status"];
 		this.emptyGroups = this.emptyGroups.bind(this);
 		this.organisations = [];
 		this.scopes = [];
@@ -51,42 +47,118 @@ class GroupsAppState {
 		return this;
 	}
 }
+
 interface GroupSelector {
+	createGroup(newGroup: Group): void;
+	deleteGroup(group: Group): void;
 	selectOrganisation(id: string): void;
 	selectScope(id: string): void;
-	selectStatus(status: string): void;
-}
+	setStatus(status: string): void;
+	setName(name: string): void;
+	setCode(code: string): void;
+	setDescription(description: string): void;
+	addMember(member: Member): void;
+	removeMember(member: Member): void;
 
+}
 export class GroupsApp extends React.Component<{}, GroupsAppState> implements GroupSelector {
 	constructor(props: any) {
 		super(props);
 		this.state = new GroupsAppState();
 
-		this.onCreate = this.onCreate.bind(this);
 		this.loadGroups = this.loadGroups.bind(this);
 		this.setState = this.setState.bind(this);
 		this.addGroup = this.addGroup.bind(this);
 		this.addOrganisation = this.addOrganisation.bind(this);
+		this.addScope = this.addScope.bind(this);
+
+		this.createGroup = this.createGroup.bind(this);
+		this.deleteGroup = this.deleteGroup.bind(this);
+
 		this.selectOrganisation = this.selectOrganisation.bind(this);
 		this.selectScope = this.selectScope.bind(this);
-		this.selectStatus = this.selectStatus.bind(this);
-		this.addScope = this.addScope.bind(this);
+		this.setStatus = this.setStatus.bind(this);
+		this.setName = this.setName.bind(this);
+		this.setCode = this.setCode.bind(this);
+		this.setDescription = this.setDescription.bind(this);
+		this.removeMember = this.removeMember.bind(this);
+		this.addMember = this.addMember.bind(this);
 	}
 
-	selectOrganisation(id: string) {
+	selectOrganisation(id: string): void {
 		this.setState(prevState => { prevState.groupSelection.organisationID = id; return prevState; });
 	}
-	selectScope(id: string) {
+	selectScope(id: string): void {
 		this.setState(prevState => { prevState.groupSelection.scopeID = id; return prevState; });
 	}
-	selectStatus(status: string) {
+	setStatus(status: string): void {
 		this.setState(prevState => { prevState.groupSelection.status = status; return prevState; });
 	}
+	setName(name: string): void {
+		this.setState(prevState => { prevState.groupSelection.name = name; return prevState; });
+	}
+	setCode(code: string): void {
+		this.setState(prevState => { prevState.groupSelection.code = code; return prevState; });
+	}
+	setDescription(description: string): void {
+		this.setState(prevState => { prevState.groupSelection.description = description; return prevState; });
+	}
+	addMember(member: Member): void {
+		let self = this;
+		restclient.postRequest(group_url + "/membership", JSON.stringify(member))
+			.then(() => { self.loadGroups(); });
+	}
+	removeMember(member: Member): void {
+		let self = this;
+		restclient.deleteRequest(group_url + "/membership/" + member.id)
+			.then(() => { self.loadGroups(); });
+	}
 
+	createGroup(newGroup: Group): void {
+		let self = this;
+		restclient.postRequest(group_url, JSON.stringify(newGroup))
+			.then(() => { self.loadGroups(); });
+		//(json: string) => self.addGroup(JSON.parse(json) as Group);
+	}
+	deleteGroup(group: Group) {
+		let self = this;
+		restclient.deleteRequest(group_url + '/' + group.id)
+			.then(() => { self.loadGroups(); });
+	}
+
+	append(url: string, name: string, value: string): string {
+		var att = name + "=" + escape(value);
+
+		if (url.endsWith("?")) {
+			return url + att;
+		}
+		return url + "&" + att;
+
+	}
 	loadGroups() {
 		this.setState(this.state.emptyGroups());
 
-		Rx.DOM.fromEventSource(url)
+		var url = group_url + "?";
+		if (this.state.groupSelection.name != "") {
+			url = this.append(url, "name", this.state.groupSelection.name);
+		}
+		if (this.state.groupSelection.code != "") {
+			url = this.append(url, "code", this.state.groupSelection.code);
+		}
+		if (this.state.groupSelection.description != "") {
+			url = this.append(url, "description", this.state.groupSelection.description);
+		}
+		if (this.state.groupSelection.status != "") {
+			url = this.append(url, "status", this.state.groupSelection.status);
+		}
+		if (this.state.groupSelection.scopeID != "") {
+			url = this.append(url, "scopeId", this.state.groupSelection.scopeID);
+		}
+		if (this.state.groupSelection.organisationID != "") {
+			url = this.append(url, "organisationId", this.state.groupSelection.organisationID);
+		}
+
+		Rx.DOM.fromEventSource(url, Rx.Observer.create(console.log, console.log))
 			.map((json: string) => JSON.parse(json) as Group)
 			.subscribe(this.addGroup);
 	}
@@ -97,6 +169,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 			return prevState;
 		});
 	}
+
 	addOrganisation(organisation: Organisation) {
 		this.setState(prevState => {
 			prevState.organisations.push(organisation);
@@ -126,9 +199,16 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 				<h1>Group Admin</h1>
 				<div>
 					<div>
-						<input type="text" placeholder="name" id="searchName" />
-						<input type="text" placeholder="description" id="searchDescription" />
-						<input type="text" placeholder="code" id="searchCode" />
+						<CreateDialog
+							scopes={this.state.scopes}
+							organisations={this.state.organisations}
+							groupSelection={this.state.groupSelection}
+							groupSelector={this} />
+					</div>
+					<div>
+						<input type="text" placeholder="name" value={this.state.groupSelection.name} onChange={(e) => { this.setName((e.target as any).value); }} />
+						<input type="text" placeholder="description" value={this.state.groupSelection.description} onChange={(e) => { this.setDescription((e.target as any).value); }} />
+						<input type="text" placeholder="code" value={this.state.groupSelection.code} onChange={(e) => { this.setCode((e.target as any).value); }} />
 
 						<OrganisationSelectionComp organisations={this.state.organisations}
 							selectedID={this.state.groupSelection.organisationID}
@@ -137,67 +217,56 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 							selectedID={this.state.groupSelection.scopeID}
 							selectScope={this.selectScope} />
 
-						<input type="text" placeholder="feature" id="searchFeature" />
-
-						<select id="searchStatus">
-							<option value="">(status)</option>
-							<option value="Active">Active</option>
-							<option value="Inactive">Inactive</option>
-						</select>
-					</div>
-					<div>
-						<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}
-							scopes={this.state.scopes}
-							organisations={this.state.organisations}
-							groupSelection={this.state.groupSelection}
-							groupSelector={this} />
-						<GroupListComp groups={this.state.groups} />
+						<StatusSelectionComp
+							selectedStatus={this.state.groupSelection.status}
+							selectStatus={this.setStatus} />
+						<button key="search" onClick={this.loadGroups}>Search</button>
+						<GroupListComp groups={this.state.groups} deleteGroup={this.deleteGroup} />
 					</div>
 				</div>
 			</div>
 
 		)
 	}
-	// tag::create[]
-	onCreate(newGroup: Group) {
-		let self = this;
-		restclient.postRequest(url, JSON.stringify(newGroup))
-			.then(() => { self.loadGroups(); });
-		//(json: string) => self.addGroup(JSON.parse(json) as Group);
-	}
-	// end::create[]
+
 }
 // end::app[]
 // tag::create-dialog[]
 interface DialogProps {
-	attributes: string[];
 	groupSelection: GroupSelection;
 	scopes: Scope[];
 	organisations: Organisation[];
 	groupSelector: GroupSelector;
-	onCreate(group: Group): void;
 }
-class CreateDialog extends React.Component<DialogProps, {}> {
+interface DialogState {
+	group: Group;
+}
+class DialogStateImpl implements DialogState {
+	public group: Group;
+	public constructor() {
+		this.group = new Group();
+		this.group.organisation = new Organisation();
+		this.group.organisation.id = "";
+		this.group.scope = new Scope();
+		this.group.scope.id = "";
+	}
+}
+
+class CreateDialog extends React.Component<DialogProps, DialogState> {
 
 	constructor(props: DialogProps) {
 		super(props);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.state = new DialogStateImpl();
+	}
+	componentDidMount() {
+		console.log("componentDidMount");
+
 	}
 
 	handleSubmit(e: any) {
 		e.preventDefault();
-		var newGroup: Group = new Group();
-		this.props.attributes.forEach(attribute => {
-			(newGroup as any)[attribute] = (ReactDOM.findDOMNode(this.refs[attribute]) as HTMLInputElement).value.trim();
-		});
-		newGroup.organisation = new Organisation(this.props.groupSelection.organisationID);
-		newGroup.scope = new Scope(this.props.groupSelection.scopeID);
-		this.props.onCreate(newGroup);
-
-		// clear out the dialog's inputs
-		this.props.attributes.forEach(attribute => {
-			(ReactDOM.findDOMNode(this.refs[attribute]) as HTMLInputElement).value = '';
-		});
+		this.props.groupSelector.createGroup(this.state.group);
 
 		// Navigate away from the dialog to hide it.
 
@@ -205,12 +274,6 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 	}
 
 	render() {
-		var inputs = this.props.attributes.map(attribute =>
-			<p key={attribute}>
-				<input type="text" placeholder={attribute} ref={attribute} className="field" />
-			</p>
-		);
-
 		return (
 			<div>
 				<a href="#createGroup">Create</a>
@@ -222,13 +285,42 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 						<h2>Create new Group</h2>
 
 						<form>
-							{inputs}
-							<ScopeSelectionComp scopes={this.props.scopes}
-								selectedID={this.props.groupSelection.scopeID}
-								selectScope={this.props.groupSelector.selectScope} />
-							<OrganisationSelectionComp organisations={this.props.organisations}
-								selectedID={this.props.groupSelection.organisationID}
-								selectOrganisation={this.props.groupSelector.selectOrganisation} />
+							<div>
+								<div >Name</div>
+								<input type="text" value={this.state.group.name}
+									onChange={(e) => { this.setState({ group: { name: (e.target as any).value } } as DialogState); }} className="field" />
+							</div>
+							<div>
+								<div >Description</div>
+								<input type="text" value={this.state.group.description}
+									onChange={(e) => { this.setState({ group: { description: (e.target as any).value } } as DialogState); }} className="field" />
+							</div>
+							<div>
+								<div >Code</div>
+								<input type="text" value={this.state.group.code}
+									onChange={(e) => { this.setState({ group: { code: (e.target as any).value } } as DialogState); }} className="field" />
+							</div>
+
+							<div>
+								<div >Status</div>
+								<StatusSelectionComp
+									selectedStatus={this.state.group.status}
+									selectStatus={(status) => { this.setState({ group: { status: status } } as DialogState); }} />
+							</div>
+							<div>
+								<div >Organisation</div>
+								<OrganisationSelectionComp organisations={this.props.organisations}
+									selectedID={this.state.group.organisation.id}
+									selectOrganisation={(organisationID) => { this.setState({ group: { organisation: { id: organisationID } } } as DialogState); }} />
+							</div>
+							<div>
+								<div >Scope</div>
+								<ScopeSelectionComp scopes={this.props.scopes}
+									selectedID={this.state.group.scope.id}
+									selectScope={(scopeID) => { this.setState({ group: { scope: { id: scopeID } } } as DialogState); }} />
+							</div>
+
+
 							<button onClick={this.handleSubmit}>Create</button>
 						</form>
 					</div>
@@ -245,11 +337,12 @@ class CreateDialog extends React.Component<DialogProps, {}> {
 
 interface GroupListProps {
 	groups: Group[];
+	deleteGroup(group: Group): void;
 }
 class GroupListComp extends React.Component<GroupListProps, {}> {
 	render() {
 		var groups = this.props.groups.map(group =>
-			<GroupComp key={group.id} group={group} />
+			<GroupComp key={group.id} group={group} deleteGroup={this.props.deleteGroup} />
 		);
 		return (
 			<table>
@@ -260,6 +353,7 @@ class GroupListComp extends React.Component<GroupListProps, {}> {
 						<th>Organisation</th>
 						<th>Scope</th>
 						<th>Status</th>
+						<th></th>
 					</tr>
 					{groups}
 				</tbody>
@@ -270,6 +364,7 @@ class GroupListComp extends React.Component<GroupListProps, {}> {
 
 interface GroupCompProps {
 	group: Group;
+	deleteGroup(group: Group): void;
 }
 
 class GroupComp extends React.Component<GroupCompProps, {}>{
@@ -289,6 +384,7 @@ class GroupComp extends React.Component<GroupCompProps, {}>{
 				<td>{org}</td>
 				<td>{scope}</td>
 				<td>{this.props.group.status}</td>
+				<td ><a onClick={() => { this.props.deleteGroup(this.props.group); }}>delete</a></td>
 			</tr>
 		)
 	}

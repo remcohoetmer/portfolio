@@ -2,8 +2,8 @@ import { Scope } from "./Scope"
 import { Person } from "./Person"
 import { Organisation } from "./Organisation"
 
-class Member {
-    constructor(public role: string, public person: Person) {
+export class Member {
+    constructor(public id: string, public role: string, public person: Person) {
     }
 }
 export class Group {
