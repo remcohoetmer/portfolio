@@ -15,4 +15,10 @@ export class Group {
     status: string;
     organisation: Organisation;
     members: Array<Member>;
+    setName(name: string): void {
+        this.name = name;
+    }
+    constructor() {
+        this.setName = this.setName.bind(this);
+    }
 }

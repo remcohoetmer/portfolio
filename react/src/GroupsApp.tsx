@@ -202,7 +202,6 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 						<CreateDialog
 							scopes={this.state.scopes}
 							organisations={this.state.organisations}
-							groupSelection={this.state.groupSelection}
 							groupSelector={this} />
 					</div>
 					<div>
@@ -233,7 +232,6 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 // end::app[]
 // tag::create-dialog[]
 interface DialogProps {
-	groupSelection: GroupSelection;
 	scopes: Scope[];
 	organisations: Organisation[];
 	groupSelector: GroupSelector;
@@ -245,6 +243,10 @@ class DialogStateImpl implements DialogState {
 	public group: Group;
 	public constructor() {
 		this.group = new Group();
+		this.group.name = "";
+		this.group.code = "";
+		this.group.description = "";
+		this.group.status = "";
 		this.group.organisation = new Organisation();
 		this.group.organisation.id = "";
 		this.group.scope = new Scope();
@@ -272,6 +274,7 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 
 		(window as any).location = "#";
 	}
+	//onChange={(e) => { this.setState({ group: { description: (e.target as any).value } } as DialogState); }} className="field" />
 
 	render() {
 		return (
@@ -282,42 +285,50 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 					<div>
 						<a href="#" title="Close" className="close">X</a>
 
-						<h2>Create new Group</h2>
+						<h2>Create Group</h2>
 
 						<form>
 							<div>
-								<div >Name</div>
+								<div>Name</div>
 								<input type="text" value={this.state.group.name}
-									onChange={(e) => { this.setState({ group: { name: (e.target as any).value } } as DialogState); }} className="field" />
+									onChange={(e) => {
+										const value = (e.target as any).value;
+										this.setState((prevState) => { prevState.group.setName(value); return prevState; })
+									}} className="field" />
 							</div>
 							<div>
-								<div >Description</div>
+								<div>Description</div>
 								<input type="text" value={this.state.group.description}
-									onChange={(e) => { this.setState({ group: { description: (e.target as any).value } } as DialogState); }} className="field" />
+									onChange={(e) => {
+										const value = (e.target as any).value;
+										this.setState((prevState) => { prevState.group.description = value; return prevState; })
+									}} className="field" />
 							</div>
 							<div>
-								<div >Code</div>
+								<div>Code</div>
 								<input type="text" value={this.state.group.code}
-									onChange={(e) => { this.setState({ group: { code: (e.target as any).value } } as DialogState); }} className="field" />
+									onChange={(e) => {
+										const value = (e.target as any).value;
+										this.setState((prevState) => { prevState.group.code = value; return prevState; })
+									}} className="field" />
 							</div>
-
 							<div>
-								<div >Status</div>
+								<div>Status</div>
 								<StatusSelectionComp
 									selectedStatus={this.state.group.status}
-									selectStatus={(status) => { this.setState({ group: { status: status } } as DialogState); }} />
+									selectStatus={(status) => { this.setState((prevState) => { prevState.group.status = status; return prevState; }) }} />
 							</div>
 							<div>
-								<div >Organisation</div>
+								<div>Organisation</div>
 								<OrganisationSelectionComp organisations={this.props.organisations}
 									selectedID={this.state.group.organisation.id}
-									selectOrganisation={(organisationID) => { this.setState({ group: { organisation: { id: organisationID } } } as DialogState); }} />
+									selectOrganisation={(organisationID) => { this.setState((prevState) => { prevState.group.organisation.id = organisationID; return prevState; }) }} />
 							</div>
 							<div>
-								<div >Scope</div>
+								<div>Scope</div>
 								<ScopeSelectionComp scopes={this.props.scopes}
 									selectedID={this.state.group.scope.id}
-									selectScope={(scopeID) => { this.setState({ group: { scope: { id: scopeID } } } as DialogState); }} />
+									selectScope={(scopeID) => { this.setState((prevState) => { prevState.group.scope.id = scopeID; return prevState; }) }} />
 							</div>
 
 
