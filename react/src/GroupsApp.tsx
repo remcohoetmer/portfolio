@@ -1,6 +1,7 @@
 'use strict';
 import { Scope, ScopeSelectionComp } from './types/Scope';
-import { Group, Member } from './types/Group';
+import { Member, MemberListComp } from './types/Member';
+import { Group } from './types/Group';
 import { Organisation, OrganisationSelectionComp } from './types/Organisation';
 import { StatusSelectionComp } from './types/Status';
 import { restclient } from "./communication/restclient";
@@ -30,26 +31,29 @@ export class GroupSelection {
 	}
 }
 class GroupsAppState {
-	attributes: string[];
 	public organisations: Organisation[];
 	public scopes: Scope[];
-	groupSelection: GroupSelection;
+	public groupSelection: GroupSelection;
+	public selectedGroup: Group;
 	constructor(public groups: Group[] = []) {
 
 		this.emptyGroups = this.emptyGroups.bind(this);
 		this.organisations = [];
 		this.scopes = [];
 		this.groupSelection = new GroupSelection();
+		this.selectedGroup = null;
 	}
 
 	emptyGroups(): GroupsAppState {
 		this.groups = [];
+		this.selectedGroup = null;
 		return this;
 	}
 }
 
 interface GroupSelector {
 	createGroup(newGroup: Group): void;
+	selectGroup(Group: Group): void;
 	deleteGroup(group: Group): void;
 	selectOrganisation(id: string): void;
 	selectScope(id: string): void;
@@ -74,6 +78,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 
 		this.createGroup = this.createGroup.bind(this);
 		this.deleteGroup = this.deleteGroup.bind(this);
+		this.selectGroup = this.selectGroup.bind(this);
 
 		this.selectOrganisation = this.selectOrganisation.bind(this);
 		this.selectScope = this.selectScope.bind(this);
@@ -105,12 +110,12 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 	}
 	addMember(member: Member): void {
 		let self = this;
-		restclient.postRequest(group_url + "/membership", JSON.stringify(member))
+		restclient.postRequest(group_url + "/" + this.state.selectedGroup.id + "/membership", JSON.stringify(member))
 			.then(() => { self.loadGroups(); });
 	}
 	removeMember(member: Member): void {
 		let self = this;
-		restclient.deleteRequest(group_url + "/membership/" + member.id)
+		restclient.deleteRequest(group_url + "/" + this.state.selectedGroup.id + "/membership/" + member.person.id)
 			.then(() => { self.loadGroups(); });
 	}
 
@@ -120,6 +125,10 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 			.then(() => { self.loadGroups(); });
 		//(json: string) => self.addGroup(JSON.parse(json) as Group);
 	}
+	selectGroup(group: Group): void {
+		this.setState((prevState) => { prevState.selectedGroup = group; return prevState });
+	}
+
 	deleteGroup(group: Group) {
 		let self = this;
 		restclient.deleteRequest(group_url + '/' + group.id)
@@ -136,6 +145,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 
 	}
 	loadGroups() {
+		this.setState(this.state.emptyGroups());
 		this.setState(this.state.emptyGroups());
 
 		var url = group_url + "?";
@@ -198,12 +208,11 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 			<div id="container">
 				<h1>Group Admin</h1>
 				<div>
-					<div>
-						<CreateDialog
-							scopes={this.state.scopes}
-							organisations={this.state.organisations}
-							groupSelector={this} />
-					</div>
+
+					<CreateDialog
+						scopes={this.state.scopes}
+						organisations={this.state.organisations}
+						groupSelector={this} />
 					<div>
 						<input type="text" placeholder="name" value={this.state.groupSelection.name} onChange={(e) => { this.setName((e.target as any).value); }} />
 						<input type="text" placeholder="description" value={this.state.groupSelection.description} onChange={(e) => { this.setDescription((e.target as any).value); }} />
@@ -220,9 +229,14 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 							selectedStatus={this.state.groupSelection.status}
 							selectStatus={this.setStatus} />
 						<button key="search" onClick={this.loadGroups}>Search</button>
-						<GroupListComp groups={this.state.groups} deleteGroup={this.deleteGroup} />
+						<GroupListComp groups={this.state.groups} deleteGroup={this.deleteGroup} selectGroup={this.selectGroup} />
 					</div>
+					{(this.state.selectedGroup != null) &&
+						<MemberListComp memberships={this.state.selectedGroup.memberships} deleteMember={this.removeMember} />
+					}
+
 				</div>
+
 			</div>
 
 		)
@@ -263,18 +277,15 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 	}
 	componentDidMount() {
 		console.log("componentDidMount");
-
 	}
 
 	handleSubmit(e: any) {
 		e.preventDefault();
 		this.props.groupSelector.createGroup(this.state.group);
-
 		// Navigate away from the dialog to hide it.
-
 		(window as any).location = "#";
 	}
-	//onChange={(e) => { this.setState({ group: { description: (e.target as any).value } } as DialogState); }} className="field" />
+	//TODO: this.setState({ group: { name: (e.target as any).value } } as DialogState);
 
 	render() {
 		return (
@@ -293,7 +304,7 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 								<input type="text" value={this.state.group.name}
 									onChange={(e) => {
 										const value = (e.target as any).value;
-										this.setState((prevState) => { prevState.group.setName(value); return prevState; })
+										this.setState((prevState) => { prevState.group.name = value; return prevState; });
 									}} className="field" />
 							</div>
 							<div>
@@ -349,11 +360,12 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 interface GroupListProps {
 	groups: Group[];
 	deleteGroup(group: Group): void;
+	selectGroup(group: Group): void;
 }
 class GroupListComp extends React.Component<GroupListProps, {}> {
 	render() {
 		var groups = this.props.groups.map(group =>
-			<GroupComp key={group.id} group={group} deleteGroup={this.props.deleteGroup} />
+			<GroupComp key={group.id} group={group} deleteGroup={this.props.deleteGroup} selectGroup={this.props.selectGroup} />
 		);
 		return (
 			<table>
@@ -376,6 +388,7 @@ class GroupListComp extends React.Component<GroupListProps, {}> {
 interface GroupCompProps {
 	group: Group;
 	deleteGroup(group: Group): void;
+	selectGroup(group: Group): void;
 }
 
 class GroupComp extends React.Component<GroupCompProps, {}>{
@@ -390,7 +403,7 @@ class GroupComp extends React.Component<GroupCompProps, {}>{
 		}
 		return (
 			<tr>
-				<td>{this.props.group.name}</td>
+				<td><a onClick={() => { this.props.selectGroup(this.props.group); }}>{this.props.group.name}</a></td>
 				<td>{this.props.group.description}</td>
 				<td>{org}</td>
 				<td>{scope}</td>

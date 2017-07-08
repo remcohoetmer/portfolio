@@ -13,8 +13,7 @@ public class Person {
     this.setId(id);
   }
 
-  public Person() {
-  }
+  public Person() {}
 
   public String getId() {
     return id;

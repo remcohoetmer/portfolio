@@ -10,3 +10,4 @@ export class Person {
     role: string;
     organisation: Organisation;
 }
+

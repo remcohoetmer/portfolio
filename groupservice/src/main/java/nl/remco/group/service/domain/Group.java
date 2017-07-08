@@ -52,6 +52,10 @@ public class Group {
     return features;
   }
 
+  public void setMemberships(List<Membership> memberships) {
+    this.memberships = memberships;
+  }
+
   public List<Membership> getMemberships() {
     if (memberships == null) {
       memberships = new ArrayList<Membership>();
@@ -139,6 +143,7 @@ public class Group {
     private String status;
     private Organisation organisation;
     private Scope scope;
+    private List<Membership> members;
 
     private Builder() {
     }
@@ -160,6 +165,7 @@ public class Group {
       group.setStatus(status);
       group.setOrganisation(organisation);
       group.setScope(scope);
+      group.setMemberships(members);
       return group;
     }
 
@@ -175,6 +181,11 @@ public class Group {
 
     public Builder withDescription(String description) {
       this.description = description;
+      return this;
+    }
+
+    public Builder withMembers(List<Membership> members) {
+      this.members = members;
       return this;
     }
   }

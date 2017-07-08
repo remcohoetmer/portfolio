@@ -1,11 +1,8 @@
 import { Scope } from "./Scope"
-import { Person } from "./Person"
 import { Organisation } from "./Organisation"
+import { Member } from "./Member"
 
-export class Member {
-    constructor(public id: string, public role: string, public person: Person) {
-    }
-}
+
 export class Group {
     id: number;
     name: string;
@@ -14,7 +11,7 @@ export class Group {
     scope: Scope;
     status: string;
     organisation: Organisation;
-    members: Array<Member>;
+    memberships: Array<Member>;
     setName(name: string): void {
         this.name = name;
     }
