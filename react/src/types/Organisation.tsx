@@ -12,7 +12,6 @@ export interface OrganisationListProps {
 	selectOrganisation(id: string): void;
 }
 
-
 export class OrganisationSelectionComp extends React.Component<OrganisationListProps, {}> {
 
 	render() {

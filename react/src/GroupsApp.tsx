@@ -24,7 +24,7 @@ export class GroupSelection {
 	constructor() {
 		this.name = "";
 		this.description = "";
-		this.status = "Active";
+		this.status = "";
 		this.code = "";
 		this.scopeID = "";
 		this.organisationID = "";
@@ -71,6 +71,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 		this.state = new GroupsAppState();
 
 		this.loadGroups = this.loadGroups.bind(this);
+		this.loadGroupDetails = this.loadGroupDetails.bind(this);
 		this.setState = this.setState.bind(this);
 		this.addGroup = this.addGroup.bind(this);
 		this.addOrganisation = this.addOrganisation.bind(this);
@@ -80,6 +81,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 		this.deleteGroup = this.deleteGroup.bind(this);
 		this.selectGroup = this.selectGroup.bind(this);
 
+		this.initialiseGroups = this.initialiseGroups.bind(this);
 		this.selectOrganisation = this.selectOrganisation.bind(this);
 		this.selectScope = this.selectScope.bind(this);
 		this.setStatus = this.setStatus.bind(this);
@@ -120,19 +122,18 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 	}
 
 	createGroup(newGroup: Group): void {
-		let self = this;
 		restclient.postRequest(group_url, JSON.stringify(newGroup))
-			.then(() => { self.loadGroups(); });
+			.then(() => { this.loadGroups(); });
 		//(json: string) => self.addGroup(JSON.parse(json) as Group);
 	}
 	selectGroup(group: Group): void {
 		this.setState((prevState) => { prevState.selectedGroup = group; return prevState });
+		this.loadGroupDetails(group);
 	}
 
 	deleteGroup(group: Group) {
-		let self = this;
 		restclient.deleteRequest(group_url + '/' + group.id)
-			.then(() => { self.loadGroups(); });
+			.then(() => { this.loadGroups(); });
 	}
 
 	append(url: string, name: string, value: string): string {
@@ -144,11 +145,14 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 		return url + "&" + att;
 
 	}
+	initialiseGroups() {
+		restclient.getRequest(group_url + '/initialise')
+			.then(() => { this.loadGroups(); });
+	}
 	loadGroups() {
 		this.setState(this.state.emptyGroups());
-		this.setState(this.state.emptyGroups());
 
-		var url = group_url + "?";
+		var url = group_url + "?selectOrganisations&selectScopes";
 		if (this.state.groupSelection.name != "") {
 			url = this.append(url, "name", this.state.groupSelection.name);
 		}
@@ -171,6 +175,14 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 		Rx.DOM.fromEventSource(url, Rx.Observer.create(console.log, console.log))
 			.map((json: string) => JSON.parse(json) as Group)
 			.subscribe(this.addGroup);
+	}
+
+	loadGroupDetails(group: Group) {
+		restclient.getRequest(group_url + '/' + group.id)
+			.then((json: string) => JSON.parse(json) as Group)
+			.then((groupWithDetails) => {
+				this.setState((prevState) => { prevState.selectedGroup = groupWithDetails; return prevState; })
+			});
 	}
 
 	addGroup(group: Group) {
@@ -207,6 +219,7 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 		return (
 			<div id="container">
 				<h1>Group Admin</h1>
+				<button key="init" onClick={this.initialiseGroups}>Initialise</button>
 				<div>
 
 					<CreateDialog
@@ -228,11 +241,19 @@ export class GroupsApp extends React.Component<{}, GroupsAppState> implements Gr
 						<StatusSelectionComp
 							selectedStatus={this.state.groupSelection.status}
 							selectStatus={this.setStatus} />
-						<button key="search" onClick={this.loadGroups}>Search</button>
-						<GroupListComp groups={this.state.groups} deleteGroup={this.deleteGroup} selectGroup={this.selectGroup} />
 					</div>
-					{(this.state.selectedGroup != null) &&
-						<MemberListComp memberships={this.state.selectedGroup.memberships} deleteMember={this.removeMember} />
+
+					<button key="search" onClick={this.loadGroups}>Search</button>
+					<button><a href="#createGroup">Create</a></button>
+					<h3>Group List</h3>
+					<GroupListComp groups={this.state.groups} selectedGroup={this.state.selectedGroup} deleteGroup={this.deleteGroup} selectGroup={this.selectGroup} />
+
+					{(this.state.selectedGroup != undefined) &&
+						<div>
+							<h3>Group Members</h3>
+							<MemberListComp memberships={this.state.selectedGroup.memberships} deleteMember={this.removeMember} />
+						</div>
+
 					}
 
 				</div>
@@ -290,8 +311,6 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 	render() {
 		return (
 			<div>
-				<a href="#createGroup">Create</a>
-
 				<div id="createGroup" className="modalDialog">
 					<div>
 						<a href="#" title="Close" className="close">X</a>
@@ -359,13 +378,15 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 
 interface GroupListProps {
 	groups: Group[];
+	selectedGroup: Group;
 	deleteGroup(group: Group): void;
 	selectGroup(group: Group): void;
 }
 class GroupListComp extends React.Component<GroupListProps, {}> {
 	render() {
 		var groups = this.props.groups.map(group =>
-			<GroupComp key={group.id} group={group} deleteGroup={this.props.deleteGroup} selectGroup={this.props.selectGroup} />
+			<GroupComp key={group.id} isSelected={(this.props.selectedGroup != undefined) && (group.id == this.props.selectedGroup.id)}
+				group={group} deleteGroup={this.props.deleteGroup} selectGroup={this.props.selectGroup} />
 		);
 		return (
 			<table>
@@ -387,6 +408,7 @@ class GroupListComp extends React.Component<GroupListProps, {}> {
 
 interface GroupCompProps {
 	group: Group;
+	isSelected: boolean;
 	deleteGroup(group: Group): void;
 	selectGroup(group: Group): void;
 }
@@ -401,14 +423,15 @@ class GroupComp extends React.Component<GroupCompProps, {}>{
 		if (this.props.group.scope != undefined) {
 			scope = this.props.group.scope.name;
 		}
+		var className = this.props.isSelected ? "selected" : "normal";
 		return (
-			<tr>
-				<td><a onClick={() => { this.props.selectGroup(this.props.group); }}>{this.props.group.name}</a></td>
+			<tr className={className} onClick={() => { this.props.selectGroup(this.props.group); }}>
+				<td>{this.props.group.name}</td>
 				<td>{this.props.group.description}</td>
 				<td>{org}</td>
 				<td>{scope}</td>
 				<td>{this.props.group.status}</td>
-				<td ><a onClick={() => { this.props.deleteGroup(this.props.group); }}>delete</a></td>
+				<td ><a href="#" onClick={() => { this.props.deleteGroup(this.props.group); }}>delete</a></td>
 			</tr>
 		)
 	}

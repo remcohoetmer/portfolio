@@ -54,7 +54,7 @@ class MemberComp extends React.Component<MemberCompProps, {}>{
                 <td>{this.props.member.person.name}</td>
                 <td>{this.props.member.person.surname}</td>
                 <td>{org}</td>
-                <td ><a onClick={() => { this.props.deleteMember(this.props.member); }}>delete</a></td>
+                <td ><a href="#" onClick={() => { this.props.deleteMember(this.props.member); }}>delete</a></td>
             </tr>
         )
     }

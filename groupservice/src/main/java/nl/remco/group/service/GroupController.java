@@ -55,6 +55,9 @@ public final class GroupController {
   }
 
 
+  /*
+  selectOrganisations: ook van de members
+   */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   @CrossOrigin(origins = "*")
   Flux<GroupDTO> findAll(
@@ -80,10 +83,14 @@ public final class GroupController {
     groupFilter.setPersonId(personId);
     groupFilter.setOrganisationId(organisationId);
     groupFilter.setMasterId(masterId);
-    groupSelection.setSelectMasters();
-    groupSelection.setSelectPersons();
-    groupSelection.setSelectScopes();
-    groupSelection.setSelectOrganisations();
+    if (selectMasters != null)
+      groupSelection.setSelectMasters();
+    if (selectPersons != null)
+      groupSelection.setSelectPersons();
+    if (selectScopes != null)
+      groupSelection.setSelectScopes();
+    if (selectOrganisations != null)
+      groupSelection.setSelectOrganisations();
     LOGGER.info("Finding all group entries");
     return groupService.find(groupFilter, groupSelection);
   }
@@ -107,7 +114,7 @@ public final class GroupController {
   @CrossOrigin(origins = "*")
   Mono<GroupDTO> findById(@PathVariable("id") String id) {
     LOGGER.info("Finding group entry with id: {}", id);
-
+    // TODO Mono Errors should not translate to a server exception. HTTP 404??
     return groupService.findById(id);
   }
 

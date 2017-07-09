@@ -53,11 +53,10 @@ public class MongoDBGroupService implements GroupService {
   private Mono<GroupDTO> enrich(GroupDTO group, GroupFilter groupFilter,
                                 GroupSelection groupSelection) {
     Mono<GroupDTO> chain = Mono.just(group);
-    if (groupSelection.isSelectOrganisations())
-      chain = chain.flatMap(organisationEnricher::enrichOrganisations);
-
     if (groupSelection.isSelectPersons())
       chain = chain.flatMap(personEnricher::enrichPersons);
+    if (groupSelection.isSelectOrganisations())
+      chain = chain.flatMap(organisationEnricher::enrichOrganisations);
     if (groupSelection.isSelectScopes())
       chain = chain.flatMap(scopeEnricher::enrichScopes);
     if (groupSelection.isSelectMasters())
@@ -159,7 +158,7 @@ public class MongoDBGroupService implements GroupService {
     logger.info("Finding group entry with id: {}", id);
 
     return findGroupById(id)
-      .map(found -> {// Found can be null!
+      .map(found -> {// Found cannot be null!
         logger.info("Found group entry: {}", found);
         return converter.convertToDTO(found);
 
@@ -167,7 +166,7 @@ public class MongoDBGroupService implements GroupService {
       .flatMap(personEnricher::enrichPersons)
       .flatMap(scopeEnricher::enrichScopes)
       .flatMap(organisationEnricher::enrichOrganisations)
-      .switchIfEmpty(Mono.just(new GroupDTO()));
+      .switchIfEmpty(Mono.error(new IllegalArgumentException(("Group does not exists"))));
   }
 
   private Membership convertFromDTO(MembershipDTO membershipDTO) {
@@ -190,7 +189,7 @@ public class MongoDBGroupService implements GroupService {
       .map(result -> {
         logger.info("Add member " + result);
         return new Object();
-      }).then(Mono.empty());
+      }).then();
   }
 
 
@@ -202,7 +201,7 @@ public class MongoDBGroupService implements GroupService {
     return mongoTemplate.updateMulti(
       new Query(Criteria.where("id").is(id)),
       new Update().pull("memberships", Query.query(Criteria.where("person.id").is(memid))), Group.class)
-      .log(logger.getName(), "Delete member result" + id + "/ "+ memid, Level.INFO)
+      .log("Delete member result" + id + "/ " + memid, Level.INFO)
       .then();
   }
 
@@ -232,14 +231,14 @@ public class MongoDBGroupService implements GroupService {
         Scope scope2 = (list != null && list.size() > 2) ? list.get(2) : null;
         Scope scope3 = (list != null && list.size() > 3) ? list.get(3) : null;
 
-        List<Membership> members= new ArrayList();
-        members.add( new Membership( "leerling", new Person("person1")));
-        members.add( new Membership( "leerling", new Person("person2")));
-        members.add( new Membership( "leerling", new Person("person3")));
-        members.add( new Membership( "docent", new Person("person4")));
+        List<Membership> members = new ArrayList();
+        members.add(new Membership("leerling", new Person("person1")));
+        members.add(new Membership("leerling", new Person("person2")));
+        members.add(new Membership("leerling", new Person("person3")));
+        members.add(new Membership("docent", new Person("person4")));
 
         return Arrays.asList(
-          Group.getBuilder().name("filosofie").withDescription("Descartes").status("Active").withOrganisation(new Organisation("8000")).withScope(scope0).withMembers(members). build(),
+          Group.getBuilder().name("filosofie").withDescription("Descartes").status("Active").withOrganisation(new Organisation("8000")).withScope(scope0).withMembers(members).build(),
           Group.getBuilder().name("geo").withDescription("Leonardo da Vinci").status("Active").withOrganisation(new Organisation("8000")).withScope(scope1).build(),
           Group.getBuilder().name("natuurkunde").withDescription("Gay-Lussac").status("Active").withOrganisation(new Organisation("8001")).withScope(scope2).build(),
           Group.getBuilder().name("wiskunde").withDescription("Pythogoras").status("Active").withOrganisation(new Organisation("8002")).withScope(scope3).build()

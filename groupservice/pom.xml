@@ -40,11 +40,7 @@
             <artifactId>scopeservice</artifactId>
             <version>0.1</version>
         </dependency>
-        <dependency>
-            <groupId>nl.remco</groupId>
-            <artifactId>empservice</artifactId>
-            <version>0.1</version>
-        </dependency>    </dependencies>
+    </dependencies>
 
     <build>
         <plugins>

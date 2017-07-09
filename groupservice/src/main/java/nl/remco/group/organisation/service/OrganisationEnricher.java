@@ -1,6 +1,7 @@
 package nl.remco.group.organisation.service;
 
 import nl.remco.group.service.dto.GroupDTO;
+import nl.remco.group.service.dto.MembershipDTO;
 import nl.remco.group.service.dto.OrganisationDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +20,22 @@ public class OrganisationEnricher {
   public Mono<GroupDTO> enrichOrganisations(GroupDTO groupDTO) {
     Mono chain = Mono.empty();
     OrganisationDTO orgDTO = groupDTO.getOrganisation();
-    log.info("enrichOrganisations: " + orgDTO);
-    if (orgDTO != null && orgDTO.getId() != null && !orgDTO.getId().isEmpty()) {
 
+    log.info("enrichOrganisations: " + orgDTO);
+
+    if (orgDTO != null && orgDTO.getId() != null && !orgDTO.getId().isEmpty()) {
       chain = chain.then(crmOrganisationDelegate.getOrganisation(orgDTO.getId())
         .map(crmOrganisation -> convertDTO(orgDTO, crmOrganisation)));
     }
-    return chain.then(Mono.just(groupDTO)).onErrorResume(e->Mono.just(groupDTO));
+    log.info("enrich Memberships of organisation: " + groupDTO.getMemberships().size());
+    for (MembershipDTO memberDTO : groupDTO.getMemberships()) {
+      OrganisationDTO memberOrganisationDTO = memberDTO.getPerson().getOrganisation();
+      if (memberOrganisationDTO != null && memberOrganisationDTO.getId() != null && !memberOrganisationDTO.getId().isEmpty()) {
+        chain = chain.then(crmOrganisationDelegate.getOrganisation(memberOrganisationDTO.getId())
+          .map(crmOrganisation -> convertDTO(memberOrganisationDTO, crmOrganisation)));
+      }
+    }
+    return chain.then(Mono.just(groupDTO)).onErrorResume(e -> Mono.just(groupDTO));
   }
 
 

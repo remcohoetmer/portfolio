@@ -12,10 +12,8 @@ public class PersonDTO {
 	
 	public PersonDTO() {
 	}
-	public PersonDTO(String name) {
-		this.setId(name);
-		this.setName(name);
-	
+	public PersonDTO(String id) {
+		this.setId(id);
 	}
 
 	public PersonDTO(String id, String name, String surname, String email,
