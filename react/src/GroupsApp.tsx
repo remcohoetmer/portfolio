@@ -296,10 +296,6 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.state = new DialogStateImpl();
 	}
-	componentDidMount() {
-		console.log("componentDidMount");
-	}
-
 	handleSubmit(e: any) {
 		e.preventDefault();
 		this.props.groupSelector.createGroup(this.state.group);
@@ -310,63 +306,66 @@ class CreateDialog extends React.Component<DialogProps, DialogState> {
 
 	render() {
 		return (
-			<div>
-				<div id="createGroup" className="modalDialog">
-					<div>
-						<a href="#" title="Close" className="close">X</a>
 
-						<h2>Create Group</h2>
+			<div id="createGroup" className="modalDialog">
+				<div>
+					<a href="#" title="Close" className="close">X</a>
 
-						<form>
-							<div>
-								<div>Name</div>
-								<input type="text" value={this.state.group.name}
-									onChange={(e) => {
-										const value = (e.target as any).value;
-										this.setState((prevState) => { prevState.group.name = value; return prevState; });
-									}} className="field" />
-							</div>
-							<div>
-								<div>Description</div>
-								<input type="text" value={this.state.group.description}
-									onChange={(e) => {
-										const value = (e.target as any).value;
-										this.setState((prevState) => { prevState.group.description = value; return prevState; })
-									}} className="field" />
-							</div>
-							<div>
-								<div>Code</div>
-								<input type="text" value={this.state.group.code}
-									onChange={(e) => {
-										const value = (e.target as any).value;
-										this.setState((prevState) => { prevState.group.code = value; return prevState; })
-									}} className="field" />
-							</div>
-							<div>
-								<div>Status</div>
-								<StatusSelectionComp
-									selectedStatus={this.state.group.status}
-									selectStatus={(status) => { this.setState((prevState) => { prevState.group.status = status; return prevState; }) }} />
-							</div>
-							<div>
-								<div>Organisation</div>
-								<OrganisationSelectionComp organisations={this.props.organisations}
-									selectedID={this.state.group.organisation.id}
-									selectOrganisation={(organisationID) => { this.setState((prevState) => { prevState.group.organisation.id = organisationID; return prevState; }) }} />
-							</div>
-							<div>
-								<div>Scope</div>
-								<ScopeSelectionComp scopes={this.props.scopes}
-									selectedID={this.state.group.scope.id}
-									selectScope={(scopeID) => { this.setState((prevState) => { prevState.group.scope.id = scopeID; return prevState; }) }} />
-							</div>
+					<h2>Create Group</h2>
 
+					<form>
+						<table>
+							<tbody>
+								<tr>
+									<td>Name</td>
+									<td><input type="text" value={this.state.group.name}
+										onChange={(e) => {
+											const value = (e.target as any).value;
+											this.setState((prevState) => { prevState.group.name = value; return prevState; });
+										}} className="field" /></td>
+								</tr>
+								<tr>
+									<td>Description</td>
+									<td><input type="text" value={this.state.group.description}
+										onChange={(e) => {
+											const value = (e.target as any).value;
+											this.setState((prevState) => { prevState.group.description = value; return prevState; })
+										}} className="field" /></td>
+								</tr>
+								<tr>
+									<td>Code</td>
+									<td><input type="text" value={this.state.group.code}
+										onChange={(e) => {
+											const value = (e.target as any).value;
+											this.setState((prevState) => { prevState.group.code = value; return prevState; })
+										}} className="field" /></td>
+								</tr>
+								<tr>
+									<td>Status</td>
+									<td><StatusSelectionComp
+										selectedStatus={this.state.group.status}
+										selectStatus={(status) => { this.setState((prevState) => { prevState.group.status = status; return prevState; }) }} /></td>
+								</tr>
+								<tr>
+									<td>Organisation</td>
+									<td><OrganisationSelectionComp organisations={this.props.organisations}
+										selectedID={this.state.group.organisation.id}
+										selectOrganisation={(organisationID: string) => { this.setState((prevState) => { prevState.group.organisation.id = organisationID; return prevState; }) }} /></td>
+								</tr>
+								<tr>
+									<td>Scope</td>
+									<td><ScopeSelectionComp scopes={this.props.scopes}
+										selectedID={this.state.group.scope.id}
+										selectScope={(scopeID) => { this.setState((prevState) => { prevState.group.scope.id = scopeID; return prevState; }) }} /></td>
+								</tr>
+							</tbody>
+						</table>
 
-							<button onClick={this.handleSubmit}>Create</button>
-						</form>
-					</div>
+						<button onClick={this.handleSubmit}>Create</button>
+					</form>
 				</div>
 			</div>
+
 		)
 	}
 
@@ -389,7 +388,7 @@ class GroupListComp extends React.Component<GroupListProps, {}> {
 				group={group} deleteGroup={this.props.deleteGroup} selectGroup={this.props.selectGroup} />
 		);
 		return (
-			<table>
+			<table className="groups">
 				<tbody>
 					<tr>
 						<th>Name</th>
