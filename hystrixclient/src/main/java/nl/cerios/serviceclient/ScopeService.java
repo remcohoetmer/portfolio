@@ -21,24 +21,20 @@ public class ScopeService {
     this.restTemplate = rest;
   }
 
-  @HystrixCommand(fallbackMethod = "reliableScopes")
+  @HystrixCommand(fallbackMethod = "reliableScopes", ignoreExceptions = {org.springframework.web.client.ResourceAccessException.class})
   public List<Scope> getScopes() {
     logger.info("getScopes(): invoke");
-    URI uri = URI.create("http://localhost:8082/api/scope/list");
-    List<Scope> scopes;
-    try {
-      scopes = this.restTemplate.getForObject(uri, List.class);
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-      throw e;
-    }
+    URI uri = URI.create("http://localhost:8082/api/scope");
+    List<Scope> scopes = this.restTemplate.getForObject(uri, List.class);
+
     logger.info("getScopes " + scopes.size());
     return scopes;
   }
 
 
-  public List<Scope> reliableScopes() {
+  public List<Scope> reliableScopes(Throwable t) {
     logger.info("getScopes(): fallback");
+    t.printStackTrace();
     return new ArrayList();
   }
 
@@ -49,7 +45,7 @@ public class ScopeService {
 
   }
 
-  public Scope reliableScopeById(String id) {
+  public Scope reliableScopeById(String id, Throwable t) {
     return new Scope(id, "");
 
   }
