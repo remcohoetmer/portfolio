@@ -22,6 +22,7 @@
     </parent>
 
     <modules>
+        <module>dto</module>
         <module>groupservice</module>
         <module>scopeservice</module>
         <module>serviceclient</module>

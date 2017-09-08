@@ -1,18 +1,11 @@
-package nl.remco.scope.service;
-
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.validation.constraints.Size;
+package nl.remco.scope.service.dto;
 
 public final class ScopeDTO {
 
   private String id;
 
-  @Size(max = Scope.MAX_LENGTH_NAME)
   private String name;
 
-  @NotEmpty
-  @Size(max = Scope.MAX_LENGTH_STATUS)
   private String status;
 
   public ScopeDTO() {

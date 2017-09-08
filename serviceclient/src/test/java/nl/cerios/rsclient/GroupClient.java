@@ -3,7 +3,7 @@ package nl.cerios.rsclient;
 import nl.remco.group.service.dto.GroupDTO;
 import nl.remco.group.service.dto.MembershipDTO;
 import nl.remco.group.service.dto.PersonDTO;
-import nl.remco.scope.service.ScopeDTO;
+import nl.remco.scope.service.dto.ScopeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

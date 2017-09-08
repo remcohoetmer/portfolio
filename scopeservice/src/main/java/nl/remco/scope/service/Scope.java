@@ -1,6 +1,9 @@
 package nl.remco.scope.service;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
+
+import javax.validation.constraints.Size;
 
 import static nl.remco.scope.util.PreCondition.*;
 
@@ -12,8 +15,11 @@ final class Scope {
   @Id
   private String id;
 
+  @Size(max = Scope.MAX_LENGTH_NAME)
   private String name;
 
+  @NotEmpty
+  @Size(max = Scope.MAX_LENGTH_STATUS)
   private String status;
 
   public Scope() {

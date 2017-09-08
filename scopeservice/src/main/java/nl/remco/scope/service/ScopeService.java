@@ -1,5 +1,6 @@
 package nl.remco.scope.service;
 
+import nl.remco.scope.service.dto.ScopeDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
