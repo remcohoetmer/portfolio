@@ -6,7 +6,7 @@ import nl.remco.group.service.dto.PersonDTO;
 import nl.remco.scope.service.dto.ScopeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,8 +21,10 @@ import java.util.stream.Collectors;
 public class GroupClient {
   private static final Logger logger = LoggerFactory.getLogger(GroupClient.class);
 
-  @Autowired
-  WebClient webClient;
+  @Bean
+  WebClient client() {
+    return WebClient.create("http://localhost:8082");
+  }
 
   private Mono<GroupDTO> print(final GroupDTO message) {
     return Mono.fromCompletionStage(CompletableFuture.supplyAsync(() -> {
@@ -33,7 +35,7 @@ public class GroupClient {
 
   Mono<GroupDTO> getGroup(GroupDTO group) {
     String url = "/api/group/" + group.getId();
-    return webClient.get().uri(url).exchange()
+    return client().get().uri(url).exchange()
       .flatMap(response -> check(url, response))
       .flatMap(clientResponse -> clientResponse.bodyToMono(GroupDTO.class))
       .flatMap(this::print);
@@ -42,7 +44,7 @@ public class GroupClient {
 
   Mono<List<GroupDTO>> getGroups() {
     String url = "/api/group/";
-    return webClient.get().uri(url).exchange().flux()
+    return client().get().uri(url).exchange().flux()
       .flatMap(response -> check(url, response))
       .flatMap(clientResponse -> clientResponse.bodyToFlux(GroupDTO.class))
       .collectList();
@@ -58,7 +60,7 @@ public class GroupClient {
     group.setScope(scope);
 
     String uri = "/api/group";
-    Mono<GroupDTO> savedGroup = webClient.post().uri(uri).syncBody(group).exchange()
+    Mono<GroupDTO> savedGroup = client().post().uri(uri).syncBody(group).exchange()
       .flatMap(response -> check(uri, response))
       .flatMap(clientResponse -> clientResponse.bodyToMono(GroupDTO.class));
     return savedGroup;
@@ -70,7 +72,7 @@ public class GroupClient {
     PersonDTO person = new PersonDTO("person1");
     mmbr.setPerson(person);
     String uri = "/api/group/" + group.getId() + "/membership";
-    Mono<ClientResponse> chain = webClient.post().uri(uri)
+    Mono<ClientResponse> chain = client().post().uri(uri)
       .syncBody(mmbr).exchange()
       .flatMap(response -> check(uri, response));
     return chain;
