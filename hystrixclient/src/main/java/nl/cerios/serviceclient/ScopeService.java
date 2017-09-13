@@ -2,6 +2,7 @@ package nl.cerios.serviceclient;
 
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import nl.remco.scope.service.dto.ScopeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -21,32 +23,33 @@ public class ScopeService {
     this.restTemplate = rest;
   }
 
-  @HystrixCommand(fallbackMethod = "reliableScopes", ignoreExceptions = {org.springframework.web.client.ResourceAccessException.class})
-  public List<Scope> getScopes() {
+  @HystrixCommand(fallbackMethod = "reliableScopes",
+    ignoreExceptions = {org.springframework.web.client.ResourceAccessException.class}
+   /* observableExecutionMode = ObservableExecutionMode.EAGER*/)
+  public List<ScopeDTO> getScopes() {
     logger.info("getScopes(): invoke");
-    URI uri = URI.create("http://localhost:8082/api/scope");
-    List<Scope> scopes = this.restTemplate.getForObject(uri, List.class);
+    URI uri = URI.create("http://localhost:8082/api/scope/list");
+    ScopeDTO[] scopes = this.restTemplate.getForObject(uri, ScopeDTO[].class);
 
-    logger.info("getScopes " + scopes.size());
-    return scopes;
+    return Arrays.asList(scopes);
   }
 
 
-  public List<Scope> reliableScopes(Throwable t) {
+  public List<ScopeDTO> reliableScopes(Throwable t) {
     logger.info("getScopes(): fallback");
     t.printStackTrace();
     return new ArrayList();
   }
 
   @HystrixCommand(fallbackMethod = "reliableScopeById")
-  public Scope getScopeById(String id) {
+  public ScopeDTO getScopeById(String id) {
     URI uri = URI.create("http://localhost:8082/api/scope/" + id);
-    return this.restTemplate.getForObject(uri, Scope.class);
+    return this.restTemplate.getForObject(uri, ScopeDTO.class);
 
   }
 
-  public Scope reliableScopeById(String id, Throwable t) {
-    return new Scope(id, "");
+  public ScopeDTO reliableScopeById(String id, Throwable t) {
+    return new ScopeDTO();
 
   }
 }

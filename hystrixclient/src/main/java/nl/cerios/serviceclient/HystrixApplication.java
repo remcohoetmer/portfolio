@@ -1,5 +1,6 @@
 package nl.cerios.serviceclient;
 
+import nl.remco.scope.service.dto.ScopeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,8 +27,17 @@ public class HystrixApplication {
   }
 
   @RequestMapping("/scopes")
-  public List<Scope> toRead() {
+  public List<ScopeDTO> getScopes() {
     return scopeService.getScopes();
+  }
+
+  @RequestMapping("/scope")
+  public ScopeDTO getScopeById() {
+    List<ScopeDTO> scopes= scopeService.getScopes();
+    if (!scopes.isEmpty()) {
+      return scopeService.getScopeById(scopes.get(0).getId());
+    }
+    return new ScopeDTO();
   }
 
   public static void main(String[] args) {
