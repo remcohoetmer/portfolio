@@ -26,7 +26,7 @@
         <module>groupservice</module>
         <module>scopeservice</module>
         <module>serviceclient</module>
-        <module>hystrixclient</module>
+        <!--<module>hystrixclient</module>-->
     </modules>
 
     <repositories>

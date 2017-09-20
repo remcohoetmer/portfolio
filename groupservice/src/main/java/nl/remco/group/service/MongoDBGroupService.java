@@ -2,6 +2,7 @@ package nl.remco.group.service;
 
 import nl.remco.group.enrich.PersonEnricher;
 import nl.remco.group.enrich.ScopeEnricher;
+import nl.remco.group.nl.remco.kafka.SampleProducer;
 import nl.remco.group.organisation.service.OrganisationEnricher;
 import nl.remco.group.service.domain.*;
 import nl.remco.group.service.dto.GroupDTO;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import reactor.core.Exceptions;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -49,6 +51,10 @@ public class MongoDBGroupService implements GroupService {
   private MongoDBGroupService(GroupRepository repository) {
     this.repository = repository;
   }
+
+  @Autowired
+  SampleProducer kafkaSender;
+  private static final String TOPIC = "demo-topic";
 
   private Mono<GroupDTO> enrich(GroupDTO group, GroupFilter groupFilter,
                                 GroupSelection groupSelection) {
@@ -84,7 +90,15 @@ public class MongoDBGroupService implements GroupService {
     logger.info("Creating a new group entry with information: {}", group);
     Group groupDTO = converter.convertfromDTO(group);
     return repository.save(groupDTO)
-      .map(converter::convertToDTO);
+      .map(converter::convertToDTO)
+      .log()
+      .flatMap(dto -> {
+        try {
+          return kafkaSender.sendMessages(TOPIC, dto.getName()).then(Mono.just(dto));
+        } catch (InterruptedException e) {
+          throw Exceptions.propagate(e);
+        }
+      });
   }
 
   @Override
