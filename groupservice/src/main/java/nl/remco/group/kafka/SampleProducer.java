@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.remco.group.nl.remco.kafka;
+package nl.remco.group.kafka;
 
+import nl.remco.group.kafka.serialization.GroupSerializer;
+import nl.remco.group.service.domain.Group;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.IntegerSerializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class SampleProducer {
   private static final String BOOTSTRAP_SERVERS = "localhost:9092";
   private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS z dd MMM yyyy");
 
-  private KafkaSender<Integer, String> sender;
+  private KafkaSender<Integer, Group> sender;
 
   @PostConstruct
   public void init() {
@@ -56,8 +57,8 @@ public class SampleProducer {
     props.put(ProducerConfig.CLIENT_ID_CONFIG, "sample-producer");
     props.put(ProducerConfig.ACKS_CONFIG, "all");
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    SenderOptions<Integer, String> senderOptions = SenderOptions.create(props);
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GroupSerializer.class);
+    SenderOptions<Integer, Group> senderOptions = SenderOptions.create(props);
     sender = KafkaSender.create(senderOptions);
   }
 
@@ -66,9 +67,9 @@ public class SampleProducer {
     sender.close();
   }
 
-  public Flux<SenderResult<Integer>> sendMessages(String topic, String message) throws InterruptedException {
+  public Flux<SenderResult<Integer>> sendMessages(String topic, Group group) throws InterruptedException {
     return sender.<Integer>send(Flux.range(1, 1)
-      .map(i -> SenderRecord.create(new ProducerRecord<Integer, String>(topic, 1, null, i, message, null), i)))
+      .map(i -> SenderRecord.create(new ProducerRecord<Integer, Group>(topic, 1, null, i, group, null), i)))
       .doOnError(e -> log.error("Send failed", e))
       .doOnNext(r -> {
         RecordMetadata metadata = r.recordMetadata();

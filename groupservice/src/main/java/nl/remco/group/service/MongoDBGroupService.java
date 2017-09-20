@@ -2,7 +2,7 @@ package nl.remco.group.service;
 
 import nl.remco.group.enrich.PersonEnricher;
 import nl.remco.group.enrich.ScopeEnricher;
-import nl.remco.group.nl.remco.kafka.SampleProducer;
+import nl.remco.group.kafka.SampleProducer;
 import nl.remco.group.organisation.service.OrganisationEnricher;
 import nl.remco.group.service.domain.*;
 import nl.remco.group.service.dto.GroupDTO;
@@ -86,15 +86,15 @@ public class MongoDBGroupService implements GroupService {
   }
 
   @Override
-  public Mono<GroupDTO> create(GroupDTO group) {
-    logger.info("Creating a new group entry with information: {}", group);
-    Group groupDTO = converter.convertfromDTO(group);
-    return repository.save(groupDTO)
+  public Mono<GroupDTO> create(GroupDTO groupDTO) {
+    logger.info("Creating a new group entry with information: {}", groupDTO);
+    Group group = converter.convertfromDTO(groupDTO);
+    return repository.save(group)
       .map(converter::convertToDTO)
       .log()
       .flatMap(dto -> {
         try {
-          return kafkaSender.sendMessages(TOPIC, dto.getName()).then(Mono.just(dto));
+          return kafkaSender.sendMessages(TOPIC, group).then(Mono.just(dto));
         } catch (InterruptedException e) {
           throw Exceptions.propagate(e);
         }

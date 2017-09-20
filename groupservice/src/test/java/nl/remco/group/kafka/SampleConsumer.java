@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.remco.group.nl.remco.kafka;
+package nl.remco.group.kafka;
 
+import nl.remco.group.kafka.serialization.GroupDeserializer;
+import nl.remco.group.service.domain.Group;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
@@ -54,7 +55,7 @@ public class SampleConsumer {
     private static final String BOOTSTRAP_SERVERS = "localhost:9092";
     private static final String TOPIC = "demo-topic";
 
-    private final ReceiverOptions<Integer, String> receiverOptions;
+    private final ReceiverOptions<Integer, Group> receiverOptions;
     private final SimpleDateFormat dateFormat;
 
     public SampleConsumer(String bootstrapServers) {
@@ -64,7 +65,7 @@ public class SampleConsumer {
         props.put(ConsumerConfig.CLIENT_ID_CONFIG, "sample-consumer");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "sample-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GroupDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         receiverOptions = ReceiverOptions.create(props);
         dateFormat = new SimpleDateFormat("HH:mm:ss:SSS z dd MMM yyyy");
@@ -72,10 +73,10 @@ public class SampleConsumer {
 
     public Disposable consumeMessages(String topic, CountDownLatch latch) {
 
-        ReceiverOptions<Integer, String> options = receiverOptions.subscription(Collections.singleton(topic))
+        ReceiverOptions<Integer, Group> options = receiverOptions.subscription(Collections.singleton(topic))
                 .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
                 .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));
-        Flux<ReceiverRecord<Integer, String>> kafkaFlux = KafkaReceiver.create(options).receive();
+        Flux<ReceiverRecord<Integer, Group>> kafkaFlux = KafkaReceiver.create(options).receive();
         return kafkaFlux.subscribe(record -> {
                 ReceiverOffset offset = record.receiverOffset();
                 System.out.printf("Received message: topic-partition=%s offset=%d timestamp=%s key=%d value=%s\n",
@@ -89,8 +90,8 @@ public class SampleConsumer {
             });
     }
 
-    public static void Xmain(String[] args) throws Exception {
-        int count = 40;
+    public static void main(String[] args) throws Exception {
+        int count = 1;
         CountDownLatch latch = new CountDownLatch(count);
         SampleConsumer consumer = new SampleConsumer(BOOTSTRAP_SERVERS);
         Disposable disposable = consumer.consumeMessages(TOPIC, latch);
