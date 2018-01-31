@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import reactor.core.Exceptions;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -92,13 +91,14 @@ public class MongoDBGroupService implements GroupService {
     return repository.save(group)
       .map(converter::convertToDTO)
       .log()
+      /*
       .flatMap(dto -> {
         try {
           return kafkaSender.sendMessages(TOPIC, group).then(Mono.just(dto));
         } catch (InterruptedException e) {
           throw Exceptions.propagate(e);
         }
-      });
+      })*/;
   }
 
   @Override
