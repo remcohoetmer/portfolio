@@ -23,7 +23,7 @@ public class GroupClient {
 
   @Bean
   WebClient client() {
-    return WebClient.create("http://localhost:8082");
+    return WebClient.create("http://localhost:80");
   }
 
   private Mono<GroupDTO> print(final GroupDTO message) {

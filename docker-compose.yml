@@ -1,0 +1,53 @@
+version: '3.1'
+
+services:
+  mongodb:
+      image: mongo:latest
+      container_name: "mongodb"
+      environment:
+        - MONGO_DATA_DIR=/data/db
+        - MONGO_LOG_DIR=/dev/null
+      volumes:
+        - ./data/db:/data/db
+      command: mongod --smallfiles --logpath=/dev/null # --quiet
+
+#  kafka:
+#      image: spotify/kafka:latest
+#      container_name: "kafka"
+#      ports:
+#        - "9092:9092"
+#      volumes:
+#        - /var/run/docker.sock:/var/run/docker.sock
+
+  scopeservice:
+    container_name: "scopeservice"
+    image: java:alpine
+    volumes:
+      - ./scopeservice/target/scopeservice-0.1.jar:/var/app.jar:z
+    command: java -Djava.net.preferIPv4Stack=true -jar /var/app.jar -cluster
+    ports:
+      - 8081:8081
+    environment:
+      MONGOSERVER: mongodb
+      MONGOPORT: 27017
+    depends_on:
+      - mongodb
+
+  groupservice:
+    image: java:alpine
+    volumes:
+      - ./groupservice/target/groupservice-0.1.jar:/var/app.jar:z
+    command: java -Djava.net.preferIPv4Stack=true -jar /var/app.jar -cluster
+    ports:
+      - 80:8082
+    environment:
+      MONGOSERVER: mongodb
+      MONGOPORT: 27017
+#      KAFKASERVER: kafka
+#      KAFKAPORT: 9092
+      SCOPESERVICE: http://scopeservice:8081
+    depends_on:
+      - mongodb
+      - scopeservice
+#      - kafka
+

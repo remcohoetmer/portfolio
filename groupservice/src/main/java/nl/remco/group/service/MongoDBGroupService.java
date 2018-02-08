@@ -55,6 +55,9 @@ public class MongoDBGroupService implements GroupService {
   SampleProducer kafkaSender;
   private static final String TOPIC = "demo-topic";
 
+  @Autowired
+  ScopeClient scopeClient;
+
   private Mono<GroupDTO> enrich(GroupDTO group, GroupFilter groupFilter,
                                 GroupSelection groupSelection) {
     Mono<GroupDTO> chain = Mono.just(group);
@@ -237,7 +240,7 @@ public class MongoDBGroupService implements GroupService {
   }
 
   private Mono<List<Group>> getInitalGroups() {
-    Flux<Scope> scopes = new ScopeClient().getScopes();
+    Flux<Scope> scopes = scopeClient.getScopes();
     return scopes.collectList().map(
       list -> {
         Scope scope0 = (list != null && list.size() > 0) ? list.get(0) : null;
