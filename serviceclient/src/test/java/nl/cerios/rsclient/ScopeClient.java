@@ -12,7 +12,7 @@ public class ScopeClient {
 
   @Bean
   WebClient client() {
-    return WebClient.create("http://localhost:81");
+    return WebClient.create("http://localhost:8081");
   }
 
   Flux<ScopeDTO> getScopes() {

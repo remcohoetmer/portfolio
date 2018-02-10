@@ -1,5 +1,6 @@
+bin/kafka.sh
+mvn clean spring-boot:run
 
-    mvn clean spring-boot:run
 
 
 [{"id":"593783304ba8d0152504af36","name":"remco","status":"Active"}]

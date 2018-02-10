@@ -10,9 +10,9 @@ import Rx from 'rx-dom';
 
 declare function escape(s: string): string;
 
-const group_url = 'http://localhost/api/group';
-const org_url = 'http://localhost/api/organisation';
-const scope_url = 'http://localhost:81/api/scope';
+const group_url = 'http://localhost:8082/api/group';
+const org_url = 'http://localhost:8082/api/organisation';
+const scope_url = 'http://localhost:8081/api/scope';
 
 export class GroupSelection {
 	name: string;

@@ -20,10 +20,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class MongoDBGroupService implements GroupService {
@@ -52,11 +53,11 @@ public class MongoDBGroupService implements GroupService {
   }
 
   @Autowired
-  SampleProducer kafkaSender;
+  private SampleProducer kafkaSender;
   private static final String TOPIC = "demo-topic";
 
   @Autowired
-  ScopeClient scopeClient;
+  private ScopeClient scopeClient;
 
   private Mono<GroupDTO> enrich(GroupDTO group, GroupFilter groupFilter,
                                 GroupSelection groupSelection) {
@@ -239,27 +240,32 @@ public class MongoDBGroupService implements GroupService {
       });
   }
 
+  private static Scope getElementAtIndex(List<Scope> list, int index) {
+    return list != null && list.size() > index ? list.get(index) : null;
+  }
+
   private Mono<List<Group>> getInitalGroups() {
     Flux<Scope> scopes = scopeClient.getScopes();
     return scopes.collectList().map(
       list -> {
-        Scope scope0 = (list != null && list.size() > 0) ? list.get(0) : null;
-        Scope scope1 = (list != null && list.size() > 1) ? list.get(1) : null;
-        Scope scope2 = (list != null && list.size() > 2) ? list.get(2) : null;
-        Scope scope3 = (list != null && list.size() > 3) ? list.get(3) : null;
+        List<Membership> members = Arrays.asList(
+          new Membership("leerling", new Person("person1")),
+          new Membership("leerling", new Person("person2")),
+          new Membership("leerling", new Person("person3")),
+          new Membership("docent", new Person("person4")));
+        String[] names = new String[]{"filosofie", "geo", "natuurkunde", "wiskunde"};
+        String[] descriptions = new String[]{"Descartes", "Leonardo da Vinci", "Gay-Lussac", "Pythogoras"};
 
-        List<Membership> members = new ArrayList();
-        members.add(new Membership("leerling", new Person("person1")));
-        members.add(new Membership("leerling", new Person("person2")));
-        members.add(new Membership("leerling", new Person("person3")));
-        members.add(new Membership("docent", new Person("person4")));
+        return IntStream.range(0, 4).mapToObj(
+          nr -> Group.getBuilder()
+            .name(names[nr])
+            .withDescription(descriptions[nr])
+            .status("Active")
+            .withOrganisation(new Organisation(Integer.toString(8000 + nr)))
+            .withScope(getElementAtIndex(list, nr))
+            .withMembers(members.subList(0, nr + 1)).build()
+        ).collect(Collectors.toList());
 
-        return Arrays.asList(
-          Group.getBuilder().name("filosofie").withDescription("Descartes").status("Active").withOrganisation(new Organisation("8000")).withScope(scope0).withMembers(members).build(),
-          Group.getBuilder().name("geo").withDescription("Leonardo da Vinci").status("Active").withOrganisation(new Organisation("8000")).withScope(scope1).build(),
-          Group.getBuilder().name("natuurkunde").withDescription("Gay-Lussac").status("Active").withOrganisation(new Organisation("8001")).withScope(scope2).build(),
-          Group.getBuilder().name("wiskunde").withDescription("Pythogoras").status("Active").withOrganisation(new Organisation("8002")).withScope(scope3).build()
-        );
       });
   }
 
